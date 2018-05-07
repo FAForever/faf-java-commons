@@ -6,10 +6,10 @@ import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 
 @Data
-@Type("tutorial")
+@Type("message")
 public class Message {
   @Id
-  private int id;
+  private String id;
   private String key;
   private String language;
   private String region;
