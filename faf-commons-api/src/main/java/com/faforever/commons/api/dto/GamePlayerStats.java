@@ -1,6 +1,9 @@
 package com.faforever.commons.api.dto;
 
 import com.faforever.commons.api.elide.ElideEntity;
+import com.faforever.commons.api.elide.querybuilder.FieldFilterDefinition;
+import com.faforever.commons.api.elide.querybuilder.QueryOperator;
+import com.faforever.commons.api.elide.querybuilder.TransientFilter;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
@@ -16,24 +19,27 @@ import java.time.OffsetDateTime;
 @EqualsAndHashCode(of = "id")
 @Type("gamePlayerStats")
 public class GamePlayerStats implements ElideEntity {
-    @Id
-    private String id;
-    private boolean ai;
-    private Faction faction;
-    private byte color;
-    private byte team;
-    private byte startSpot;
-    private Float beforeMean;
-    private Float beforeDeviation;
-    private Float afterMean;
-    private Float afterDeviation;
-    private byte score;
-    @Nullable
-    private OffsetDateTime scoreTime;
+  @Id
+  private String id;
+  private boolean ai;
 
-    @Relationship("game")
-    private Game game;
+  @FieldFilterDefinition(allowedOperators = QueryOperator.Preset.ENUM)
+  private Faction faction;
+  private byte color;
+  private byte team;
+  private byte startSpot;
+  private Float beforeMean;
+  private Float beforeDeviation;
+  private Float afterMean;
+  private Float afterDeviation;
+  private byte score;
+  @Nullable
+  private OffsetDateTime scoreTime;
 
-    @Relationship("player")
-    private Player player;
+  @Relationship("game")
+  private Game game;
+
+  @Relationship("player")
+  @TransientFilter
+  private Player player;
 }
