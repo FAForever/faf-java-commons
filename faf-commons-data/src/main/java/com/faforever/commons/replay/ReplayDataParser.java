@@ -7,7 +7,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -51,12 +53,12 @@ public class ReplayDataParser {
   }
 
   private String readString(LittleEndianDataInputStream dataStream) throws IOException {
-    StringBuilder stringBuilder = new StringBuilder();
-    char character;
-    while ((character = (char) dataStream.readByte()) != 0) {
-      stringBuilder.append(character);
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte tempByte;
+    while ((tempByte =  dataStream.readByte()) != 0) {
+      out.write(tempByte);
     }
-    return stringBuilder.toString();
+    return new String(out.toByteArray(), StandardCharsets.UTF_8);
   }
 
   private Object parseLua(LittleEndianDataInputStream dataStream) throws IOException {
