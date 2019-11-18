@@ -1,5 +1,6 @@
 package com.faforever.commons.replay;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
 import lombok.Data;
@@ -52,7 +53,8 @@ public class ReplayDataParser {
     commandsPerMinuteByPlayer = new HashMap<>();
   }
 
-  private String readString(LittleEndianDataInputStream dataStream) throws IOException {
+  @VisibleForTesting
+  String readString(LittleEndianDataInputStream dataStream) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte tempByte;
     while ((tempByte =  dataStream.readByte()) != 0) {
