@@ -1,7 +1,6 @@
 package com.faforever.commons.replay;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -11,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -45,12 +43,14 @@ public class ReplayDataParser {
   private float scale;
   private int ticks;
   private List<GameOption> gameOptions;
+  private RawReplayDataReader rawReplayDataReader;
 
   public ReplayDataParser(Path path) {
     this.path = path;
     armies = new HashMap<>();
     chatMessages = new ArrayList<>();
     commandsPerMinuteByPlayer = new HashMap<>();
+    rawReplayDataReader = new RawReplayDataReader();
   }
 
   @VisibleForTesting
@@ -97,17 +97,6 @@ public class ReplayDataParser {
     int next = dataStream.readUnsignedByte();
     dataStream.reset();
     return next;
-  }
-
-  // TODO don't duplicate code
-  private byte[] readReplayData(Path replayFile) {
-    try {
-      List<String> lines = Files.readAllLines(replayFile);
-      return QtCompress.qUncompress(BaseEncoding.base64().decode(lines.get(1)));
-    } catch (Exception e) {
-      log.warn("Replay file " + replayFile + " could not be read", e);
-      return null;
-    }
   }
 
   @SuppressWarnings("unchecked")
@@ -332,7 +321,7 @@ public class ReplayDataParser {
 
   @SneakyThrows
   public ReplayData parse() {
-    byte[] data = readReplayData(path);
+    byte[] data = rawReplayDataReader.read(path);
     if (data == null) {
       // TODO the call above should maybe throw an exception
       throw new IllegalStateException("Could not read replay data");
