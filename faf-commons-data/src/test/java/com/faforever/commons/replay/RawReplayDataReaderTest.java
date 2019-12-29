@@ -57,4 +57,16 @@ public class RawReplayDataReaderTest {
     byte reference[] = Files.readAllBytes(referenceFile);
     assertThat("Zstd compressed replay matches reference", Arrays.equals(data, reference));
   }
+
+  @Test
+  public void testLegacyFormat() throws Exception {
+    Path replayFile = temporaryFolder.resolve("test.fafreplay");
+    Path referenceFile = temporaryFolder.resolve("test.raw");
+    Files.copy(getClass().getResourceAsStream("/replay/test.fafreplay"), replayFile);
+    Files.copy(getClass().getResourceAsStream("/replay/test.raw"), referenceFile);
+
+    byte data[] = new RawReplayDataReader().read(replayFile);
+    byte reference[] = Files.readAllBytes(referenceFile);
+    assertThat("Legacy compressed file matches reference", Arrays.equals(data, reference));
+  }
 }
