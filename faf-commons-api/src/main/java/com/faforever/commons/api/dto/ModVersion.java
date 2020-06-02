@@ -2,6 +2,7 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -11,6 +12,7 @@ import java.net.URL;
 @Getter
 @Setter
 @Type("modVersion")
+@EqualsAndHashCode(callSuper = true)
 public class ModVersion extends AbstractEntity {
   private String uid;
   private ModType type;

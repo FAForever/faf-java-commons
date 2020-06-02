@@ -9,10 +9,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
-public class Rating {
-    @Id
-    private String id;
+@EqualsAndHashCode(callSuper = true)
+public class Rating extends AbstractEntity{
     private double mean;
     private double deviation;
     private double rating;

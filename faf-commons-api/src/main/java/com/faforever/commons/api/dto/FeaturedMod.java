@@ -9,11 +9,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("featuredMod")
-public class FeaturedMod implements ElideEntity {
-    @Id
-    private String id;
+public class FeaturedMod extends AbstractEntity {
     private String description;
     private String displayName;
     private int order;

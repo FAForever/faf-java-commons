@@ -3,6 +3,7 @@ package com.faforever.commons.api.dto;
 import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +12,8 @@ import java.util.Set;
 @Type(MeResult.TYPE_NAME)
 @Getter
 @Setter
-public class MeResult implements ElideEntity {
+@EqualsAndHashCode(callSuper = true)
+public class MeResult extends AbstractEntity {
 
   public static final String TYPE_NAME = "me";
 

@@ -13,11 +13,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("game")
-public class Game implements ElideEntity {
-    @Id
-    private String id;
+public class Game extends AbstractEntity {
     private String name;
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;

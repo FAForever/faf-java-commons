@@ -2,6 +2,7 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.time.OffsetDateTime;
 @Setter
 @Type(TeamkillReport.TYPE_NAME)
 @RestrictedVisibility("IsModerator")
+@EqualsAndHashCode(callSuper = true)
 public class TeamkillReport extends AbstractEntity {
 
   public static final String TYPE_NAME = "teamkillReport";

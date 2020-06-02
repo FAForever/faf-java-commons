@@ -14,13 +14,10 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("mod")
 @NoArgsConstructor
-public class Mod implements ElideEntity {
-
-  @Id
-  private String id;
+public class Mod extends AbstractEntity {
   private String displayName;
   private String author;
   private OffsetDateTime createTime;

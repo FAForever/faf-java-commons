@@ -9,12 +9,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("playerEvent")
-public class PlayerEvent {
+public class PlayerEvent extends AbstractEntity {
 
-    @Id
-    private String id;
     private int count;
 
     @Relationship("event")

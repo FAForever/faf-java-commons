@@ -8,11 +8,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("coopMission")
-public class CoopMission {
-    @Id
-    private String id;
+public class CoopMission extends AbstractEntity{
+
     private String name;
     private int version;
     private String category;

@@ -2,6 +2,7 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -13,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Type("mapVersion")
+@EqualsAndHashCode(callSuper = true)
 public class MapVersion extends AbstractEntity {
   private String description;
   private Integer maxPlayers;

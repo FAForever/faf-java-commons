@@ -8,11 +8,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("globalLeaderboardEntry")
-public class GlobalLeaderboardEntry {
-    @Id
-    private String id;
+public class GlobalLeaderboardEntry extends AbstractEntity{
     private String name;
     private int rank;
     private Double mean;

@@ -13,11 +13,9 @@ import java.time.OffsetDateTime;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("gamePlayerStats")
-public class GamePlayerStats implements ElideEntity {
-    @Id
-    private String id;
+public class GamePlayerStats extends AbstractEntity {
     private boolean ai;
     private Faction faction;
     private byte color;

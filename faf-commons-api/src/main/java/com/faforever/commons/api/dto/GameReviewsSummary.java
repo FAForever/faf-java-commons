@@ -8,10 +8,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Type("modVersionReview")
+@Type("gameReviewsSummary")
 @EqualsAndHashCode(callSuper = true)
-public class ModVersionReview extends Review {
+public class GameReviewsSummary extends Review {
 
-    @Relationship("modVersion")
-    private ModVersion modVersion;
+  @Relationship("game")
+  private Game game;
 }

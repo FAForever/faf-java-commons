@@ -10,9 +10,9 @@ import java.time.Duration;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("coopResult")
-public class CoopResult {
+public class CoopResult extends AbstractEntity{
     @Id
     private String id;
     private Duration duration;

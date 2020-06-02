@@ -5,10 +5,12 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Type("message")
-public class Message implements ElideEntity {
+@EqualsAndHashCode(callSuper = true)
+public class Message extends AbstractEntity {
   @Id
   private String id;
   private String key;

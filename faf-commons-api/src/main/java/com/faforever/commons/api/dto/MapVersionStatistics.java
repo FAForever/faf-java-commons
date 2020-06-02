@@ -10,11 +10,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("mapVersionStatistics")
-public class MapVersionStatistics implements ElideEntity {
-    @Id
-    private String id;
+public class MapVersionStatistics extends AbstractEntity {
     private int downloads;
     private int draws;
     private int plays;

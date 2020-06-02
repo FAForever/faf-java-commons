@@ -2,6 +2,7 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Setter
 @Type("userNote")
 @RestrictedVisibility("IsModerator")
+@EqualsAndHashCode(callSuper = true)
 public class UserNote extends AbstractEntity {
     @Relationship("player")
     private Player player;

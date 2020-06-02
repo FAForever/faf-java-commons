@@ -14,10 +14,8 @@ import java.util.List;
 @Data
 @Type("tutorialCategory")
 @ToString(exclude={"tutorials"})
-@EqualsAndHashCode(exclude={"tutorials"})
-public class TutorialCategory implements ElideEntity {
-  @Id
-  private String id;
+@EqualsAndHashCode(callSuper = true)
+public class TutorialCategory extends AbstractEntity {
   private String categoryKey;
   private String category;
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -10,13 +10,9 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
-@ToString(of = {"id"})
+@EqualsAndHashCode(callSuper = true)
 @Type("achievement")
-public class AchievementDefinition implements ElideEntity {
-
-    @Id
-    private String id;
+public class AchievementDefinition extends AbstractEntity {
     private String description;
     private int experiencePoints;
     private AchievementState initialState;

@@ -8,11 +8,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("ladder1v1LeaderboardEntry")
-public class Ladder1v1LeaderboardEntry {
-    @Id
-    private String id;
+public class Ladder1v1LeaderboardEntry extends AbstractEntity{
     private int rank;
     private String name;
     private Double mean;

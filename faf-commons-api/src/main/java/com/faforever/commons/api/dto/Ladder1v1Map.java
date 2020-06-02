@@ -10,11 +10,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(callSuper = true)
 @Type("ladder1v1Map")
-public class Ladder1v1Map implements ElideEntity {
-    @Id
-    private String id;
+public class Ladder1v1Map extends AbstractEntity {
     @Relationship("mapVersion")
     private MapVersion mapVersion;
 }
