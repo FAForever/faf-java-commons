@@ -1,9 +1,5 @@
 package com.faforever.commons.lobby
 
-import com.faforever.loadtest.remote.Faction
-import com.faforever.loadtest.remote.GameStatus
-import com.faforever.loadtest.remote.LobbyMode
-import com.faforever.loadtest.remote.LobbyProtocolMessage
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -26,6 +22,7 @@ import java.time.OffsetDateTime
   JsonSubTypes.Type(value = MatchmakerMatchFoundResponse::class, name = "match_found"),
   JsonSubTypes.Type(value = MatchmakingInfo::class, name = "game_matchmaking"),
   JsonSubTypes.Type(value = SearchInfo::class, name = "search_info"),
+  JsonSubTypes.Type(value = IceServerListResponse::class, name = "ice_servers"),
 )
 
 interface ServerMessage : LobbyProtocolMessage
@@ -157,4 +154,17 @@ data class SearchInfo(
   @JsonProperty("queue_name")
   val queueName: String,
   val state: String,
+) : ServerMessage
+
+data class IceServer(
+  val url: String,
+  val urls: Collection<String>,
+  val username: String,
+  val credential: String,
+  val credentialType: String,
+)
+
+data class IceServerListResponse(
+  @JsonProperty("ice_servers")
+  val iceServers: Collection<IceServer>
 ) : ServerMessage

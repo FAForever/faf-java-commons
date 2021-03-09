@@ -1,8 +1,5 @@
 package com.faforever.commons.lobby
 
-import com.faforever.loadtest.remote.GameAccess
-import com.faforever.loadtest.remote.GameVisibility
-import com.faforever.loadtest.remote.LobbyProtocolMessage
 import com.fasterxml.jackson.annotation.JsonProperty
 
 interface ClientMessage : LobbyProtocolMessage {
@@ -18,7 +15,7 @@ data class LoginRequest(
   @JsonProperty("local_ip")
   val localIp: String,
 ) : ClientMessage {
-  override val command: String = "hello"
+  override val command = "hello"
 }
 
 data class SessionRequest(
@@ -26,8 +23,31 @@ data class SessionRequest(
   @JsonProperty("user_agent")
   val userAgent: String = "downlords-faf-client",
 ) : ClientMessage {
-  override val command: String = "ask_session"
+  override val command = "ask_session"
 }
+
+class IceServerListRequest : ClientMessage {
+  override val command = "ice_servers"
+}
+
+data class BroadcastRequest(
+  val message: String,
+) : ClientMessage {
+  override val command = "broadcast"
+}
+
+data class ClosePlayerGameRequest(
+  @JsonProperty("user_id") val playerId: Int,
+) : ClientMessage {
+  override val command = "closeFA"
+}
+
+data class ClosePlayerLobbyRequest(
+  @JsonProperty("user_id") val playerId: Int,
+) : ClientMessage {
+  override val command = "closelobby"
+}
+
 
 enum class MatchmakerState {
   @JsonProperty("start")
@@ -42,7 +62,7 @@ data class SearchLadder1v1Request(
   val state: MatchmakerState = MatchmakerState.START,
   val faction: String,
 ) : ClientMessage {
-  override val command: String = "game_matchmaking"
+  override val command = "game_matchmaking"
 }
 
 data class HostGameRequest(
@@ -55,5 +75,76 @@ data class HostGameRequest(
   val password: String?,
   val visibility: GameVisibility,
 ) : ClientMessage {
-  override val command: String = "game_host"
+  override val command = "game_host"
+}
+
+data class AddFriendRequest(
+  @JsonProperty("friend") val playerId: Int
+) : ClientMessage {
+  override val command = "social_add"
+}
+
+data class AddFoeRequest(
+  @JsonProperty("foe") val playerId: Int
+) : ClientMessage {
+  override val command = "social_add"
+}
+
+data class RemoveFriendRequest(
+  @JsonProperty("friend") val playerId: Int
+) : ClientMessage {
+  override val command = "social_remove"
+}
+
+data class RemoveFoeRequest(
+  @JsonProperty("foe") val playerId: Int
+) : ClientMessage {
+  override val command = "social_remove"
+}
+
+data class GpgGameMessage(
+  override val command: String,
+  val args: List<Any>,
+) : ClientMessage
+
+data class GameMatchmakingRequest(
+  val queueName: String,
+  val state: MatchmakerState,
+) : ClientMessage {
+  override val command = "game_matchmaking"
+}
+
+data class InviteToPartyRequest(
+  @JsonProperty("recipientId")
+  val playerId: Int
+) : ClientMessage {
+  override val command = "invite_to_party"
+}
+
+data class AcceptInviteToPartyRequest(
+  @JsonProperty("senderId")
+  val playerId: Int
+) : ClientMessage {
+  override val command = "accept_party_invite"
+}
+
+data class KickPlayerFromPartyRequest(
+  @JsonProperty("kickedPlayerId")
+  val playerId: Int
+) : ClientMessage {
+  override val command = "kick_player_from_party"
+}
+
+class ReadyPartyRequest(isReady: Boolean) : ClientMessage {
+  override val command = if (isReady) "ready_party" else "unready_party"
+}
+
+class LeavePartyRequest : ClientMessage {
+  override val command = "leave_party"
+}
+
+data class SelectPartyFactionsRequest(
+  val factions: Set<Faction>
+) : ClientMessage {
+  override val command = "set_party_factions"
 }

@@ -1,4 +1,4 @@
-package com.faforever.loadtest.remote
+package com.faforever.commons.lobby
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

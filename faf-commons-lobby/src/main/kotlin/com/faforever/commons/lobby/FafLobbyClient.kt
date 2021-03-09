@@ -8,16 +8,38 @@ import io.netty.handler.codec.string.LineSeparator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.Disposable
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import reactor.netty.Connection
 import reactor.netty.tcp.TcpClient
 import java.util.function.Function
 
-class FafLobbyClient(
+interface FafLobbyClient :
+  FafAdminLobbyClient,
+  FafSocialLobbyClient,
+  FafMatchmakerLobbyClient {
+  val events: Flux<ServerMessage>
+
+  fun connectAndLogin(): Mono<LoginResponse>
+
+  fun disconnect()
+
+  fun getIceServers(): Mono<Collection<IceServer>>
+
+  fun sendGpgGameMessage(message: GpgGameMessage)
+
+//  fun requestHostGame(): Mono<GameLaunchResponse>
+//
+//  fun requestJoinGame(gameId: Int, password: String): Mono<GameLaunchResponse>
+
+}
+
+
+class FafLobbyClientImpl(
   private val config: Config,
   private val mapper: ObjectMapper,
-) {
+) : FafLobbyClient {
   companion object {
     val log: Logger = LoggerFactory.getLogger(FafLobbyClient::class.java)
   }
@@ -33,7 +55,7 @@ class FafLobbyClient(
   )
 
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().multicast().directBestEffort()
-  val events = eventSink.asFlux()
+  override val events = eventSink.asFlux()
 
   private val outboundSink: Sinks.Many<String> = Sinks.many().unicast().onBackpressureBuffer()
   private val connectionMono: Mono<out Connection> = TcpClient.create(
@@ -73,22 +95,39 @@ class FafLobbyClient(
 
   private var connectionSubscription: Disposable? = null
 
-  fun connectAndLogin() =
+  override fun connectAndLogin() =
     Mono.fromCallable {
       connectionSubscription = connectionMono.subscribe()
       send(SessionRequest())
     }.then(
       events
         .filter { it is LoginResponse }
+        .cast(LoginResponse::class.java)
         .next()
     )
 
-  fun disconnect() {
+  override fun disconnect() {
     when (val subscription = connectionSubscription) {
       null -> log.warn("Attempting to disconnect while never connected")
       else -> subscription.dispose().also { log.info("Disconnecting") }
     }
   }
+
+  override fun broadcastMessage(message: String) = send(BroadcastRequest(message))
+
+  override fun closePlayerGame(playerId: Int) = send(ClosePlayerGameRequest(playerId))
+
+  override fun closePlayerLobby(playerId: Int) = send(ClosePlayerLobbyRequest(playerId))
+
+  override fun getIceServers(): Mono<Collection<IceServer>> =
+    Mono.fromCallable { send(IceServerListRequest()) }
+      .then(
+        events
+          .filter { it is IceServerListResponse }
+          .cast(IceServerListResponse::class.java)
+          .next()
+          .map { it.iceServers }
+      )
 
   fun send(message: ClientMessage) {
     outboundSink.tryEmitNext(mapper.writeValueAsString(message))
@@ -113,4 +152,29 @@ class FafLobbyClient(
       Unit
     }
   }
+
+  override fun addFriend(playerId: Int) = send(AddFriendRequest(playerId))
+
+  override fun addFoe(playerId: Int) = send(AddFoeRequest(playerId))
+
+  override fun removeFriend(playerId: Int) = send(RemoveFriendRequest(playerId))
+
+  override fun removeFoe(playerId: Int) = send(RemoveFoeRequest(playerId))
+
+  override fun gameMatchmaking(queueName: String, state: MatchmakerState) =
+    send(GameMatchmakingRequest(queueName, state))
+
+  override fun inviteToParty(playerId: Int) = send(InviteToPartyRequest(playerId))
+
+  override fun acceptPartyInvite(playerId: Int) = send(AcceptInviteToPartyRequest(playerId))
+
+  override fun kickPlayerFromParty(playerId: Int) = send(KickPlayerFromPartyRequest(playerId))
+
+  override fun readyParty(isReady: Boolean) = send(ReadyPartyRequest(isReady))
+
+  override fun leaveParty() = send(LeavePartyRequest())
+
+  override fun setPartyFactions(factions: Set<Faction>) = send(SelectPartyFactionsRequest(factions))
+
+  override fun sendGpgGameMessage(message: GpgGameMessage) = send(message)
 }
