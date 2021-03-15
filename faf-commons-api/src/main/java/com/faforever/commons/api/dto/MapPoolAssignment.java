@@ -1,6 +1,5 @@
 package com.faforever.commons.api.dto;
 
-import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import lombok.Getter;
 import lombok.Setter;
