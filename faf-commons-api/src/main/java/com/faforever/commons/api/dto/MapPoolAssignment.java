@@ -7,10 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MapPoolAssignment {
-
-  @Id
-  protected String id;
+public class MapPoolAssignment extends AbstractEntity {
 
   @Relationship("mapPool")
   private MapPool mapPool;
