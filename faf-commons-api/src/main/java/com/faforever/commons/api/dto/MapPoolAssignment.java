@@ -21,20 +21,6 @@ public class MapPoolAssignment extends AbstractEntity {
   private MapVersion mapVersion;
   private int weight;
   private MapParams mapParams;
-
-  @JsonGetter("mapParams")
-  public String mapParamsToString() throws JsonProcessingException {
-    return new ObjectMapper().writeValueAsString(mapParams);
-  }
-
-  @JsonSetter("mapParams")
-  public void setMapParamsFromString(String mapParams) throws IOException {
-    if (mapParams != null) {
-      this.mapParams = new ObjectMapper().readValue(mapParams, MapParams.class);
-    } else {
-      this.mapParams = null;
-    }
-  }
 }
 
 
