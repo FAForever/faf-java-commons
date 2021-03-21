@@ -1,5 +1,7 @@
 package com.faforever.commons.lobby
 
+import reactor.core.publisher.Mono
+
 
 interface FafAdminLobbyClient {
 
@@ -24,6 +26,8 @@ interface FafSocialLobbyClient {
 }
 
 interface FafMatchmakerLobbyClient {
+
+  fun requestMatchmakerInfo()
 
   fun gameMatchmaking(queueName: String, state: MatchmakerState)
 

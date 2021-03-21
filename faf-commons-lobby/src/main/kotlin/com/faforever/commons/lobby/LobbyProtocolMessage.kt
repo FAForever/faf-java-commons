@@ -1,9 +1,9 @@
 package com.faforever.commons.lobby
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 
-interface LobbyProtocolMessage {
-}
+interface LobbyProtocolMessage
 
 enum class Faction {
   @JsonProperty("aeon")
@@ -39,6 +39,23 @@ enum class GameStatus {
   CLOSED;
 }
 
+enum class GameType {
+  @JsonProperty("unknown")
+  UNKNOWN,
+
+  @JsonProperty("custom")
+  CUSTOM,
+
+  @JsonProperty("matchmaker")
+  MATCHMAKER,
+
+  @JsonProperty("coop")
+  COOP,
+
+  @JsonProperty("tutorial")
+  TUTORIAL,
+}
+
 enum class GameAccess {
   @JsonProperty("public")
   PUBLIC,
@@ -72,6 +89,7 @@ enum class VictoryCondition {
   UNKNOWN
 }
 
+@JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
 enum class LobbyMode {
   @JsonProperty(index = 0)
   DEFAULT_LOBBY,

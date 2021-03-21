@@ -27,11 +27,17 @@ interface FafLobbyClient :
 
   fun getIceServers(): Mono<Collection<IceServer>>
 
-  fun sendGpgGameMessage(message: GpgGameMessage)
+  fun sendGpgGameMessage(message: GpgGameOutboundMessage)
 
-//  fun requestHostGame(): Mono<GameLaunchResponse>
-//
-//  fun requestJoinGame(gameId: Int, password: String): Mono<GameLaunchResponse>
+  fun requestHostGame(
+    title: String,
+    mapName: String,
+    mod: String,
+    visibility: GameVisibility,
+    password: String?,
+  ): Mono<GameLaunchResponse>
+
+  fun requestJoinGame(gameId: Int, password: String?): Mono<GameLaunchResponse>
 
 }
 
@@ -51,6 +57,7 @@ class FafLobbyClientImpl(
     val password: String,
     val localIp: String,
     val generateUid: Function<Long, String>,
+    val bufferSize: Long,
     val wiretap: Boolean = false,
   )
 
@@ -68,13 +75,22 @@ class FafLobbyClientImpl(
         .addHandler(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
         .addHandler(LineBasedFrameDecoder(8192))
     }
+//    .doOnChannelInit{observer, channel, remoteAddress ->
+//      channel.pipeline()
+//        .addLast(LineEncoder(LineSeparator.UNIX))
+//        .addLast(LineBasedFrameDecoder(config.bufferSize))
+//    }
     .handle { inbound, outbound ->
       val inboundMono = inbound.receive()
         .asString(Charsets.UTF_8)
         .doOnNext { log.debug("Inbound message: {}", it) }
         .map { mapper.readValue(it, ServerMessage::class.java) }
         .flatMap { handle(it) }
-        .doOnError { log.error("Error during read", it) }
+        .onErrorResume {
+          log.error("Error during read", it)
+          // Show must go on!
+          Mono.empty()
+        }
         .doOnComplete { log.info("Inbound channel closed") }
         .doFinally { log.info("Inbound channel finally") }
         .then()
@@ -82,7 +98,11 @@ class FafLobbyClientImpl(
       val outboundMono = outbound.send(
         outboundSink.asFlux()
           .doOnNext { log.debug("Outbound message: {}", it) }
-          .doOnError { log.error("Error during read", it) }
+          .onErrorResume {
+            log.error("Error during write", it)
+            // Show must go on!
+            Mono.empty()
+          }
           .doOnComplete { log.error("Outbound channel closed") }
           .doFinally { log.info("Outbound channel finally") }
           // appending line ending is workaround due to broken encoder
@@ -118,6 +138,43 @@ class FafLobbyClientImpl(
   override fun closePlayerGame(playerId: Int) = send(ClosePlayerGameRequest(playerId))
 
   override fun closePlayerLobby(playerId: Int) = send(ClosePlayerLobbyRequest(playerId))
+
+  override fun requestHostGame(
+    title: String,
+    mapName: String,
+    mod: String,
+    visibility: GameVisibility,
+    password: String?,
+  ): Mono<GameLaunchResponse> =
+    Mono.fromCallable {
+      send(
+        HostGameRequest(
+          mapName,
+          title,
+          mod,
+          BooleanArray(0),
+          if (password == null) GameAccess.PUBLIC else GameAccess.PASSWORD,
+          0,
+          password,
+          visibility,
+        )
+      )
+    }.then(
+      events
+        .filter { it is GameLaunchResponse }
+        .cast(GameLaunchResponse::class.java)
+        .next()
+    )
+
+  override fun requestJoinGame(gameId: Int, password: String?) =
+    Mono.fromCallable {
+      send(JoinGameRequest(gameId, password))
+    }.then(
+      events
+        .filter { it is GameLaunchResponse }
+        .cast(GameLaunchResponse::class.java)
+        .next()
+    )
 
   override fun getIceServers(): Mono<Collection<IceServer>> =
     Mono.fromCallable { send(IceServerListRequest()) }
@@ -161,6 +218,8 @@ class FafLobbyClientImpl(
 
   override fun removeFoe(playerId: Int) = send(RemoveFoeRequest(playerId))
 
+  override fun requestMatchmakerInfo() = send(MatchmakerInfoRequest())
+
   override fun gameMatchmaking(queueName: String, state: MatchmakerState) =
     send(GameMatchmakingRequest(queueName, state))
 
@@ -176,5 +235,5 @@ class FafLobbyClientImpl(
 
   override fun setPartyFactions(factions: Set<Faction>) = send(SelectPartyFactionsRequest(factions))
 
-  override fun sendGpgGameMessage(message: GpgGameMessage) = send(message)
+  override fun sendGpgGameMessage(message: GpgGameOutboundMessage) = send(message)
 }

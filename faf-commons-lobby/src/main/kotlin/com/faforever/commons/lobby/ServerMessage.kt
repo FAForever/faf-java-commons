@@ -23,6 +23,12 @@ import java.time.OffsetDateTime
   JsonSubTypes.Type(value = MatchmakingInfo::class, name = "game_matchmaking"),
   JsonSubTypes.Type(value = SearchInfo::class, name = "search_info"),
   JsonSubTypes.Type(value = IceServerListResponse::class, name = "ice_servers"),
+  JsonSubTypes.Type(value = PartyInfo::class, name = "update_party"),
+  JsonSubTypes.Type(value = HostGameGpgCommand::class, name = "HostGame"),
+  JsonSubTypes.Type(value = JoinGameGpgCommand::class, name = "JoinGame"),
+  JsonSubTypes.Type(value = ConnectToPeerGpgCommand::class, name = "ConnectToPeer"),
+  JsonSubTypes.Type(value = IceMsgGpgCommand::class, name = "IceMsg"),
+  JsonSubTypes.Type(value = DisconnectFromPeerGpgCommand::class, name = "DisconnectFromPeer"),
 )
 
 interface ServerMessage : LobbyProtocolMessage
@@ -53,6 +59,8 @@ data class SessionResponse(
 data class Player(
   val id: Int,
   val login: String,
+  val clan: String?,
+  val avatar: Avatar?,
   @JsonProperty("global_rating")
   val globalRating: List<Float>?,
   @JsonProperty("ladder_rating")
@@ -60,7 +68,21 @@ data class Player(
   @JsonProperty("number_of_games")
   val numberOfGames: Int,
   val country: String,
-)
+  val league: Map<String, String>?,
+  val ratings: Map<String, LeaderboardRating>,
+) {
+  data class Avatar(
+    val url: String,
+    @JsonProperty("tooltip")
+    val description: String,
+  )
+
+  data class LeaderboardRating(
+    @JsonProperty("number_of_games")
+    val numberOfGame: Int,
+    val rating: List<Float>
+  )
+}
 
 data class LoginResponse(
   val id: Int,
@@ -80,28 +102,40 @@ data class SocialInfo(
   val power: Int,
 ) : ServerMessage
 
-data class MatchmakerQueue(
-  @JsonProperty("queue_name")
-  val name: String,
-  @JsonProperty("queue_pop_time")
-  val popTime: OffsetDateTime
-)
-
 data class MatchmakerInfo(
   val queues: List<MatchmakerQueue>,
-) : ServerMessage
+) : ServerMessage {
+  data class MatchmakerQueue(
+    @JsonProperty("queue_name")
+    val name: String,
+    @JsonProperty("queue_pop_time")
+    val popTime: OffsetDateTime,
+    @JsonProperty("team_size")
+    val teamSize: Int,
+    @JsonProperty("num_players")
+    val numberOfPlayers: Int,
+    @JsonProperty("boundary_75s")
+    val boundary75s: List<List<Int>>,
+    @JsonProperty("boundary_80s")
+    val boundary80s: List<List<Int>>,
+  )
+}
 
 data class MatchmakerMatchFoundResponse(
+  @JsonProperty("queue_name")
   val queue: String,
 ) : ServerMessage
 
 /**
  * GameInfo comes as single message or as a nested list
+ * which makes all fields nullable. Thanks for nothing...
  */
 data class GameInfo(
   val uid: Long?,
   val title: String?,
   val host: String?,
+  @JsonProperty("game_type")
+  val gameType: GameType?,
   @JsonProperty("max_players")
   val maxPlayers: Int?,
   @JsonProperty("num_players")
@@ -112,6 +146,8 @@ data class GameInfo(
   val state: GameStatus?,
   @JsonProperty("featured_mod")
   val featuredMod: String?,
+  @JsonProperty("rating_type")
+  val leaderboard: String?,
   @JsonProperty("sim_mods")
   val simMods: Map<String, String>?,
   @JsonProperty("mapname")
@@ -121,6 +157,12 @@ data class GameInfo(
   @JsonProperty("launched_at")
   val launchedAt: Double?,
   val teams: Map<String, List<String>>?,
+  @JsonProperty("rating_min")
+  val ratingMin: Int?,
+  @JsonProperty("rating_max")
+  val ratingMax: Int?,
+  @JsonProperty("enforce_rating_range")
+  val enforceRatingRange: Boolean?,
 
   val games: List<GameInfo>?,
 ) : ServerMessage
@@ -128,22 +170,23 @@ data class GameInfo(
 data class GameLaunchResponse(
   val uid: Int,
   val name: String,
-  val mod: String,
+  @JsonProperty("mod")
+  val featureMod: String,
   @JsonProperty("init_mode")
-  val lobbyMode: Int,
+  val lobbyMode: LobbyMode,
+  /**
+   * Technical name of the leaderboard to select ratings to be shown
+   */
+  @JsonProperty("rating_type")
+  val leaderboard: String,
   val args: List<Any>,
-) : ServerMessage
 
-data class GameLaunchRequest(
-  val uid: Int,
-  val name: String,
-  val mapName: String,
-  val mod: String,
-  val expectedPlayers: Int,
-  val mapPosition: Int,
-  val faction: Faction,
-  val initMode: LobbyMode,
-  val args: List<String>,
+  @JsonProperty("mapname")
+  val mapName: String? = null,
+  val expectedPlayers: Int? = null,
+  val mapPosition: Int? = null,
+  val team: Int? = null,
+  val faction: Faction? = null,
 ) : ServerMessage
 
 data class MatchmakingInfo(
@@ -156,9 +199,10 @@ data class SearchInfo(
   val state: String,
 ) : ServerMessage
 
+
 data class IceServer(
-  val url: String,
-  val urls: Collection<String>,
+  val url: String?,
+  val urls: Collection<String>?,
   val username: String,
   val credential: String,
   val credentialType: String,
@@ -166,5 +210,48 @@ data class IceServer(
 
 data class IceServerListResponse(
   @JsonProperty("ice_servers")
-  val iceServers: Collection<IceServer>
-) : ServerMessage
+  val iceServers: Collection<IceServer>,
+  val ttl: Int,
+) : ServerMessage {
+}
+
+data class PartyInfo(
+  val owner: Int,
+  val members: List<PartyMember>,
+) : ServerMessage {
+  data class PartyMember(
+    @JsonProperty("player")
+    val playerId: Int,
+    val factions: List<Faction>
+  )
+}
+
+interface GpgGameInboundMessage : ServerMessage {
+  val target: String
+  val args: List<Any>
+}
+
+data class HostGameGpgCommand(
+  override val target: String,
+  override val args: List<Any>,
+) : GpgGameInboundMessage
+
+data class JoinGameGpgCommand(
+  override val target: String,
+  override val args: List<Any>,
+) : GpgGameInboundMessage
+
+data class ConnectToPeerGpgCommand(
+  override val target: String,
+  override val args: List<Any>,
+) : GpgGameInboundMessage
+
+data class IceMsgGpgCommand(
+  override val target: String,
+  override val args: List<Any>,
+) : GpgGameInboundMessage
+
+data class DisconnectFromPeerGpgCommand(
+  override val target: String,
+  override val args: List<Any>,
+) : GpgGameInboundMessage

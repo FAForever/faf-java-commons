@@ -66,7 +66,8 @@ data class SearchLadder1v1Request(
 }
 
 data class HostGameRequest(
-  val mapname: String,
+  @JsonProperty("mapname")
+  val mapName: String,
   val title: String,
   val mod: String,
   val options: BooleanArray,
@@ -76,6 +77,14 @@ data class HostGameRequest(
   val visibility: GameVisibility,
 ) : ClientMessage {
   override val command = "game_host"
+}
+
+data class JoinGameRequest(
+  @JsonProperty("uid")
+  val gameId: Int,
+  val password: String?
+) : ClientMessage {
+  override val command = "game_join"
 }
 
 data class AddFriendRequest(
@@ -102,10 +111,12 @@ data class RemoveFoeRequest(
   override val command = "social_remove"
 }
 
-data class GpgGameMessage(
+data class GpgGameOutboundMessage(
   override val command: String,
   val args: List<Any>,
-) : ClientMessage
+) : ClientMessage {
+  val target = "game"
+}
 
 data class GameMatchmakingRequest(
   val queueName: String,
@@ -147,4 +158,8 @@ data class SelectPartyFactionsRequest(
   val factions: Set<Faction>
 ) : ClientMessage {
   override val command = "set_party_factions"
+}
+
+class MatchmakerInfoRequest : ClientMessage {
+  override val command = "matchmaker_info"
 }
