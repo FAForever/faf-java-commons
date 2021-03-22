@@ -20,6 +20,7 @@ import java.time.OffsetDateTime
   JsonSubTypes.Type(value = GameInfo::class, name = "game_info"),
   JsonSubTypes.Type(value = GameLaunchResponse::class, name = "game_launch"),
   JsonSubTypes.Type(value = MatchmakerMatchFoundResponse::class, name = "match_found"),
+  JsonSubTypes.Type(value = MatchmakerMatchCancelledResponse::class, name = "match_cancelled"),
   JsonSubTypes.Type(value = MatchmakingInfo::class, name = "game_matchmaking"),
   JsonSubTypes.Type(value = SearchInfo::class, name = "search_info"),
   JsonSubTypes.Type(value = IceServerListResponse::class, name = "ice_servers"),
@@ -125,6 +126,8 @@ data class MatchmakerMatchFoundResponse(
   @JsonProperty("queue_name")
   val queue: String,
 ) : ServerMessage
+
+class MatchmakerMatchCancelledResponse : ServerMessage
 
 /**
  * GameInfo comes as single message or as a nested list
