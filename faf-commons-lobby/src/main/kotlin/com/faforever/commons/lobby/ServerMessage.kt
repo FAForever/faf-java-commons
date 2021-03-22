@@ -8,12 +8,12 @@ import java.time.OffsetDateTime
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "command")
 @JsonSubTypes(
   JsonSubTypes.Type(value = PingMessage::class, name = "ping"),
-  JsonSubTypes.Type(value = AuthenticationFailedResponse::class, name = "authentication_failed"),
+  JsonSubTypes.Type(value = LoginFailedResponse::class, name = "authentication_failed"),
   JsonSubTypes.Type(value = NoticeInfo::class, name = "notice"),
   JsonSubTypes.Type(value = UpdateInfo::class, name = "update"),
   JsonSubTypes.Type(value = InvalidResponse::class, name = "invalid"),
   JsonSubTypes.Type(value = SessionResponse::class, name = "session"),
-  JsonSubTypes.Type(value = LoginResponse::class, name = "welcome"),
+  JsonSubTypes.Type(value = LoginSuccessResponse::class, name = "welcome"),
   JsonSubTypes.Type(value = PlayerInfo::class, name = "player_info"),
   JsonSubTypes.Type(value = SocialInfo::class, name = "social"),
   JsonSubTypes.Type(value = MatchmakerInfo::class, name = "matchmaker_info"),
@@ -35,7 +35,7 @@ interface ServerMessage : LobbyProtocolMessage
 
 class PingMessage : ServerMessage
 
-data class AuthenticationFailedResponse(
+data class LoginFailedResponse(
   val text: String?,
 ) : ServerMessage
 
@@ -84,7 +84,7 @@ data class Player(
   )
 }
 
-data class LoginResponse(
+data class LoginSuccessResponse(
   val id: Int,
   val login: String,
   val me: Player,

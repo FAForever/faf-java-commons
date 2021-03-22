@@ -15,13 +15,15 @@ import reactor.netty.Connection
 import reactor.netty.tcp.TcpClient
 import java.util.function.Function
 
+class LoginException(reason: String?) : Exception(reason)
+
 interface FafLobbyClient :
   FafAdminLobbyClient,
   FafSocialLobbyClient,
   FafMatchmakerLobbyClient {
   val events: Flux<ServerMessage>
 
-  fun connectAndLogin(): Mono<LoginResponse>
+  fun connectAndLogin(): Mono<LoginSuccessResponse>
 
   fun disconnect()
 
@@ -62,7 +64,14 @@ class FafLobbyClientImpl(
   )
 
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().multicast().directBestEffort()
-  override val events = eventSink.asFlux()
+  private val rawEvents = eventSink.asFlux()
+
+  override val events = eventSink.asFlux().filter {
+    it !is PingMessage &&
+      it !is SessionResponse &&
+      it !is LoginSuccessResponse &&
+      it !is LoginFailedResponse
+  }
 
   private val outboundSink: Sinks.Many<String> = Sinks.many().unicast().onBackpressureBuffer()
   private val connectionMono: Mono<out Connection> = TcpClient.create(
@@ -75,11 +84,6 @@ class FafLobbyClientImpl(
         .addHandler(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
         .addHandler(LineBasedFrameDecoder(8192))
     }
-//    .doOnChannelInit{observer, channel, remoteAddress ->
-//      channel.pipeline()
-//        .addLast(LineEncoder(LineSeparator.UNIX))
-//        .addLast(LineBasedFrameDecoder(config.bufferSize))
-//    }
     .handle { inbound, outbound ->
       val inboundMono = inbound.receive()
         .asString(Charsets.UTF_8)
@@ -120,9 +124,15 @@ class FafLobbyClientImpl(
       connectionSubscription = connectionMono.subscribe()
       send(SessionRequest())
     }.then(
-      events
-        .filter { it is LoginResponse }
-        .cast(LoginResponse::class.java)
+      rawEvents
+        .flatMap {
+          when (it) {
+            is LoginSuccessResponse -> Mono.just(it)
+            is LoginFailedResponse -> Mono.error(LoginException(it.text))
+            else -> Mono.empty()
+          }
+        }
+        .cast(LoginSuccessResponse::class.java)
         .next()
     )
 
