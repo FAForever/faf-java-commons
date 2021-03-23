@@ -8,48 +8,19 @@ import io.netty.handler.codec.string.LineSeparator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.Disposable
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import reactor.netty.Connection
 import reactor.netty.tcp.TcpClient
 import java.util.function.Function
 
-class LoginException(reason: String?) : Exception(reason)
 
-interface FafLobbyClient :
-  FafAdminLobbyClient,
-  FafSocialLobbyClient,
-  FafMatchmakerLobbyClient {
-  val events: Flux<ServerMessage>
-
-  fun connectAndLogin(): Mono<LoginSuccessResponse>
-
-  fun disconnect()
-
-  fun getIceServers(): Mono<Collection<IceServer>>
-
-  fun sendGpgGameMessage(message: GpgGameOutboundMessage)
-
-  fun requestHostGame(
-    title: String,
-    mapName: String,
-    mod: String,
-    visibility: GameVisibility,
-    password: String?,
-  ): Mono<GameLaunchResponse>
-
-  fun requestJoinGame(gameId: Int, password: String?): Mono<GameLaunchResponse>
-
-}
-
-
-class FafLobbyClientImpl(
+class FafLobbyClient(
   private val config: Config,
   private val mapper: ObjectMapper,
-) : FafLobbyClient {
+) : FafLobbyApi {
   companion object {
-    val log: Logger = LoggerFactory.getLogger(FafLobbyClient::class.java)
+    val log: Logger = LoggerFactory.getLogger(FafLobbyApi::class.java)
   }
 
   data class Config(
@@ -186,6 +157,8 @@ class FafLobbyClientImpl(
         .next()
     )
 
+  override fun restoreGameSession(gameId: Int) = send(RestoreGameSessionRequest(gameId))
+
   override fun getIceServers(): Mono<Collection<IceServer>> =
     Mono.fromCallable { send(IceServerListRequest()) }
       .then(
@@ -196,7 +169,7 @@ class FafLobbyClientImpl(
           .map { it.iceServers }
       )
 
-  fun send(message: ClientMessage) {
+  private fun send(message: ClientMessage) {
     outboundSink.tryEmitNext(mapper.writeValueAsString(message))
   }
 

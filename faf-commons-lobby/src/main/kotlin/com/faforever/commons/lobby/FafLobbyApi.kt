@@ -1,45 +1,86 @@
 package com.faforever.commons.lobby
 
-import reactor.core.publisher.Mono
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import reactor.core.publisher.Flux
 
+/**
+ * Marker interface to identify messages on the Lobby protocol
+ */
+interface LobbyProtocolMessage
 
-interface FafAdminLobbyClient {
-
-  fun broadcastMessage(message: String)
-
-  fun closePlayerGame(playerId: Int)
-
-  fun closePlayerLobby(playerId: Int)
-
+interface ClientMessage : LobbyProtocolMessage {
+  val command: String
 }
 
-interface FafSocialLobbyClient {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "command")
+@JsonSubTypes(
+  JsonSubTypes.Type(value = PingMessage::class, name = "ping"),
+  JsonSubTypes.Type(value = LoginFailedResponse::class, name = "authentication_failed"),
+  JsonSubTypes.Type(value = NoticeInfo::class, name = "notice"),
+  JsonSubTypes.Type(value = UpdateInfo::class, name = "update"),
+  JsonSubTypes.Type(value = InvalidResponse::class, name = "invalid"),
+  JsonSubTypes.Type(value = SessionResponse::class, name = "session"),
+  JsonSubTypes.Type(value = LoginSuccessResponse::class, name = "welcome"),
+  JsonSubTypes.Type(value = PlayerInfo::class, name = "player_info"),
+  JsonSubTypes.Type(value = SocialInfo::class, name = "social"),
+  JsonSubTypes.Type(value = MatchmakerInfo::class, name = "matchmaker_info"),
+  JsonSubTypes.Type(value = GameInfo::class, name = "game_info"),
+  JsonSubTypes.Type(value = GameLaunchResponse::class, name = "game_launch"),
+  JsonSubTypes.Type(value = MatchmakerMatchFoundResponse::class, name = "match_found"),
+  JsonSubTypes.Type(value = MatchmakerMatchCancelledResponse::class, name = "match_cancelled"),
+  JsonSubTypes.Type(value = MatchmakingInfo::class, name = "game_matchmaking"),
+  JsonSubTypes.Type(value = SearchInfo::class, name = "search_info"),
+  JsonSubTypes.Type(value = IceServerListResponse::class, name = "ice_servers"),
+  JsonSubTypes.Type(value = PartyInfo::class, name = "update_party"),
+  JsonSubTypes.Type(value = HostGameGpgCommand::class, name = "HostGame"),
+  JsonSubTypes.Type(value = JoinGameGpgCommand::class, name = "JoinGame"),
+  JsonSubTypes.Type(value = ConnectToPeerGpgCommand::class, name = "ConnectToPeer"),
+  JsonSubTypes.Type(value = IceMsgGpgCommand::class, name = "IceMsg"),
+  JsonSubTypes.Type(value = DisconnectFromPeerGpgCommand::class, name = "DisconnectFromPeer"),
+)
+interface ServerMessage : LobbyProtocolMessage
 
-  fun addFriend(playerId: Int)
 
-  fun addFoe(playerId: Int)
+/**
+ * API for interacting with the FAF Lobby server
+ */
+interface FafLobbyApi :
+  ConnectionApi,
+  GameApi,
+  AdminApi,
+  SocialApi,
+  MatchmakerApi {
 
-  fun removeFriend(playerId: Int)
-
-  fun removeFoe(playerId: Int)
-
+  /**
+   * All "public" server events can be subscribed here.
+   * Internal events such as Ping or LoginResponse are filtered out.
+   */
+  val events: Flux<ServerMessage>
 }
 
-interface FafMatchmakerLobbyClient {
 
-  fun requestMatchmakerInfo()
+/// ****************
+/// * SHARED ENUMS *
+/// ****************
 
-  fun gameMatchmaking(queueName: String, state: MatchmakerState)
+enum class Faction {
+  @JsonProperty("aeon")
+  AEON,
 
-  fun inviteToParty(playerId: Int)
+  @JsonProperty("cybran")
+  CYBRAN,
 
-  fun acceptPartyInvite(playerId: Int)
+  @JsonProperty("uef")
+  UEF,
 
-  fun kickPlayerFromParty(playerId: Int)
+  @JsonProperty("seraphim")
+  SERAPHIM,
 
-  fun readyParty(isReady: Boolean)
+  @JsonProperty("nomad")
+  NOMAD,
 
-  fun leaveParty()
-
-  fun setPartyFactions(factions: Set<Faction>)
+  @JsonProperty("civilian")
+  CIVILIAN
 }
