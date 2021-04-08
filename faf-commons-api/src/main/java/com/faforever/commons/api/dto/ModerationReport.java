@@ -1,36 +1,30 @@
 package com.faforever.commons.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.util.Set;
 
 @Type("moderationReport")
-@Getter
-@Setter
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class ModerationReport extends AbstractEntity {
-  private String reportDescription;
-  private ModerationReportStatus reportStatus;
-  private String gameIncidentTimecode;
-  private String moderatorNotice;
-  private String moderatorPrivateNote;
+  String reportDescription;
+  ModerationReportStatus reportStatus;
+  String gameIncidentTimecode;
+  String moderatorNotice;
+  String moderatorPrivateNote;
 
   @Relationship("bans")
-  @JsonIgnore
-  private Set<BanInfo> bans;
+  Set<BanInfo> bans;
   @Relationship("reporter")
-  @JsonIgnore
-  private Player reporter;
+  Player reporter;
   @Relationship("game")
-  @JsonIgnore
-  private Game game;
+  Game game;
   @Relationship("lastModerator")
-  @JsonIgnore
-  private Player lastModerator;
+  Player lastModerator;
   @Relationship("reportedUsers")
-  @JsonIgnore
-  private Set<Player> reportedUsers;
+  Set<Player> reportedUsers;
 }

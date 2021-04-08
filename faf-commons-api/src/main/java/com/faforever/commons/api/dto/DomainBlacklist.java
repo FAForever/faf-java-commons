@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
 @RestrictedVisibility("IsModerator")
-@Getter
-@Setter
+@Value
 @EqualsAndHashCode(of = "domain")
 @Type("domainBlacklist")
 public class DomainBlacklist implements ElideEntity {

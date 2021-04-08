@@ -4,22 +4,22 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Getter;
+import lombok.Value;
 
 import java.time.OffsetDateTime;
 
-@Getter
+@Value
 @Type("teamkill")
 @RestrictedVisibility("IsModerator")
 public class Teamkill implements ElideEntity {
     @Id
-    private String id;
+    String id;
     @Relationship("teamkiller")
-    private Player teamkiller;
+    Player teamkiller;
     @Relationship("victim")
-    private Player victim;
+    Player victim;
     @Relationship("game")
-    private Game game;
-    private long gameTime;
-    private OffsetDateTime reportedAt;
+    Game game;
+    long gameTime;
+    OffsetDateTime reportedAt;
 }

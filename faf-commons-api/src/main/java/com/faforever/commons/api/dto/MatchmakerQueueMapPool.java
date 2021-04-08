@@ -4,23 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
+@Value
 @EqualsAndHashCode(callSuper = true)
 @Type("matchmakerQueueMapPool")
 public class MatchmakerQueueMapPool extends AbstractEntity {
 
-    private Double minRating;
-    private Double maxRating;
+    Double minRating;
+    Double maxRating;
 
     @Relationship("matchmakerQueue")
-    private MatchmakerQueue matchmakerQueue;
+    MatchmakerQueue matchmakerQueue;
 
     @Relationship("mapPool")
     @JsonIgnore
-    private MapPool mapPool;
+    MapPool mapPool;
 
 }

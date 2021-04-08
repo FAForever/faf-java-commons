@@ -2,13 +2,13 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.time.OffsetDateTime;
 
-@Getter
-@Setter
+@Value
+@EqualsAndHashCode(callSuper = true)
 @Type(TeamkillReport.TYPE_NAME)
 @RestrictedVisibility("IsModerator")
 public class TeamkillReport extends AbstractEntity {
@@ -18,15 +18,15 @@ public class TeamkillReport extends AbstractEntity {
   /**
    * How many seconds into the game, in simulation time.
    */
-  private Integer gameTime;
-  private OffsetDateTime reportedAt;
+  Integer gameTime;
+  OffsetDateTime reportedAt;
 
   @Relationship("teamkiller")
-  private Player teamkiller;
+  Player teamkiller;
 
   @Relationship("victim")
-  private Player victim;
+  Player victim;
 
   @Relationship("game")
-  private Game game;
+  Game game;
 }

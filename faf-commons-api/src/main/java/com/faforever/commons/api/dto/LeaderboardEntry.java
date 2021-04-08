@@ -1,23 +1,24 @@
 package com.faforever.commons.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import java.time.OffsetDateTime;
-
 @Value
 @EqualsAndHashCode(callSuper = true)
-@Type("avatarAssignment")
-public class AvatarAssignment extends AbstractEntity {
-  Boolean selected;
-  OffsetDateTime expiresAt;
+@Type("leaderboardRating")
+public class LeaderboardEntry extends AbstractEntity{
+
+  Double mean;
+  Double deviation;
+  Integer totalGames;
+  Integer wonGames;
+  Double rating;
+
   @Relationship("player")
-  @JsonIgnore
   Player player;
-  @Relationship("avatar")
-  @JsonIgnore
-  Avatar avatar;
+
+  @Relationship("leaderboard")
+  Leaderboard leaderboard;
 }

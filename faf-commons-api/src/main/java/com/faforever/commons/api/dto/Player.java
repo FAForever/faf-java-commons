@@ -4,49 +4,53 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
-@Getter
-@Setter
+@Value
+@EqualsAndHashCode(callSuper = true)
 @Type("player")
 public class Player extends AbstractEntity {
-    private String login;
+    String login;
+    @RestrictedVisibility("IsModerator")
+    String email;
+    String userAgent;
+    @RestrictedVisibility("IsModerator")
+    String steamId;
+    @RestrictedVisibility("IsModerator")
+    String recentIpAddress;
+    @RestrictedVisibility("IsModerator")
+    OffsetDateTime lastLogin;
+
     @Relationship("names")
     List<NameRecord> names;
-    @RestrictedVisibility("IsModerator")
-    private String email;
-    private String userAgent;
-    @RestrictedVisibility("IsModerator")
-    private String steamId;
-    @RestrictedVisibility("IsModerator")
-    private String recentIpAddress;
-    @RestrictedVisibility("IsModerator")
-    private OffsetDateTime lastLogin;
 
+    @Deprecated
     @Relationship("globalRating")
-    private GlobalRating globalRating;
+    GlobalRating globalRating;
 
+    @Deprecated
     @Relationship("ladder1v1Rating")
-    private Ladder1v1Rating ladder1v1Rating;
+    Ladder1v1Rating ladder1v1Rating;
 
+    @Deprecated
     @Relationship("lobbyGroup")
-    private LobbyGroup lobbyGroup;
+    LobbyGroup lobbyGroup;
 
     @Relationship("bans")
-    private List<BanInfo> bans;
+    List<BanInfo> bans;
 
     @Relationship("avatarAssignments")
     @JsonIgnore
-    private List<AvatarAssignment> avatarAssignments;
+    List<AvatarAssignment> avatarAssignments;
 
     @JsonBackReference
     @Relationship("reporterOnModerationReports")
-    private Set<ModerationReport> reporterOnModerationReports;
+    Set<ModerationReport> reporterOnModerationReports;
 
     @Override
     public String toString() {

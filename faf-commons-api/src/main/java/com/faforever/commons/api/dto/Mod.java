@@ -1,43 +1,29 @@
 package com.faforever.commons.api.dto;
 
-import com.faforever.commons.api.elide.ElideEntity;
-import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id")
+@Value
+@EqualsAndHashCode(callSuper = true)
 @Type("mod")
-@NoArgsConstructor
-public class Mod implements ElideEntity {
+public class Mod extends AbstractEntity {
 
-  @Id
-  private String id;
-  private String displayName;
-  private String author;
-  private OffsetDateTime createTime;
+  String displayName;
+  String author;
 
   @Relationship("uploader")
-  private Player uploader;
+  Player uploader;
 
   @Relationship("versions")
-  private List<ModVersion> versions;
+  List<ModVersion> versions;
 
   @Relationship("latestVersion")
-  private ModVersion latestVersion;
+  ModVersion latestVersion;
 
-  public Mod(String id, String displayName, String author, OffsetDateTime createTime) {
-    this.id = id;
-    this.displayName = displayName;
-    this.author = author;
-    this.createTime = createTime;
-  }
+  @Relationship("reviewsSummary")
+  ModReviewsSummary modReviewsSummary;
 }

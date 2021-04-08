@@ -5,37 +5,40 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Getter
-@Setter
+@Value
 @EqualsAndHashCode(of = "id")
 @Type("game")
 public class Game implements ElideEntity {
     @Id
-    private String id;
-    private String name;
-    private OffsetDateTime startTime;
-    private OffsetDateTime endTime;
-    private Validity validity;
-    private VictoryCondition victoryCondition;
+    String id;
+    String name;
+    Boolean replayAvailable;
+    OffsetDateTime startTime;
+    OffsetDateTime endTime;
+    Integer replayTicks;
+    Validity validity;
+    VictoryCondition victoryCondition;
 
     @Relationship("reviews")
-    private List<GameReview> reviews;
+    List<GameReview> reviews;
 
     @Relationship("playerStats")
-    private List<GamePlayerStats> playerStats;
+    List<GamePlayerStats> playerStats;
 
     @Relationship("host")
-    private Player host;
+    Player host;
 
     @Relationship("featuredMod")
-    private FeaturedMod featuredMod;
+    FeaturedMod featuredMod;
 
     @Relationship("mapVersion")
-    private MapVersion mapVersion;
+    MapVersion mapVersion;
+
+    @Relationship("reviewsSummary")
+    GameReviewsSummary gameReviewsSummary;
 }

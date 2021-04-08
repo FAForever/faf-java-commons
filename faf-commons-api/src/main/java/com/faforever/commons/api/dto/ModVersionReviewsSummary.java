@@ -2,14 +2,12 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+@Type("modVersionReviewsSummary")
 @Value
-@Type("gameReview")
-@EqualsAndHashCode(callSuper = true)
-public class GameReview extends Review {
+public class ModVersionReviewsSummary extends ReviewsSummary {
 
-    @Relationship("game")
-    Game game;
+  @Relationship("modVersion")
+  ModVersion modVersion;
 }

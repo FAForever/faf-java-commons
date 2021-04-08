@@ -4,19 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
 import java.util.List;
 
 @Type("avatar")
-@Getter
-@Setter
+@Value
 @EqualsAndHashCode(callSuper = true)
 public class Avatar extends AbstractEntity {
-    private String url;
-    private String tooltip;
+    String url;
+    String tooltip;
     @Relationship("assignments")
     @JsonIgnore
-    private List<AvatarAssignment> assignments;
+    List<AvatarAssignment> assignments;
 }

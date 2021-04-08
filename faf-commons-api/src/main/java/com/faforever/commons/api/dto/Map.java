@@ -4,31 +4,32 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Value
 @Type("map")
 @EqualsAndHashCode(callSuper = true)
 public class Map extends AbstractEntity {
-    private String battleType;
-    private String displayName;
-    private String mapType;
+    String battleType;
+    String displayName;
+    String mapType;
 
     @Relationship("author")
-    private Player author;
+    Player author;
 
     @Relationship("statistics")
-    private MapStatistics statistics;
+    MapStatistics statistics;
 
     @Relationship("latestVersion")
     @JsonIgnore
-    private MapVersion latestVersion;
+    MapVersion latestVersion;
 
     @Relationship("versions")
     @JsonIgnore
-    private List<MapVersion> versions;
+    List<MapVersion> versions;
+
+    @Relationship("reviewsSummary")
+    MapReviewsSummary mapReviewsSummary;
 }

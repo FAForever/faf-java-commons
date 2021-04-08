@@ -5,35 +5,41 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
-@Getter
-@Setter
+@Value
 @EqualsAndHashCode(of = "id")
 @Type("gamePlayerStats")
 public class GamePlayerStats implements ElideEntity {
     @Id
-    private String id;
-    private boolean ai;
-    private Faction faction;
-    private byte color;
-    private byte team;
-    private byte startSpot;
-    private Float beforeMean;
-    private Float beforeDeviation;
-    private Float afterMean;
-    private Float afterDeviation;
-    private byte score;
+    String id;
+    boolean ai;
+    Faction faction;
+    byte color;
+    byte team;
+    byte startSpot;
+    @Deprecated
+    Float beforeMean;
+    @Deprecated
+    Float beforeDeviation;
+    @Deprecated
+    Float afterMean;
+    @Deprecated
+    Float afterDeviation;
+    byte score;
     @Nullable
-    private OffsetDateTime scoreTime;
+    OffsetDateTime scoreTime;
 
     @Relationship("game")
-    private Game game;
+    Game game;
 
     @Relationship("player")
-    private Player player;
+    Player player;
+
+    @Relationship("ratingChanges")
+    private List<LeaderboardRatingJournal> leaderboardRatingJournals;
 }

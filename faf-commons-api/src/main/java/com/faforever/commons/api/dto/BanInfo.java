@@ -4,34 +4,32 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
 import java.time.OffsetDateTime;
 
 @Type("banInfo")
 @RestrictedVisibility("HasBanRead")
-@Getter
-@Setter
+@Value
 @EqualsAndHashCode(callSuper = true)
 public class BanInfo extends AbstractEntity {
     @Relationship("player")
     @JsonIgnore
-    private Player player;
+    Player player;
     @Relationship("author")
     @JsonIgnore
-    private Player author;
-    private String reason;
-    private OffsetDateTime expiresAt;
-    private BanLevel level;
+    Player author;
+    String reason;
+    OffsetDateTime expiresAt;
+    BanLevel level;
     @Relationship("moderationReport")
     @JsonIgnore
-    private ModerationReport moderationReport;
-    private String revokeReason;
+    ModerationReport moderationReport;
+    String revokeReason;
     @Relationship("revokeAuthor")
     @JsonIgnore
-    private Player revokeAuthor;
-    private OffsetDateTime revokeTime;
+    Player revokeAuthor;
+    OffsetDateTime revokeTime;
 
     @JsonIgnore
     public BanDurationType getDuration() {
