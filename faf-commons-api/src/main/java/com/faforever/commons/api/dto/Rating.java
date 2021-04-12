@@ -3,13 +3,13 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @EqualsAndHashCode(of = "id")
+@NoArgsConstructor
 public class Rating {
     @Id
     String id;
