@@ -32,6 +32,10 @@ public class BanInfo extends AbstractEntity {
     @JsonIgnore
     Player revokeAuthor;
     OffsetDateTime revokeTime;
+    @JsonIgnore
+    BanDurationType duration;
+    @JsonIgnore
+    BanStatus banStatus;
 
     @JsonIgnore
     public BanDurationType getDuration() {
