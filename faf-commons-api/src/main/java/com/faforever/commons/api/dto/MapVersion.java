@@ -2,17 +2,17 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.Value;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.List;
 
-@Data
-@ToString(exclude = {"map", "reviews"})
+@Value
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @Type("mapVersion")
 public class MapVersion extends AbstractEntity {

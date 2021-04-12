@@ -2,13 +2,15 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.util.Set;
 
 @Type("moderationReport")
-@Data
+@Value
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class ModerationReport extends AbstractEntity {
   String reportDescription;

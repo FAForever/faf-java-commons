@@ -2,13 +2,15 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
+@Builder
 @ToString(exclude = "memberships")
 @EqualsAndHashCode(callSuper = true)
 @Type("clan")

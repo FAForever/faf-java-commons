@@ -2,12 +2,14 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @Type(Vote.TYPE_NAME)
 public class Vote extends AbstractEntity {

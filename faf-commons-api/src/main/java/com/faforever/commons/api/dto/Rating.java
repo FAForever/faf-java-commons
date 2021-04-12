@@ -3,18 +3,20 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
-@Data
+@Value
+@Builder
 @EqualsAndHashCode(of = "id")
 public class Rating {
     @Id
-    private String id;
-    private double mean;
-    private double deviation;
-    private double rating;
+    String id;
+    double mean;
+    double deviation;
+    double rating;
 
     @Relationship("player")
-    private Player player;
+    Player player;
 }

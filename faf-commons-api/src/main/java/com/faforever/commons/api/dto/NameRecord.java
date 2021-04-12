@@ -4,11 +4,15 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.time.OffsetDateTime;
 
-@Data
+@Value
+@Builder
+@EqualsAndHashCode(of = "id")
 @Type("nameRecord")
 public class NameRecord implements ElideEntity {
     @Id

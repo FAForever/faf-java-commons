@@ -2,13 +2,13 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.util.Set;
 
 @Type(GroupPermission.TYPE_NAME)
-@Data
+@Value
 @EqualsAndHashCode(callSuper = true)
 public class GroupPermission extends AbstractEntity {
   public static final String TYPE_NAME = "groupPermission";

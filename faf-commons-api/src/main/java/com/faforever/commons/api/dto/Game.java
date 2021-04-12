@@ -4,14 +4,16 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.Value;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Data
+@Value
+@Builder
 @ToString(exclude = {"playerStats", "reviews", "gameReviewsSummary"})
 @EqualsAndHashCode(of = "id")
 @Type("game")

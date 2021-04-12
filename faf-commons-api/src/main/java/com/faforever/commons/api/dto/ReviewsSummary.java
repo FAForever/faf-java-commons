@@ -1,18 +1,20 @@
 package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Id;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
+@Builder
 @EqualsAndHashCode(of = "id")
 public class ReviewsSummary {
   @Id
-  private String id;
-  private float positive;
-  private float negative;
-  private float score;
-  private int reviews;
-  private float lowerBound;
+  String id;
+  float positive;
+  float negative;
+  float score;
+  int reviews;
+  float lowerBound;
 
 }

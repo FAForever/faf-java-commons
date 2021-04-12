@@ -3,12 +3,14 @@ package com.faforever.commons.api.dto;
 import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Value;
 
 import java.util.Set;
 
 @Type(MeResult.TYPE_NAME)
-@Data
+@Value
+@Builder
 public class MeResult implements ElideEntity {
 
   public static final String TYPE_NAME = "me";
@@ -26,7 +28,7 @@ public class MeResult implements ElideEntity {
     return userId;
   }
 
-  @Data
+  @Value
   public static class Clan {
     Integer id;
     Integer membershipId;

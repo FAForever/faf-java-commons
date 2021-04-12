@@ -3,12 +3,14 @@ package com.faforever.commons.api.dto;
 import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.Value;
 
 @Type("achievement")
-@Data
+@Value
+@Builder
 @EqualsAndHashCode(of = "id")
 @ToString(of = {"id"})
 public class AchievementDefinition implements ElideEntity {

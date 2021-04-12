@@ -3,10 +3,12 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
-@Data
+@Value
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @Type(VotingAnswer.TYPE_NAME)
 public class VotingAnswer extends AbstractEntity {
