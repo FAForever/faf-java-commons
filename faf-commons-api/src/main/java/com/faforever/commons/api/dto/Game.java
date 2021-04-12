@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @ToString(exclude = {"playerStats", "reviews", "gameReviewsSummary"})
 @EqualsAndHashCode(of = "id")
 @Type("game")

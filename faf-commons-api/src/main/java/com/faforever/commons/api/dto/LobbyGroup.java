@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 @Deprecated
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("lobbyGroup")
 public class LobbyGroup {
     @Id

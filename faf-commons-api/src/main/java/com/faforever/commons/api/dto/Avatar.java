@@ -11,7 +11,7 @@ import java.util.List;
 
 @Type("avatar")
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class Avatar extends AbstractEntity {
     String url;

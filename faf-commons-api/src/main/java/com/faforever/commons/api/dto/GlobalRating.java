@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
  * @deprecated GlobalRating replaced with leaderboardRating
  */
 @Deprecated
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("globalRating")
 @EqualsAndHashCode(callSuper = true)
 public class GlobalRating extends Rating {

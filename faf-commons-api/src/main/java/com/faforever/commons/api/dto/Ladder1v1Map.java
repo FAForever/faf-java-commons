@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 @Deprecated
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @Type("ladder1v1Map")
 public class Ladder1v1Map implements ElideEntity {

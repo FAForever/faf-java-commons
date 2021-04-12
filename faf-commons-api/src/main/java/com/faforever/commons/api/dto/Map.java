@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("map")
 @EqualsAndHashCode(callSuper = true)
 public class Map extends AbstractEntity {

@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("mapVersion")
 public class MapVersion extends AbstractEntity {

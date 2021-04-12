@@ -7,7 +7,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("gameReview")
 @EqualsAndHashCode(callSuper = true)
 public class GameReview extends Review {

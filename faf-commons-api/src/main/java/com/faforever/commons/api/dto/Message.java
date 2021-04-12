@@ -8,7 +8,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("message")
 public class Message implements ElideEntity {
   @Id

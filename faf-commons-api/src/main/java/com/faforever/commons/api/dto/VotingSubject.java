@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type(VotingSubject.TYPE_NAME)
 public class VotingSubject extends AbstractEntity {

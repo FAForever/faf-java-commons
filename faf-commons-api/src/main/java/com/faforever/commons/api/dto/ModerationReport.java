@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Type("moderationReport")
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class ModerationReport extends AbstractEntity {
   String reportDescription;

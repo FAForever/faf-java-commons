@@ -7,7 +7,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @Type("featuredModFile")
 public class FeaturedModFile {

@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Type(GroupPermission.TYPE_NAME)
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class GroupPermission extends AbstractEntity {
   public static final String TYPE_NAME = "groupPermission";

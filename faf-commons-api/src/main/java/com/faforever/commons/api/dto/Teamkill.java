@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.OffsetDateTime;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("teamkill")
 @RestrictedVisibility("IsModerator")
 public class Teamkill implements ElideEntity {

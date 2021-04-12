@@ -7,7 +7,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("mapPoolAssignment")
 public class MapPoolAssignment extends AbstractEntity {

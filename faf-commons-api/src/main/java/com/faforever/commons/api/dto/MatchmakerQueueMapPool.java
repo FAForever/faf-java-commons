@@ -8,7 +8,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("matchmakerQueueMapPool")
 public class MatchmakerQueueMapPool extends AbstractEntity {

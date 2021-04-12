@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 public class ReviewsSummary {
   @Id

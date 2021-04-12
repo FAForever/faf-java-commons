@@ -4,7 +4,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class NeroxisGeneratorParams implements MapParams {
   int spawns;
   int size;

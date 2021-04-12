@@ -8,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 
 @Type("modReviewsSummary")
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class ModReviewsSummary extends ReviewsSummary {
 

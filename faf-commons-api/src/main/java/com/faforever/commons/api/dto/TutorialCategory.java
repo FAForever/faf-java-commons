@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("tutorialCategory")
 @ToString(exclude={"tutorials"})
 @EqualsAndHashCode(exclude={"tutorials"})

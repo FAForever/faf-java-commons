@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 @Type("banInfo")
 @RestrictedVisibility("HasBanRead")
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class BanInfo extends AbstractEntity {
     @Relationship("player")

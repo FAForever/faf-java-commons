@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
  */
 @Deprecated
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("globalLeaderboardEntry")
 public class GlobalLeaderboardEntry {
     @Id

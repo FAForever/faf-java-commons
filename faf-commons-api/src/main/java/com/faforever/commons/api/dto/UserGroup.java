@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.Set;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type(UserGroup.TYPE_NAME)
 public class UserGroup extends AbstractEntity {

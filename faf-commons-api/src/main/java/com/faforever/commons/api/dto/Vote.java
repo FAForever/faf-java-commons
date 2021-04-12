@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type(Vote.TYPE_NAME)
 public class Vote extends AbstractEntity {

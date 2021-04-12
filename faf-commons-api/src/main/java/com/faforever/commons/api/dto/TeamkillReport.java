@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.OffsetDateTime;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type(TeamkillReport.TYPE_NAME)
 @RestrictedVisibility("IsModerator")

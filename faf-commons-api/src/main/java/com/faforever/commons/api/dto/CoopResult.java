@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.Duration;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @Type("coopResult")
 public class CoopResult {

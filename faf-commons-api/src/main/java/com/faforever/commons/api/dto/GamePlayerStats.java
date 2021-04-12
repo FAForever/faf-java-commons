@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @Type("gamePlayerStats")
 public class GamePlayerStats implements ElideEntity {

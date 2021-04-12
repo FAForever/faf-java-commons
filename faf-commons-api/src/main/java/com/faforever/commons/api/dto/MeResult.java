@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Type(MeResult.TYPE_NAME)
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class MeResult implements ElideEntity {
 
   public static final String TYPE_NAME = "me";

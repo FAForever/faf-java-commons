@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @ToString(exclude = "memberships")
 @EqualsAndHashCode(callSuper = true)
 @Type("clan")

@@ -7,7 +7,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Type("mapVersionReview")
 @EqualsAndHashCode(callSuper = true)
 public class MapVersionReview extends Review {

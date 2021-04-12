@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("player")
 public class Player extends AbstractEntity {

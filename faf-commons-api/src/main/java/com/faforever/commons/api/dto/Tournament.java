@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.OffsetDateTime;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.WRAPPER_OBJECT)
 public class Tournament {

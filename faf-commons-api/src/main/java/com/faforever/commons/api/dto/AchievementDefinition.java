@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 @Type("achievement")
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @ToString(of = {"id"})
 public class AchievementDefinition implements ElideEntity {

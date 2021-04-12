@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.OffsetDateTime;
 
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 public abstract class AbstractEntity implements ElideEntity {
   @Id

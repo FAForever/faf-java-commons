@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 @RestrictedVisibility("IsModerator")
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "domain")
 @Type("domainBlacklist")
 public class DomainBlacklist implements ElideEntity {

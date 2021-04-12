@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.OffsetDateTime;
 
 @Value
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @Type("nameRecord")
 public class NameRecord implements ElideEntity {
