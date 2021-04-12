@@ -2,11 +2,9 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Type("mapReviewsSummary")
 public class MapReviewsSummary extends ReviewsSummary {
 

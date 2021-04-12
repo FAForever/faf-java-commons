@@ -3,10 +3,10 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
 
-@Value
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("playerAchievement")
 public class PlayerAchievement extends AbstractEntity {

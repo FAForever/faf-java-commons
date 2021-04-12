@@ -2,13 +2,13 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Value;
+import lombok.Data;
 
 /**
  * @deprecated GlobaleaderboardEntry replaced with leaderboardRating
  */
 @Deprecated
-@Value
+@Data
 @Type("globalLeaderboardEntry")
 public class GlobalLeaderboardEntry {
     @Id

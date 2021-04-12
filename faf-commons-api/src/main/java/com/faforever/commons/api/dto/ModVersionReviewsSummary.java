@@ -2,10 +2,10 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Value;
+import lombok.Data;
 
 @Type("modVersionReviewsSummary")
-@Value
+@Data
 public class ModVersionReviewsSummary extends ReviewsSummary {
 
   @Relationship("modVersion")

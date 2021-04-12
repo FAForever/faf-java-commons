@@ -2,10 +2,10 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
 
-@Value
+@Data
 @EqualsAndHashCode(of = "id")
 @Type("featuredModFile")
 public class FeaturedModFile {

@@ -4,13 +4,15 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Value
+@Data
+@ToString(exclude = {"playerStats", "reviews", "gameReviewsSummary"})
 @EqualsAndHashCode(of = "id")
 @Type("game")
 public class Game implements ElideEntity {

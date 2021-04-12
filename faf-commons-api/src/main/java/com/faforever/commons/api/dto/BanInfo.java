@@ -3,14 +3,14 @@ package com.faforever.commons.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
 
 import java.time.OffsetDateTime;
 
 @Type("banInfo")
 @RestrictedVisibility("HasBanRead")
-@Value
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class BanInfo extends AbstractEntity {
     @Relationship("player")
