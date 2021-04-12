@@ -4,13 +4,13 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 
 @Value
-@Builder
+@SuperBuilder
 @Type("teamkill")
 @RestrictedVisibility("IsModerator")
 public class Teamkill implements ElideEntity {

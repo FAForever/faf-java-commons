@@ -2,8 +2,8 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @deprecated LobbyGroups are supposed to be replaced with role based security
@@ -11,7 +11,7 @@ import lombok.Value;
 
 @Deprecated
 @Value
-@Builder
+@SuperBuilder
 @Type("lobbyGroup")
 public class LobbyGroup {
     @Id

@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Value
-@Builder
+@SuperBuilder
 @Type("tutorialCategory")
 @ToString(exclude={"tutorials"})
 @EqualsAndHashCode(exclude={"tutorials"})

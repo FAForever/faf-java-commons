@@ -2,12 +2,12 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 @Value
-@Builder
+@SuperBuilder
 @Type("gameReview")
 @EqualsAndHashCode(callSuper = true)
 public class GameReview extends Review {

@@ -3,14 +3,14 @@ package com.faforever.commons.api.dto;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Duration;
 
 @Value
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(of = "id")
 @Type("coopResult")
 public class CoopResult {

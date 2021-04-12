@@ -2,14 +2,14 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 
 @Value
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Type(TeamkillReport.TYPE_NAME)
 @RestrictedVisibility("IsModerator")

@@ -3,14 +3,14 @@ package com.faforever.commons.api.dto;
 import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Type(MeResult.TYPE_NAME)
 @Value
-@Builder
+@SuperBuilder
 public class MeResult implements ElideEntity {
 
   public static final String TYPE_NAME = "me";

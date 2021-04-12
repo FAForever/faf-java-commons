@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
 @Value
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Type("player")
 public class Player extends AbstractEntity {

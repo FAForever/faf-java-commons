@@ -3,14 +3,14 @@ package com.faforever.commons.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Value
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Type(UserGroup.TYPE_NAME)
 public class UserGroup extends AbstractEntity {

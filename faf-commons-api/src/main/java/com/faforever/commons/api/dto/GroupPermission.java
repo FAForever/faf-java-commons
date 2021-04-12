@@ -4,11 +4,13 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Type(GroupPermission.TYPE_NAME)
 @Value
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class GroupPermission extends AbstractEntity {
   public static final String TYPE_NAME = "groupPermission";
