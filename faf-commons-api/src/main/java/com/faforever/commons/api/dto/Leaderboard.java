@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Type("leaderboard")
 public class Leaderboard extends AbstractEntity {
-  private String technical_name;
-  private String name_key;
-  private String description_key;
+  private String technicalName;
+  private String nameKey;
+  private String descriptionKey;
 }
