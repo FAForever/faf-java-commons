@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "rating"}, callSuper = true)
+@ToString(of = {"id", "rating"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 public class Rating {

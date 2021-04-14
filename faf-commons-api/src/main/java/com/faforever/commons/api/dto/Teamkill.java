@@ -10,7 +10,7 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = {"id"}, callSuper = true)
+@ToString(of = {"id"})
 @Type("teamkill")
 @RestrictedVisibility("IsModerator")
 public class Teamkill implements ElideEntity {

@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "key"}, callSuper = true)
+@ToString(of = {"id", "key"})
 @Type("message")
 public class Message implements ElideEntity {
   @Id

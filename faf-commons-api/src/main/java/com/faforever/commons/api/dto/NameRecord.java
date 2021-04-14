@@ -11,7 +11,7 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = {"id", "player", "name"}, callSuper = true)
+@ToString(of = {"id", "player", "name"})
 @EqualsAndHashCode(of = "id")
 @Type("nameRecord")
 public class NameRecord implements ElideEntity {

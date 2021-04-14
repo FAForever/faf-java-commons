@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "score"}, callSuper = true)
+@ToString(of = {"id", "score"})
 @EqualsAndHashCode(of = "id")
 public class ReviewsSummary {
   @Id

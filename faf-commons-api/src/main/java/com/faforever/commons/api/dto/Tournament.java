@@ -11,7 +11,7 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = {"id", "name"}, callSuper = true)
+@ToString(of = {"id", "name"})
 @EqualsAndHashCode(of = "id")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.WRAPPER_OBJECT)
 public class Tournament {

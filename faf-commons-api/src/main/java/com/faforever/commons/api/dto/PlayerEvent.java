@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "event"}, callSuper = true)
+@ToString(of = {"id", "event"})
 @EqualsAndHashCode(of = "id")
 @Type("playerEvent")
 public class PlayerEvent {

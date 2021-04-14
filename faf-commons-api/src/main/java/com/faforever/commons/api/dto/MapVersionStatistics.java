@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id"}, callSuper = true)
+@ToString(of = {"id"})
 @EqualsAndHashCode(of = "id")
 @Type("mapVersionStatistics")
 public class MapVersionStatistics implements ElideEntity {
