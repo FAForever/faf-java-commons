@@ -5,11 +5,13 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
 @Type("map")
+@ToString(exclude = {"latestVersion", "versions"})
 @EqualsAndHashCode(callSuper = true)
 public class Map extends AbstractEntity {
   private String battleType;

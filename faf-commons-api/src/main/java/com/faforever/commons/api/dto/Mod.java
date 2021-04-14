@@ -4,10 +4,12 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
+@ToString(exclude = {"latestVersion", "versions"})
 @EqualsAndHashCode(callSuper = true)
 @Type("mod")
 public class Mod extends AbstractEntity {

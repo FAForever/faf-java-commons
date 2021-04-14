@@ -5,8 +5,10 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@ToString(of = {"id", "displayName", "technicalName"})
 @EqualsAndHashCode(of = "id")
 @Type("featuredMod")
 public class FeaturedMod implements ElideEntity {
