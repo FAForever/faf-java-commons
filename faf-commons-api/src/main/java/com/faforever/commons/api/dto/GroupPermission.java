@@ -35,6 +35,7 @@ public class GroupPermission extends AbstractEntity {
   public static final String ROLE_ADMIN_MAP = "ROLE_ADMIN_MAP";
   public static final String ROLE_ADMIN_MOD = "ROLE_ADMIN_MOD";
   public static final String ROLE_WRITE_MESSAGE = "ROLE_WRITE_MESSAGE";
+  public static final String ADMIN_KICK_SERVER = "ROLE_ADMIN_KICK_SERVER";
 
   private String technicalName;
   private String nameKey;
