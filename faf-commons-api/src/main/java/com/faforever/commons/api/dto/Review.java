@@ -3,15 +3,13 @@ package com.faforever.commons.api.dto;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class Review extends AbstractEntity {
-    String text;
-    Byte score;
+  private String text;
+  private Byte score;
 
-    @Relationship("player")
-    Player player;
+  @Relationship("player")
+  private Player player;
 }

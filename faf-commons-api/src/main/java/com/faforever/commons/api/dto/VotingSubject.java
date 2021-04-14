@@ -2,33 +2,31 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type(VotingSubject.TYPE_NAME)
 public class VotingSubject extends AbstractEntity {
   public static final String TYPE_NAME = "votingSubject";
 
-  String subjectKey;
-  String subject;
-  Integer numberOfVotes;
-  String topicUrl;
-  OffsetDateTime beginOfVoteTime;
-  OffsetDateTime endOfVoteTime;
-  Integer minGamesToVote;
-  String descriptionKey;
-  String description;
-  Boolean revealWinner;
+  private String subjectKey;
+  private String subject;
+  private Integer numberOfVotes;
+  private String topicUrl;
+  private OffsetDateTime beginOfVoteTime;
+  private OffsetDateTime endOfVoteTime;
+  private Integer minGamesToVote;
+  private String descriptionKey;
+  private String description;
+  private Boolean revealWinner;
   @Relationship("votes")
-  List<Vote> votes;
+  private List<Vote> votes;
   @Relationship("votingQuestions")
-  List<VotingQuestion> votingQuestions;
+  private List<VotingQuestion> votingQuestions;
 }
 

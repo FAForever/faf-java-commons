@@ -3,25 +3,23 @@ package com.faforever.commons.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("mapPool")
 public class MapPool extends AbstractEntity {
 
-    String name;
+  private String name;
 
-    @Relationship("matchmakerQueueMapPool")
-    @JsonIgnore
-    MatchmakerQueueMapPool matchmakerQueueMapPool;
+  @Relationship("matchmakerQueueMapPool")
+  @JsonIgnore
+  private MatchmakerQueueMapPool matchmakerQueueMapPool;
 
-    @Relationship("mapPoolAssignments")
-    List<MapPoolAssignment> mapPoolAssignments;
+  @Relationship("mapPoolAssignments")
+  private List<MapPoolAssignment> mapPoolAssignments;
 
 }

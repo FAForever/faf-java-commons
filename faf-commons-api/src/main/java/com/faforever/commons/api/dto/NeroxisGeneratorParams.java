@@ -1,12 +1,10 @@
 package com.faforever.commons.api.dto;
 
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
+import lombok.Data;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 public class NeroxisGeneratorParams implements MapParams {
-  int spawns;
-  int size;
-  String version;
+  private int spawns;
+  private int size;
+  private String version;
 }

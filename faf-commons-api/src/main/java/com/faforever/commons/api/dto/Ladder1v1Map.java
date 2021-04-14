@@ -4,18 +4,16 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 @Deprecated
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(of = "id")
 @Type("ladder1v1Map")
 public class Ladder1v1Map implements ElideEntity {
-    @Id
-    String id;
-    @Relationship("mapVersion")
-    MapVersion mapVersion;
+  @Id
+  private String id;
+  @Relationship("mapVersion")
+  private MapVersion mapVersion;
 }

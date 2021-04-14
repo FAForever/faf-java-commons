@@ -4,18 +4,16 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 @RestrictedVisibility("IsModerator")
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(of = "domain")
 @Type("domainBlacklist")
 public class DomainBlacklist implements ElideEntity {
   @Id
-  String domain;
+  private String domain;
 
   @Override
   @JsonIgnore

@@ -3,6 +3,9 @@ package com.faforever.commons.api.dto;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,7 +15,11 @@ class TutorialTest {
 
   @Test
   void testTutorialToString() {
-    Tutorial tutorial = Tutorial.builder().category(TutorialCategory.builder().build()).build();
+    Tutorial tutorial = new Tutorial();
+    Tutorial secondTutorial = new Tutorial();
+    TutorialCategory category = new TutorialCategory();
+    tutorial.setCategory(category);
+    category.setTutorials(Arrays.asList(tutorial, secondTutorial));
     assertThat("correct to string", tutorial.toString(), is(notNullValue()));
   }
 
@@ -26,15 +33,15 @@ class TutorialTest {
 
   @Test
   void testTutorialEquals() {
-    Tutorial tutorial = Tutorial.builder().build();
-    Tutorial secondTutorial = Tutorial.builder().build();
+    Tutorial tutorial = new Tutorial();
+    Tutorial secondTutorial = new Tutorial();
     assertThat("tutorial equals", tutorial.equals(secondTutorial), is(true));
   }
 
   @Test
   void testTutorialHashCode() {
-    Tutorial tutorial = Tutorial.builder().build();
-    Tutorial secondTutorial = Tutorial.builder().build();
+    Tutorial tutorial = new Tutorial();
+    Tutorial secondTutorial = new Tutorial();
     assertThat("tutorial equals", tutorial.hashCode(), is(secondTutorial.hashCode()));
   }
 
@@ -54,11 +61,15 @@ class TutorialTest {
 
   @NotNull
   private TutorialCategory getTutorialCategory() {
-    return TutorialCategory.builder()
-      .id("fixedId")
-      .category("fixedCategory")
-      .categoryKey("fixedCategoryKey")
-      .build();
+    TutorialCategory tutorialCategory = new TutorialCategory();
+    tutorialCategory.setId("fixedId");
+    tutorialCategory.setCategory("fixedCategory");
+    tutorialCategory.setCategoryKey("fixedCategoryKey");
+
+    Tutorial tutorial = new Tutorial();
+    tutorial.setCategory(tutorialCategory);
+    tutorialCategory.setTutorials(Collections.singletonList(tutorial));
+    return tutorialCategory;
   }
 
 }

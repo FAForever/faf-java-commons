@@ -2,31 +2,29 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @ToString(exclude = "memberships")
 @EqualsAndHashCode(callSuper = true)
 @Type("clan")
 public class Clan extends AbstractEntity {
-    String name;
-    String tag;
-    String description;
-    String tagColor;
-    String websiteUrl;
+  private String name;
+  private String tag;
+  private String description;
+  private String tagColor;
+  private String websiteUrl;
 
-    @Relationship("founder")
-    Player founder;
+  @Relationship("founder")
+  private Player founder;
 
-    @Relationship("leader")
-    Player leader;
+  @Relationship("leader")
+  private Player leader;
 
-    @Relationship("memberships")
-    List<ClanMembership> memberships;
+  @Relationship("memberships")
+  private List<ClanMembership> memberships;
 }

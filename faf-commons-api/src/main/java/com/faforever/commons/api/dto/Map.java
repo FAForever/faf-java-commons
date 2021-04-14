@@ -3,35 +3,33 @@ package com.faforever.commons.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @Type("map")
 @EqualsAndHashCode(callSuper = true)
 public class Map extends AbstractEntity {
-    String battleType;
-    String displayName;
-    String mapType;
+  private String battleType;
+  private String displayName;
+  private String mapType;
 
-    @Relationship("author")
-    Player author;
+  @Relationship("author")
+  private Player author;
 
-    @Relationship("statistics")
-    MapStatistics statistics;
+  @Relationship("statistics")
+  private MapStatistics statistics;
 
-    @Relationship("latestVersion")
-    @JsonIgnore
-    MapVersion latestVersion;
+  @Relationship("latestVersion")
+  @JsonIgnore
+  private MapVersion latestVersion;
 
-    @Relationship("versions")
-    @JsonIgnore
-    List<MapVersion> versions;
+  @Relationship("versions")
+  @JsonIgnore
+  private List<MapVersion> versions;
 
-    @Relationship("reviewsSummary")
-    MapReviewsSummary mapReviewsSummary;
+  @Relationship("reviewsSummary")
+  private MapReviewsSummary mapReviewsSummary;
 }

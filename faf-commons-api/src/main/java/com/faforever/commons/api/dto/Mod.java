@@ -2,30 +2,27 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("mod")
 public class Mod extends AbstractEntity {
-
-  String displayName;
-  String author;
+  private String displayName;
+  private String author;
 
   @Relationship("uploader")
-  Player uploader;
+  private Player uploader;
 
   @Relationship("versions")
-  List<ModVersion> versions;
+  private List<ModVersion> versions;
 
   @Relationship("latestVersion")
-  ModVersion latestVersion;
+  private ModVersion latestVersion;
 
   @Relationship("reviewsSummary")
-  ModReviewsSummary modReviewsSummary;
+  private ModReviewsSummary modReviewsSummary;
 }

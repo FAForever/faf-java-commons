@@ -6,19 +6,17 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 public class Rating {
-    @Id
-    String id;
-    double mean;
-    double deviation;
-    double rating;
+  @Id
+  private String id;
+  private double mean;
+  private double deviation;
+  private double rating;
 
-    @Relationship("player")
-    Player player;
+  @Relationship("player")
+  private Player player;
 }

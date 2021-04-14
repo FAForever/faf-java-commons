@@ -2,24 +2,22 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("mapPoolAssignment")
 public class MapPoolAssignment extends AbstractEntity {
 
   int weight;
-  MapParams mapParams;
+  private MapParams mapParams;
 
   @Relationship("mapPool")
-  MapPool mapPool;
+  private MapPool mapPool;
 
   @Relationship("mapVersion")
-  MapVersion mapVersion;
+  private MapVersion mapVersion;
 }
 
 

@@ -2,44 +2,43 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.List;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("mapVersion")
 public class MapVersion extends AbstractEntity {
-  String description;
-  Integer maxPlayers;
-  Integer width;
-  Integer height;
-  ComparableVersion version;
-  String folderName;
+  private String description;
+  private Integer maxPlayers;
+  private Integer width;
+  private Integer height;
+  private ComparableVersion version;
+  private String folderName;
   // TODO name consistently with folderName
-  String filename;
-  boolean ranked;
-  boolean hidden;
-  URL thumbnailUrlSmall;
-  URL thumbnailUrlLarge;
-  URL downloadUrl;
+  private String filename;
+  private boolean ranked;
+  private boolean hidden;
+  private URL thumbnailUrlSmall;
+  private URL thumbnailUrlLarge;
+  private URL downloadUrl;
 
   @Relationship("map")
-  Map map;
+  private Map map;
 
   @Relationship("statistics")
-  MapVersionStatistics statistics;
+  private MapVersionStatistics statistics;
 
+  @Deprecated
   @Nullable
   @Relationship("ladder1v1Map")
-  Ladder1v1Map ladder1v1Map;
+  private Ladder1v1Map ladder1v1Map;
 
   @Relationship("reviews")
-  List<MapVersionReview> reviews;
+  private List<MapVersionReview> reviews;
 }

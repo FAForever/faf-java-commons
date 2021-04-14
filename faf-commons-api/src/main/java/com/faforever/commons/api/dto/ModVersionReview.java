@@ -2,16 +2,13 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("modVersionReview")
 public class ModVersionReview extends Review {
-
-    @Relationship("modVersion")
-    ModVersion modVersion;
+  @Relationship("modVersion")
+  private ModVersion modVersion;
 }

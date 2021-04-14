@@ -3,26 +3,24 @@ package com.faforever.commons.api.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type(UserGroup.TYPE_NAME)
 public class UserGroup extends AbstractEntity {
 
   public static final String TYPE_NAME = "userGroup";
 
-  String technicalName;
-  String nameKey;
-  boolean public_;
+  private String technicalName;
+  private String nameKey;
+  private boolean public_;
   @Relationship("members")
   @JsonIgnore
-  Set<Player> members;
+  private Set<Player> members;
   @Relationship("permissions")
-  Set<GroupPermission> permissions;
+  private Set<GroupPermission> permissions;
 }

@@ -2,15 +2,13 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Type(GroupPermission.TYPE_NAME)
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class GroupPermission extends AbstractEntity {
   public static final String TYPE_NAME = "groupPermission";
@@ -38,9 +36,9 @@ public class GroupPermission extends AbstractEntity {
   public static final String ROLE_ADMIN_MOD = "ROLE_ADMIN_MOD";
   public static final String ROLE_WRITE_MESSAGE = "ROLE_WRITE_MESSAGE";
 
-  String technicalName;
-  String nameKey;
+  private String technicalName;
+  private String nameKey;
 
   @Relationship("userGroups")
-  Set<UserGroup> userGroups;
+  private Set<UserGroup> userGroups;
 }

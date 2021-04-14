@@ -2,24 +2,21 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("leaderboardRatingJournal")
 public class LeaderboardRatingJournal extends AbstractEntity{
-
-  Double meanAfter;
-  Double deviationAfter;
-  Double meanBefore;
-  Double deviationBefore;
+  private Double meanAfter;
+  private Double deviationAfter;
+  private Double meanBefore;
+  private Double deviationBefore;
 
   @Relationship("gamePlayerStats")
-  GamePlayerStats gamePlayerStats;
+  private GamePlayerStats gamePlayerStats;
 
   @Relationship("leaderboard")
-  Leaderboard leaderboard;
+  private Leaderboard leaderboard;
 }

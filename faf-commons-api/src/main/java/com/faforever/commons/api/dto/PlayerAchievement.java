@@ -3,18 +3,16 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("playerAchievement")
 public class PlayerAchievement extends AbstractEntity {
-    AchievementState state;
-    Integer currentSteps;
+  private AchievementState state;
+  private Integer currentSteps;
 
-    @Relationship("achievement")
-    AchievementDefinition achievement;
+  @Relationship("achievement")
+  private AchievementDefinition achievement;
 }

@@ -2,36 +2,34 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 
 import java.net.URL;
 import java.util.List;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(callSuper = true)
 @Type("modVersion")
 public class ModVersion extends AbstractEntity {
-  String uid;
-  ModType type;
-  String description;
-  ComparableVersion version;
-  String filename;
-  String icon;
-  boolean ranked;
-  boolean hidden;
-  URL thumbnailUrl;
-  URL downloadUrl;
+  private String uid;
+  private ModType type;
+  private String description;
+  private ComparableVersion version;
+  private String filename;
+  private String icon;
+  private boolean ranked;
+  private boolean hidden;
+  private URL thumbnailUrl;
+  private URL downloadUrl;
 
   @Relationship("mod")
-  Mod mod;
+  private Mod mod;
 
   @Relationship("reviews")
-  List<ModVersionReview> reviews;
+  private List<ModVersionReview> reviews;
 
   @Relationship("reviewsSummary")
-  ModVersionReviewsSummary modVersionReviewsSummary;
+  private ModVersionReviewsSummary modVersionReviewsSummary;
 }

@@ -2,23 +2,21 @@ package com.faforever.commons.api.dto;
 
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @EqualsAndHashCode(of = "id")
 @Type("coopMission")
 public class CoopMission {
-    @Id
-    String id;
-    String name;
-    int version;
-    String category;
-    String thumbnailUrlSmall;
-    String thumbnailUrlLarge;
-    String description;
-    String downloadUrl;
-    String folderName;
+  @Id
+  private String id;
+  private String name;
+  private int version;
+  private String category;
+  private String thumbnailUrlSmall;
+  private String thumbnailUrlLarge;
+  private String description;
+  private String downloadUrl;
+  private String folderName;
 }

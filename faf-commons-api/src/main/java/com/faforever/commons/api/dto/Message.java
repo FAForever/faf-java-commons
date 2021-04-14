@@ -4,17 +4,15 @@ package com.faforever.commons.api.dto;
 import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Value;
-import lombok.experimental.SuperBuilder;
+import lombok.Data;
 
-@Value
-@SuperBuilder(toBuilder = true)
+@Data
 @Type("message")
 public class Message implements ElideEntity {
   @Id
-  String id;
-  String key;
-  String language;
-  String region;
-  String value;
+  private String id;
+  private String key;
+  private String language;
+  private String region;
+  private String value;
 }
