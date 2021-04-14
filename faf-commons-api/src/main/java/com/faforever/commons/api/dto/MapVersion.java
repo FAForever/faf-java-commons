@@ -4,6 +4,7 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +12,7 @@ import java.net.URL;
 import java.util.List;
 
 @Data
+@ToString(of = {"folderName"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("mapVersion")
 public class MapVersion extends AbstractEntity {

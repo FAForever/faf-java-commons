@@ -5,12 +5,14 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 
 @Type("banInfo")
 @RestrictedVisibility("HasBanRead")
 @Data
+@ToString(of = {"player", "author", "level", "duration", "banStatus"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class BanInfo extends AbstractEntity {
   @Relationship("player")

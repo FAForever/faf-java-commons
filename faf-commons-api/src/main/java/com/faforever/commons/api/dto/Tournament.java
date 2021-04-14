@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.github.jasminb.jsonapi.annotations.Id;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 
 @Data
+@ToString(of = {"id", "name"}, callSuper = true)
 @EqualsAndHashCode(of = "id")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.WRAPPER_OBJECT)
 public class Tournament {

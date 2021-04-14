@@ -9,7 +9,7 @@ import lombok.ToString;
 import java.util.List;
 
 @Data
-@ToString(exclude = "memberships")
+@ToString(of = {"name", "tag"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("clan")
 public class Clan extends AbstractEntity {

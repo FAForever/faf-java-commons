@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @Type("map")
-@ToString(exclude = {"latestVersion", "versions"})
+@ToString(of = {"author", "displayName"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Map extends AbstractEntity {
   private String battleType;

@@ -6,8 +6,10 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
+@ToString(of = {"id", "rating"}, callSuper = true)
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 public class Rating {

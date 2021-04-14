@@ -6,12 +6,14 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
 @Data
+@ToString(of = {"login"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("player")
 public class Player extends AbstractEntity {
@@ -51,9 +53,4 @@ public class Player extends AbstractEntity {
   @JsonBackReference
   @Relationship("reporterOnModerationReports")
   private Set<ModerationReport> reporterOnModerationReports;
-
-  @Override
-  public String toString() {
-    return String.format("%s [id %s]", login, id);
-  }
 }

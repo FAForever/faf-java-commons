@@ -6,9 +6,11 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @RestrictedVisibility("IsModerator")
 @Data
+@ToString(of = {"domain"})
 @EqualsAndHashCode(of = "domain")
 @Type("domainBlacklist")
 public class DomainBlacklist implements ElideEntity {

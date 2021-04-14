@@ -5,8 +5,10 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString(of = {"id", "key"}, callSuper = true)
 @Type("message")
 public class Message implements ElideEntity {
   @Id

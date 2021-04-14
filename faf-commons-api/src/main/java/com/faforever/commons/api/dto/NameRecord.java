@@ -6,10 +6,12 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 
 @Data
+@ToString(of = {"id", "player", "name"}, callSuper = true)
 @EqualsAndHashCode(of = "id")
 @Type("nameRecord")
 public class NameRecord implements ElideEntity {

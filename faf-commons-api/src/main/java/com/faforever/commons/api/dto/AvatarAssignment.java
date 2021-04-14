@@ -5,10 +5,12 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 
 @Data
+@ToString(of = {"selected", "avatar", "player"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("avatarAssignment")
 public class AvatarAssignment extends AbstractEntity {

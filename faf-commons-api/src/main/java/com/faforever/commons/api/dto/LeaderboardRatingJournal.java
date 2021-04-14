@@ -4,8 +4,10 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@ToString(of = {"leaderboard", "gamePlayerStats"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("leaderboardRatingJournal")
 public class LeaderboardRatingJournal extends AbstractEntity{

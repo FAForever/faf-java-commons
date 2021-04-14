@@ -5,10 +5,12 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 
 @Data
+@ToString(of = {"id"}, callSuper = true)
 @Type("teamkill")
 @RestrictedVisibility("IsModerator")
 public class Teamkill implements ElideEntity {

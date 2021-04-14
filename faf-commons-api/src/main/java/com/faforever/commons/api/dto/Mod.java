@@ -9,7 +9,7 @@ import lombok.ToString;
 import java.util.List;
 
 @Data
-@ToString(exclude = {"latestVersion", "versions"})
+@ToString(of = {"displayName", "author", "uploader"}, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Type("mod")
 public class Mod extends AbstractEntity {

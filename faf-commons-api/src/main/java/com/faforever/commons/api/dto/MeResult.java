@@ -4,11 +4,13 @@ import com.faforever.commons.api.elide.ElideEntity;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Set;
 
 @Type(MeResult.TYPE_NAME)
 @Data
+@ToString(of = {"userId", "userName"}, callSuper = true)
 public class MeResult implements ElideEntity {
 
   public static final String TYPE_NAME = "me";

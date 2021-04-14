@@ -4,11 +4,13 @@ import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Set;
 
 @Type("moderationReport")
 @Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class ModerationReport extends AbstractEntity {
   private String reportDescription;

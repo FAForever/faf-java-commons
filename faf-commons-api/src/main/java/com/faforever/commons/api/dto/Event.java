@@ -4,8 +4,10 @@ import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@ToString(of = {"id", "name"})
 @EqualsAndHashCode(of = "id")
 @Type("event")
 public class Event {

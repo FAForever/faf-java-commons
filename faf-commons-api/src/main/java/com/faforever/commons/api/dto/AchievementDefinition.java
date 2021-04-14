@@ -10,7 +10,7 @@ import lombok.ToString;
 @Type("achievement")
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(of = {"id"})
+@ToString(of = {"id", "name", "type", "initialState"})
 public class AchievementDefinition implements ElideEntity {
 
   @Id
