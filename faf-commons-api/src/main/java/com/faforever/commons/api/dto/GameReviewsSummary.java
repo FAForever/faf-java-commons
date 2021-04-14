@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Type("gameReviewsSummary")
 @EqualsAndHashCode(callSuper = true)
-public class GameReviewsSummary extends Review {
+public class GameReviewsSummary extends ReviewsSummary {
   @Relationship("game")
   private Game game;
 }
