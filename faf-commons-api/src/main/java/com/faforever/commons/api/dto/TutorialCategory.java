@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @Type("tutorialCategory")
-@ToString(of = {"id", "category"}, callSuper = true)
+@ToString(of = {"id", "categoryKey", "category"}, callSuper = true)
 @EqualsAndHashCode(exclude={"tutorials"})
 public class TutorialCategory implements ElideEntity {
   @Id
