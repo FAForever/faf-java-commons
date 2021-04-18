@@ -35,9 +35,9 @@ public class MeResult implements ElideEntity {
 
   @Data
   public static class Clan {
-    Integer id;
-    Integer membershipId;
-    String tag;
-    String name;
+    private Integer id;
+    private Integer membershipId;
+    private String tag;
+    private String name;
   }
 }
