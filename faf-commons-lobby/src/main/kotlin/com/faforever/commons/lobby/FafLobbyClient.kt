@@ -30,7 +30,7 @@ class FafLobbyClient(
     val password: String,
     val localIp: String,
     val generateUid: Function<Long, String>,
-    val bufferSize: Long,
+    val bufferSize: Int,
     val wiretap: Boolean = false,
   )
 
@@ -53,7 +53,7 @@ class FafLobbyClient(
     .doOnConnected { connection ->
       connection
         .addHandler(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
-        .addHandler(LineBasedFrameDecoder(8192))
+        .addHandler(LineBasedFrameDecoder(config.bufferSize))
     }
     .handle { inbound, outbound ->
       val inboundMono = inbound.receive()
