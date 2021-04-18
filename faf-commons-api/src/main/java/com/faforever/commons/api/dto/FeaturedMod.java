@@ -8,18 +8,22 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "displayName", "technicalName"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("featuredMod")
 public class FeaturedMod implements ElideEntity {
-    @Id
-    String id;
-    String description;
-    String displayName;
-    int order;
-    String gitBranch;
-    String gitUrl;
-    String bireusUrl;
-    String technicalName;
-    boolean visible;
+  @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
+  String id;
+  String description;
+  @ToString.Include
+  String displayName;
+  int order;
+  String gitBranch;
+  String gitUrl;
+  String bireusUrl;
+  @ToString.Include
+  String technicalName;
+  boolean visible;
 }

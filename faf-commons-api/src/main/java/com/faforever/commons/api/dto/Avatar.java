@@ -11,9 +11,10 @@ import java.util.List;
 
 @Type("avatar")
 @Data
-@ToString(of = {"url"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Avatar extends AbstractEntity {
+  @ToString.Include
   private String url;
   private String tooltip;
   @Relationship("assignments")

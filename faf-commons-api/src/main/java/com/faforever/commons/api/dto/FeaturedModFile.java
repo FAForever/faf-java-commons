@@ -7,15 +7,21 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(of = "id")
-@ToString(of = {"id", "version", "name", "md5", "url"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Type("featuredModFile")
 public class FeaturedModFile {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
+  @ToString.Include
   private String version;
   private String group;
+  @ToString.Include
   private String name;
+  @ToString.Include
   private String md5;
+  @ToString.Include
   private String url;
 }

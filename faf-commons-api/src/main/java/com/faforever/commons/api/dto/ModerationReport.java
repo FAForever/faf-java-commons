@@ -10,8 +10,8 @@ import java.util.Set;
 
 @Type("moderationReport")
 @Data
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class ModerationReport extends AbstractEntity {
   private String reportDescription;
   private ModerationReportStatus reportStatus;

@@ -9,8 +9,8 @@ import lombok.ToString;
 import java.util.List;
 
 @Data
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type(Vote.TYPE_NAME)
 public class Vote extends AbstractEntity {
   public static final String TYPE_NAME = "vote";

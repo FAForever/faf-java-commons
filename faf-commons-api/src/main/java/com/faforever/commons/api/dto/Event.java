@@ -7,12 +7,15 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "name"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("event")
 public class Event {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
+  @ToString.Include
   private String name;
   private String imageUrl;
   private Type type;

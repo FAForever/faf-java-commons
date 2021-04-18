@@ -8,8 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type(VotingAnswer.TYPE_NAME)
 public class VotingAnswer extends AbstractEntity {
   public static final String TYPE_NAME = "votingAnswer";

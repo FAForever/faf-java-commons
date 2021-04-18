@@ -9,14 +9,17 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "rating"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class Rating {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private double mean;
   private double deviation;
+  @ToString.Include
   private double rating;
 
   @Relationship("player")

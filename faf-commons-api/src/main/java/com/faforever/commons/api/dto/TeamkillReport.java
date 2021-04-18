@@ -9,8 +9,8 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = {"game"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type(TeamkillReport.TYPE_NAME)
 @RestrictedVisibility("IsModerator")
 public class TeamkillReport extends AbstractEntity {
@@ -21,6 +21,7 @@ public class TeamkillReport extends AbstractEntity {
    * How many seconds into the game, in simulation time.
    */
   private Integer gameTime;
+  @ToString.Include
   private OffsetDateTime reportedAt;
 
   @Relationship("teamkiller")
@@ -30,5 +31,6 @@ public class TeamkillReport extends AbstractEntity {
   private Player victim;
 
   @Relationship("game")
+  @ToString.Include
   private Game game;
 }

@@ -10,11 +10,13 @@ import lombok.ToString;
 
 @RestrictedVisibility("IsModerator")
 @Data
-@ToString(of = {"domain"})
-@EqualsAndHashCode(of = "domain")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("domainBlacklist")
 public class DomainBlacklist implements ElideEntity {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String domain;
 
   @Override

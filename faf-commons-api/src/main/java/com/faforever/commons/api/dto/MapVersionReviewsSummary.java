@@ -7,10 +7,11 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(of = {"mapVersion"}, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("mapVersionReviewsSummary")
 public class MapVersionReviewsSummary extends ReviewsSummary {
   @Relationship("MapVersion")
+  @ToString.Include
   private MapVersion mapVersion;
 }

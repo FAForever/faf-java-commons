@@ -8,14 +8,17 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "event"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("playerEvent")
 public class PlayerEvent {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private int currentCount;
 
   @Relationship("event")
+  @ToString.Include
   private Event event;
 }

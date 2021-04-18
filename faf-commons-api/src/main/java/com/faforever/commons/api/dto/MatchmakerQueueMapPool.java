@@ -8,14 +8,17 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("matchmakerQueueMapPool")
 public class MatchmakerQueueMapPool extends AbstractEntity {
+  @ToString.Include
   private Double minRating;
+  @ToString.Include
   private Double maxRating;
 
   @Relationship("matchmakerQueue")
+  @ToString.Include
   private MatchmakerQueue matchmakerQueue;
 
   @Relationship("mapPool")

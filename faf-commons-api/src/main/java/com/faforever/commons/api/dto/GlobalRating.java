@@ -8,8 +8,8 @@ import lombok.ToString;
  * @deprecated GlobalRating replaced with leaderboardRating
  */
 @Deprecated
-@ToString(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("globalRating")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class GlobalRating extends Rating {
 }

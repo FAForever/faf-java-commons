@@ -9,7 +9,7 @@ import lombok.ToString;
  */
 @Deprecated
 @Type("ladder1v1Rating")
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Ladder1v1Rating extends Rating {
 }

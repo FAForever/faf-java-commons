@@ -10,10 +10,11 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = {"selected", "avatar", "player"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("avatarAssignment")
 public class AvatarAssignment extends AbstractEntity {
+  @ToString.Include
   private Boolean selected;
   private OffsetDateTime expiresAt;
   @Relationship("player")

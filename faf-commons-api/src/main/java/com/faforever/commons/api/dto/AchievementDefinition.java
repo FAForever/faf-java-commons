@@ -9,18 +9,22 @@ import lombok.ToString;
 
 @Type("achievement")
 @Data
-@EqualsAndHashCode(of = "id")
-@ToString(of = {"id", "name", "type", "initialState"})
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class AchievementDefinition implements ElideEntity {
 
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private String description;
   private int experiencePoints;
   private AchievementState initialState;
+  @ToString.Include
   private String name;
   private String revealedIconUrl;
   private Integer totalSteps;
+  @ToString.Include
   private AchievementType type;
   private String unlockedIconUrl;
   private int order;

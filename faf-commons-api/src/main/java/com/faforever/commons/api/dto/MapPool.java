@@ -10,11 +10,12 @@ import lombok.ToString;
 import java.util.List;
 
 @Data
-@ToString(of = {"name"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("mapPool")
 public class MapPool extends AbstractEntity {
 
+  @ToString.Include
   private String name;
 
   @Relationship("matchmakerQueueMapPool")

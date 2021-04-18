@@ -13,11 +13,13 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
-@ToString(of = {"id"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("gamePlayerStats")
 public class GamePlayerStats implements ElideEntity {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private boolean ai;
   private Faction faction;

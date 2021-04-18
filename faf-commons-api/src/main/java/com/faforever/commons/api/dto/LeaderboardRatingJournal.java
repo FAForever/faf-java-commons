@@ -7,8 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"leaderboard", "gamePlayerStats"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("leaderboardRatingJournal")
 public class LeaderboardRatingJournal extends AbstractEntity{
   private Double meanAfter;
@@ -17,8 +17,10 @@ public class LeaderboardRatingJournal extends AbstractEntity{
   private Double deviationBefore;
 
   @Relationship("gamePlayerStats")
+  @ToString.Include
   private GamePlayerStats gamePlayerStats;
 
   @Relationship("leaderboard")
+  @ToString.Include
   private Leaderboard leaderboard;
 }

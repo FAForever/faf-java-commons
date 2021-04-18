@@ -8,13 +8,15 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"achievement", "state"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("playerAchievement")
 public class PlayerAchievement extends AbstractEntity {
+  @ToString.Include
   private AchievementState state;
   private Integer currentSteps;
 
   @Relationship("achievement")
+  @ToString.Include
   private AchievementDefinition achievement;
 }

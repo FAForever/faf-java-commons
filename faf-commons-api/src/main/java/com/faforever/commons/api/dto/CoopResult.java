@@ -10,11 +10,13 @@ import lombok.ToString;
 import java.time.Duration;
 
 @Data
-@ToString(of = {"id"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("coopResult")
 public class CoopResult {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private Duration duration;
   private String playerNames;

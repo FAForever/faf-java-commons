@@ -12,8 +12,8 @@ import java.time.OffsetDateTime;
 @Type("banInfo")
 @RestrictedVisibility("HasBanRead")
 @Data
-@ToString(of = {"player", "author", "level", "duration", "banStatus"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class BanInfo extends AbstractEntity {
   @Relationship("player")
   @JsonIgnore
@@ -23,6 +23,7 @@ public class BanInfo extends AbstractEntity {
   private Player author;
   private String reason;
   private OffsetDateTime expiresAt;
+  @ToString.Include
   private BanLevel level;
   @Relationship("moderationReport")
   @JsonIgnore
@@ -33,8 +34,10 @@ public class BanInfo extends AbstractEntity {
   private Player revokeAuthor;
   private OffsetDateTime revokeTime;
   @JsonIgnore
+  @ToString.Include
   private BanDurationType duration;
   @JsonIgnore
+  @ToString.Include
   private BanStatus banStatus;
 
   @JsonIgnore

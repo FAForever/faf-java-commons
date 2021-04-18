@@ -12,11 +12,13 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
-@ToString(of = {"id"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("game")
 public class Game implements ElideEntity {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private String name;
   private Boolean replayAvailable;

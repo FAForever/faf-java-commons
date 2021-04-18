@@ -9,10 +9,12 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = "id")
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractEntity implements ElideEntity {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   protected String id;
   protected OffsetDateTime createTime;
   protected OffsetDateTime updateTime;

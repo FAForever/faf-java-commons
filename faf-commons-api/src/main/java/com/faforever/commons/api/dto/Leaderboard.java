@@ -6,11 +6,13 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"technicalName", "nameKey"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("leaderboard")
 public class Leaderboard extends AbstractEntity {
+  @ToString.Include
   private String technicalName;
+  @ToString.Include
   private String nameKey;
   private String descriptionKey;
 }

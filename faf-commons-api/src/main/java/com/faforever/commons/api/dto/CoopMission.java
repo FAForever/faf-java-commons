@@ -7,13 +7,17 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "name", "version"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("coopMission")
 public class CoopMission {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
+  @ToString.Include
   private String name;
+  @ToString.Include
   private int version;
   private String category;
   private String thumbnailUrlSmall;

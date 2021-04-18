@@ -9,11 +9,13 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("mapStatistics")
 public class MapStatistics implements ElideEntity {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private int downloads;
   private int draws;

@@ -11,13 +11,17 @@ import lombok.ToString;
  */
 @Deprecated
 @Data
-@ToString(of = {"id", "name"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("ladder1v1LeaderboardEntry")
 public class Ladder1v1LeaderboardEntry {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
+  @ToString.Include
   private int rank;
+  @ToString.Include
   private String name;
   private Double mean;
   private Double deviation;

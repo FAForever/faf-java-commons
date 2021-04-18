@@ -10,11 +10,13 @@ import lombok.ToString;
 
 @Deprecated
 @Data
-@ToString(of = {"id"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("ladder1v1Map")
 public class Ladder1v1Map implements ElideEntity {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   @Relationship("mapVersion")
   private MapVersion mapVersion;

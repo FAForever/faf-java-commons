@@ -6,10 +6,12 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"id", "score"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ReviewsSummary {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private float positive;
   private float negative;

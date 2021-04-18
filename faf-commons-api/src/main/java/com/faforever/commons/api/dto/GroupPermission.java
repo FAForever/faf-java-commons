@@ -10,8 +10,8 @@ import java.util.Set;
 
 @Type(GroupPermission.TYPE_NAME)
 @Data
-@ToString(of = {"technicalName"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class GroupPermission extends AbstractEntity {
   public static final String TYPE_NAME = "groupPermission";
 
@@ -39,7 +39,9 @@ public class GroupPermission extends AbstractEntity {
   public static final String ROLE_WRITE_MESSAGE = "ROLE_WRITE_MESSAGE";
   public static final String ADMIN_KICK_SERVER = "ROLE_ADMIN_KICK_SERVER";
 
+  @ToString.Include
   private String technicalName;
+  @ToString.Include
   private String nameKey;
 
   @Relationship("userGroups")

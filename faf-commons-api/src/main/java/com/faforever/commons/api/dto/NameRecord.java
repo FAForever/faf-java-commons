@@ -11,14 +11,18 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = {"id", "player", "name"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Type("nameRecord")
 public class NameRecord implements ElideEntity {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
   private OffsetDateTime changeTime;
   @Relationship("player")
+  @ToString.Include
   private Player player;
+  @ToString.Include
   private String name;
 }

@@ -9,11 +9,13 @@ import lombok.ToString;
 import java.util.List;
 
 @Data
-@ToString(of = {"name", "tag"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("clan")
 public class Clan extends AbstractEntity {
+  @ToString.Include
   private String name;
+  @ToString.Include
   private String tag;
   private String description;
   private String tagColor;

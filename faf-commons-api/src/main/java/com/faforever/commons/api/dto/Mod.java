@@ -9,14 +9,17 @@ import lombok.ToString;
 import java.util.List;
 
 @Data
-@ToString(of = {"displayName", "author", "uploader"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("mod")
 public class Mod extends AbstractEntity {
+  @ToString.Include
   private String displayName;
+  @ToString.Include
   private String author;
 
   @Relationship("uploader")
+  @ToString.Include
   private Player uploader;
 
   @Relationship("versions")

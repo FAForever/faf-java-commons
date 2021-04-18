@@ -7,13 +7,14 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"title", "technicalName"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("tutorial")
 public class Tutorial extends AbstractEntity {
   private String descriptionKey;
   private String description;
   private String titleKey;
+  @ToString.Include
   private String title;
   @Relationship("category")
   private TutorialCategory category;
@@ -21,6 +22,7 @@ public class Tutorial extends AbstractEntity {
   private String imageUrl;
   private int ordinal;
   private boolean launchable;
+  @ToString.Include
   private String technicalName;
   @Relationship("mapVersion")
   private MapVersion mapVersion;

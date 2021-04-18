@@ -11,14 +11,16 @@ import java.util.List;
 
 @Data
 @Type("map")
-@ToString(of = {"author", "displayName"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Map extends AbstractEntity {
   private String battleType;
+  @ToString.Include
   private String displayName;
   private String mapType;
 
   @Relationship("author")
+  @ToString.Include
   private Player author;
 
   @Relationship("statistics")

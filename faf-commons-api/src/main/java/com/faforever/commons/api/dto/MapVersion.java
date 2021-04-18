@@ -12,8 +12,8 @@ import java.net.URL;
 import java.util.List;
 
 @Data
-@ToString(of = {"folderName"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("mapVersion")
 public class MapVersion extends AbstractEntity {
   private String description;
@@ -21,6 +21,7 @@ public class MapVersion extends AbstractEntity {
   private Integer width;
   private Integer height;
   private ComparableVersion version;
+  @ToString.Include
   private String folderName;
   // TODO name consistently with folderName
   private String filename;

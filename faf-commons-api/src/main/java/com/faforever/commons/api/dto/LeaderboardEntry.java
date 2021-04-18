@@ -7,19 +7,23 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(of = {"player", "mean", "deviation", "leaderboard"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("leaderboardRating")
 public class LeaderboardEntry extends AbstractEntity {
+  @ToString.Include
   private Double mean;
+  @ToString.Include
   private Double deviation;
   private Integer totalGames;
   private Integer wonGames;
   private Double rating;
 
   @Relationship("player")
+  @ToString.Include
   private Player player;
 
   @Relationship("leaderboard")
+  @ToString.Include
   private Leaderboard leaderboard;
 }

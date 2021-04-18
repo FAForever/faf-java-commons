@@ -13,10 +13,11 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@ToString(of = {"login"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("player")
 public class Player extends AbstractEntity {
+  @ToString.Include
   private String login;
   @RestrictedVisibility("IsModerator")
   private String email;

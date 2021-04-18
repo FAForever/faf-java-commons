@@ -11,12 +11,15 @@ import lombok.ToString;
 import java.time.OffsetDateTime;
 
 @Data
-@ToString(of = {"id", "name"})
-@EqualsAndHashCode(of = "id")
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.WRAPPER_OBJECT)
 public class Tournament {
   @Id
+  @ToString.Include
+  @EqualsAndHashCode.Include
   private String id;
+  @ToString.Include
   private String name;
   private String description;
   @JsonProperty("tournament_type")

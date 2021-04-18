@@ -8,9 +8,10 @@ import lombok.ToString;
 
 @Type("modReviewsSummary")
 @Data
-@ToString(of = {"mod"}, callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class ModReviewsSummary extends ReviewsSummary {
   @Relationship("mod")
+  @ToString.Include
   private Mod mod;
 }
