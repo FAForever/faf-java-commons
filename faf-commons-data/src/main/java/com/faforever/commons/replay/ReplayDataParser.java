@@ -1,11 +1,16 @@
 package com.faforever.commons.replay;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.utils.IOUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,12 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -34,6 +34,7 @@ public class ReplayDataParser {
   private static final int LUA_TABLE_START = 4;
   private static final int LUA_TABLE_END = 5;
   private final Path path;
+  private final ObjectMapper objectMapper;
   private Map<Integer, Map<String, Object>> armies;
   private int randomSeed;
   private List<ChatMessage> chatMessages;
@@ -48,6 +49,7 @@ public class ReplayDataParser {
 
   public ReplayDataParser(Path path) {
     this.path = path;
+    objectMapper = new ObjectMapper();
     armies = new HashMap<>();
     chatMessages = new ArrayList<>();
     commandsPerMinuteByPlayer = new HashMap<>();
@@ -57,7 +59,7 @@ public class ReplayDataParser {
   String readString(LittleEndianDataInputStream dataStream) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte tempByte;
-    while ((tempByte =  dataStream.readByte()) != 0) {
+    while ((tempByte = dataStream.readByte()) != 0) {
       out.write(tempByte);
     }
     return new String(out.toByteArray(), StandardCharsets.UTF_8);
@@ -100,13 +102,32 @@ public class ReplayDataParser {
   }
 
   // TODO don't duplicate code
-  private byte[] readReplayData(Path replayFile) {
-    try {
-      List<String> lines = Files.readAllLines(replayFile);
-      return QtCompress.qUncompress(BaseEncoding.base64().decode(lines.get(1)));
-    } catch (Exception e) {
-      log.warn("Replay file " + replayFile + " could not be read", e);
-      return null;
+  private byte[] readReplayData(Path replayFile) throws IOException {
+    List<String> lines = Files.readAllLines(replayFile);
+    ReplayMetadata metadata = objectMapper.readValue(lines.get(0), ReplayMetadata.class);
+    return decompress(lines.get(1).getBytes(StandardCharsets.UTF_8), metadata);
+  }
+
+  @SneakyThrows
+  public byte[] decompress(byte[] data, @NotNull ReplayMetadata metadata) {
+    CompressionType compressionType = Objects.requireNonNullElse(metadata.getCompression(), CompressionType.QTCOMPRESS);
+
+    switch (compressionType) {
+      case QTCOMPRESS: {
+        return QtCompress.qUncompress(BaseEncoding.base64().decode(new String(data)));
+      }
+      case ZSTD: {
+        ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(data);
+        CompressorInputStream compressorInputStream = new CompressorStreamFactory()
+          .createCompressorInputStream(arrayInputStream);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOUtils.copy(compressorInputStream, out);
+        return out.toByteArray();
+      }
+      case UNKNOWN:
+      default:
+        throw new IOException("Unknown replay format in replay file");
     }
   }
 
@@ -333,10 +354,6 @@ public class ReplayDataParser {
   @SneakyThrows
   public ReplayData parse() {
     byte[] data = readReplayData(path);
-    if (data == null) {
-      // TODO the call above should maybe throw an exception
-      throw new IllegalStateException("Could not read replay data");
-    }
     try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
       parseHeader(dataStream);
       parseTicks(dataStream);
