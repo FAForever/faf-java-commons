@@ -1,6 +1,7 @@
 package com.faforever.commons.replay;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
@@ -49,7 +50,7 @@ public class ReplayDataParser {
 
   public ReplayDataParser(Path path) {
     this.path = path;
-    objectMapper = new ObjectMapper();
+    objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
     armies = new HashMap<>();
     chatMessages = new ArrayList<>();
     commandsPerMinuteByPlayer = new HashMap<>();

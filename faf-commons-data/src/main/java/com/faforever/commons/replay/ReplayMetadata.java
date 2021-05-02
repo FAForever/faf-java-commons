@@ -1,5 +1,6 @@
 package com.faforever.commons.replay;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Data;
 
 import java.util.List;
@@ -38,4 +39,14 @@ public class ReplayMetadata {
    * Backwards compatibility: If 0.0, then {@code gameTime} should be available instead.
    */
   private double launchedAt;
+
+  @JsonSetter("compression")
+  public void setCompressionType(String compressionType) {
+    compression = CompressionType.fromString(compressionType);
+  }
+
+  @JsonSetter("game_type")
+  public void setGameType(Object gameType) {
+    this.gameType = VictoryCondition.fromNumber(gameType);
+  }
 }
