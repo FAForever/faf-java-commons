@@ -111,7 +111,7 @@ public class ReplayDataParser {
   private void readReplayData(Path replayFile) throws IOException {
     byte[] allReplayData = Files.readAllBytes(replayFile);
     int headerEnd = findReplayHeaderEnd(allReplayData);
-    metadata = objectMapper.readValue(new String(Arrays.copyOf(allReplayData, headerEnd)), ReplayMetadata.class);
+    metadata = objectMapper.readValue(new String(Arrays.copyOf(allReplayData, headerEnd), StandardCharsets.UTF_8), ReplayMetadata.class);
     data = decompress(Arrays.copyOfRange(allReplayData, headerEnd + 1, allReplayData.length), metadata);
   }
 
