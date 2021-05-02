@@ -1,5 +1,6 @@
 package com.faforever.commons.replay;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Data;
 
@@ -21,23 +22,32 @@ public class ReplayMetadata {
   private Boolean[] options;
   // FAF calls this "game_type" but it's actually the victory condition.
   private VictoryCondition gameType;
+  @JsonProperty("featured_mod")
   private String featuredMod;
+  @JsonProperty("max_players")
   private Integer maxPlayers;
+  @JsonProperty("num_players")
   private Integer numPlayers;
+  @JsonProperty("sim_mods")
   private Map<String, String> simMods;
   private Map<String, List<String>> teams;
+  @JsonProperty("featured_mod_versions")
   private Map<String, Integer> featuredModVersions;
   private boolean complete;
   private String recorder;
+  @JsonProperty("version_info")
   private Map<String, String> versionInfo;
+  @JsonProperty("end")
   private double gameEnd;
   /**
    * Backwards compatibility: If 0.0, then {@code launchedAt} should be available instead.
    */
+  @JsonProperty("time")
   private double gameTime;
   /**
    * Backwards compatibility: If 0.0, then {@code gameTime} should be available instead.
    */
+  @JsonProperty("launched_at")
   private double launchedAt;
 
   @JsonSetter("compression")
