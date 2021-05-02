@@ -6,6 +6,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
 import lombok.Data;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -36,6 +37,10 @@ public class ReplayDataParser {
   private static final int LUA_TABLE_END = 5;
   private final Path path;
   private final ObjectMapper objectMapper;
+  @Getter
+  private ReplayMetadata metadata;
+  @Getter
+  private byte[] data;
   private Map<Integer, Map<String, Object>> armies;
   private int randomSeed;
   private List<ChatMessage> chatMessages;
@@ -103,10 +108,10 @@ public class ReplayDataParser {
   }
 
   // TODO don't duplicate code
-  private byte[] readReplayData(Path replayFile) throws IOException {
+  private void readReplayData(Path replayFile) throws IOException {
     List<String> lines = Files.readAllLines(replayFile);
-    ReplayMetadata metadata = objectMapper.readValue(lines.get(0), ReplayMetadata.class);
-    return decompress(lines.get(1).getBytes(StandardCharsets.UTF_8), metadata);
+    metadata = objectMapper.readValue(lines.get(0), ReplayMetadata.class);
+    data = decompress(lines.get(1).getBytes(StandardCharsets.UTF_8), metadata);
   }
 
   @SneakyThrows
@@ -354,7 +359,7 @@ public class ReplayDataParser {
 
   @SneakyThrows
   public ReplayData parse() {
-    byte[] data = readReplayData(path);
+    readReplayData(path);
     try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
       parseHeader(dataStream);
       parseTicks(dataStream);
