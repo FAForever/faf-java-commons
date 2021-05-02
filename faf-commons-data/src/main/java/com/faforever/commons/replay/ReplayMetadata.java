@@ -37,7 +37,7 @@ public class ReplayMetadata {
   private String recorder;
   @JsonProperty("version_info")
   private Map<String, String> versionInfo;
-  @JsonProperty("end")
+  @JsonProperty("game_end")
   private double gameEnd;
   /**
    * Backwards compatibility: If 0.0, then {@code launchedAt} should be available instead.
