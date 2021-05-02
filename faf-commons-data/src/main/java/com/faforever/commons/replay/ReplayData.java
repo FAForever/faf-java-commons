@@ -1,12 +1,14 @@
 package com.faforever.commons.replay;
 
-import lombok.Data;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
 public class ReplayData {
 
-  private final List<ChatMessage> chatMessages;
-  private final List<GameOption> gameOptions;
+  ReplayMetadata metadata;
+  byte[] rawData;
+  List<ChatMessage> chatMessages;
+  List<GameOption> gameOptions;
 }

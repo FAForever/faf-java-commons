@@ -49,4 +49,9 @@ public class ReplayMetadata {
   public void setGameType(Object gameType) {
     this.gameType = VictoryCondition.fromNumber(gameType);
   }
+
+  @JsonSetter("state")
+  public void setState(String state) {
+    this.state = GameStatus.fromString(state);
+  }
 }
