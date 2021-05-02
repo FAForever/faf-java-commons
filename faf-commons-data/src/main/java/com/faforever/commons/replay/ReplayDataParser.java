@@ -109,9 +109,20 @@ public class ReplayDataParser {
 
   // TODO don't duplicate code
   private void readReplayData(Path replayFile) throws IOException {
-    List<String> lines = Files.readAllLines(replayFile);
-    metadata = objectMapper.readValue(lines.get(0), ReplayMetadata.class);
-    data = decompress(lines.get(1).getBytes(StandardCharsets.UTF_8), metadata);
+    byte[] allReplayData = Files.readAllBytes(replayFile);
+    int headerEnd = findReplayHeaderEnd(allReplayData);
+    metadata = objectMapper.readValue(new String(Arrays.copyOf(allReplayData, headerEnd)), ReplayMetadata.class);
+    data = decompress(Arrays.copyOfRange(allReplayData, headerEnd + 1, allReplayData.length), metadata);
+  }
+
+  private int findReplayHeaderEnd(byte[] replayData) {
+    int headerEnd;
+    for (headerEnd = 0; headerEnd < replayData.length; headerEnd++) {
+      if (replayData[headerEnd] == '\n') {
+        return headerEnd;
+      }
+    }
+    throw new IllegalArgumentException("Missing separator between replay header and body");
   }
 
   @SneakyThrows
