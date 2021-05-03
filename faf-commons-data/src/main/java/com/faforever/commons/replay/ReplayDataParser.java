@@ -1,6 +1,5 @@
 package com.faforever.commons.replay;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.BaseEncoding;
@@ -53,9 +52,9 @@ public class ReplayDataParser {
   private int ticks;
   private List<GameOption> gameOptions;
 
-  public ReplayDataParser(Path path) {
+  public ReplayDataParser(Path path, ObjectMapper objectMapper) {
     this.path = path;
-    objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    this.objectMapper = objectMapper;
     armies = new HashMap<>();
     chatMessages = new ArrayList<>();
     commandsPerMinuteByPlayer = new HashMap<>();
