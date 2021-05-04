@@ -68,6 +68,7 @@ public class ReplayDataParser {
     armies = new HashMap<>();
     chatMessages = new ArrayList<>();
     commandsPerMinuteByPlayer = new HashMap<>();
+    parse();
   }
 
   @VisibleForTesting
@@ -378,7 +379,7 @@ public class ReplayDataParser {
   }
 
   @SneakyThrows
-  public ReplayDataParser parse() {
+  private void parse() {
     readReplayData(path);
     try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
       parseHeader(dataStream);
@@ -386,8 +387,6 @@ public class ReplayDataParser {
     } catch (Exception e) {
       log.warn("Could not parse replay ", e);
     }
-
-    return this;
   }
 
 

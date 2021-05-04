@@ -32,7 +32,7 @@ class ReplayDataParserTest {
     Path replayFile = temporaryFolder.resolve("tmp.fafreplay");
     Files.copy(getClass().getResourceAsStream("/replay/test.fafreplay"), replayFile);
 
-    ReplayDataParser parser = new ReplayDataParser(replayFile, objectMapper).parse();
+    ReplayDataParser parser = new ReplayDataParser(replayFile, objectMapper);
 
     List<GameOption> gameOptions = parser.getGameOptions();
     assertThat(gameOptions.size(), is(28));
@@ -73,7 +73,7 @@ class ReplayDataParserTest {
   private void testBadReplay(String name) throws Exception {
     Path replayFile = temporaryFolder.resolve("tmp.fafreplay");
     Files.copy(getClass().getResourceAsStream(String.format("/replay/%s.fafreplay", name)), replayFile);
-    Assertions.assertThrows(Exception.class, () -> new ReplayDataParser(replayFile, objectMapper).parse());
+    Assertions.assertThrows(Exception.class, () -> new ReplayDataParser(replayFile, objectMapper));
   }
 
   @Test
@@ -108,7 +108,7 @@ class ReplayDataParserTest {
     Files.copy(getClass().getResourceAsStream("/replay/zstd_reference.fafreplay"), replayFile);
     Files.copy(getClass().getResourceAsStream("/replay/zstd_reference.raw"), referenceFile);
 
-    byte[] data = new ReplayDataParser(replayFile, objectMapper).parse().getData();
+    byte[] data = new ReplayDataParser(replayFile, objectMapper).getData();
     byte[] reference = Files.readAllBytes(referenceFile);
     assertThat("Zstd compressed replay matches reference", Arrays.equals(data, reference));
   }
@@ -120,7 +120,7 @@ class ReplayDataParserTest {
     Files.copy(getClass().getResourceAsStream("/replay/test.fafreplay"), replayFile);
     Files.copy(getClass().getResourceAsStream("/replay/test.raw"), referenceFile);
 
-    byte[] data = new ReplayDataParser(replayFile, objectMapper).parse().getData();
+    byte[] data = new ReplayDataParser(replayFile, objectMapper).getData();
     byte[] reference = Files.readAllBytes(referenceFile);
     assertThat("Legacy compressed file matches reference", Arrays.equals(data, reference));
   }
