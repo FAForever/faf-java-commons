@@ -39,10 +39,19 @@ public class ReplayDataParser {
   @Getter
   private ReplayMetadata metadata;
   @Getter
+  private String replayPatchFieldId;
+  @Getter
   private byte[] data;
+  @Getter
+  private String map;
+  @Getter
+  private Map<String, Map<?, ?>> mods;
+  @Getter
   private Map<Integer, Map<String, Object>> armies;
   private int randomSeed;
+  @Getter
   private List<ChatMessage> chatMessages;
+  @Getter
   private Map<Integer, Map<Integer, AtomicInteger>> commandsPerMinuteByPlayer;
   private float x;
   private float y;
@@ -50,6 +59,7 @@ public class ReplayDataParser {
   private float w;
   private float scale;
   private int ticks;
+  @Getter
   private List<GameOption> gameOptions;
 
   public ReplayDataParser(Path path, ObjectMapper objectMapper) {
@@ -149,16 +159,16 @@ public class ReplayDataParser {
 
   @SuppressWarnings("unchecked")
   private void parseHeader(LittleEndianDataInputStream dataStream) throws IOException {
-    String replayPatchFieldId = readString(dataStream);
+    replayPatchFieldId = readString(dataStream);
     dataStream.skipBytes(3);
 
     String[] split = readString(dataStream).split("\\r\\n");
     String replayVersionId = split[0];
-    String map = split[1];
+    map = split[1];
     dataStream.skipBytes(4);
 
     int numberOfMods = dataStream.readInt();
-    Object mods = parseLua(dataStream);
+    mods = (Map<String, Map<?, ?>>) parseLua(dataStream);
 
     int scenarioSize = dataStream.readInt();
     this.gameOptions = ((Map<String, Object>) parseLua(dataStream)).entrySet().stream()
@@ -368,14 +378,16 @@ public class ReplayDataParser {
   }
 
   @SneakyThrows
-  public ReplayData parse() {
+  public ReplayDataParser parse() {
     readReplayData(path);
     try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
       parseHeader(dataStream);
       parseTicks(dataStream);
+    } catch (Exception e) {
+      log.warn("Could not parse replay ", e);
     }
 
-    return new ReplayData(metadata, data, chatMessages, gameOptions);
+    return this;
   }
 
 

@@ -32,9 +32,9 @@ class ReplayDataParserTest {
     Path replayFile = temporaryFolder.resolve("tmp.fafreplay");
     Files.copy(getClass().getResourceAsStream("/replay/test.fafreplay"), replayFile);
 
-    ReplayData data = new ReplayDataParser(replayFile, objectMapper).parse();
+    ReplayDataParser parser = new ReplayDataParser(replayFile, objectMapper).parse();
 
-    List<GameOption> gameOptions = data.getGameOptions();
+    List<GameOption> gameOptions = parser.getGameOptions();
     assertThat(gameOptions.size(), is(28));
     assertThat(gameOptions.get(0), is(new GameOption("CheatMult", "2.0")));
     assertThat(gameOptions.get(1), is(new GameOption("Timeouts", "3")));
@@ -51,7 +51,7 @@ class ReplayDataParserTest {
       .build()
     )));
 
-    List<ChatMessage> chatMessages = data.getChatMessages();
+    List<ChatMessage> chatMessages = parser.getChatMessages();
     assertThat(chatMessages.get(0), is(new ChatMessage(Duration.ofSeconds(30), "kubkolienka", "all", "how does this game play?:D")));
   }
 
@@ -108,7 +108,7 @@ class ReplayDataParserTest {
     Files.copy(getClass().getResourceAsStream("/replay/zstd_reference.fafreplay"), replayFile);
     Files.copy(getClass().getResourceAsStream("/replay/zstd_reference.raw"), referenceFile);
 
-    byte[] data = new ReplayDataParser(replayFile, objectMapper).parse().getRawData();
+    byte[] data = new ReplayDataParser(replayFile, objectMapper).parse().getData();
     byte[] reference = Files.readAllBytes(referenceFile);
     assertThat("Zstd compressed replay matches reference", Arrays.equals(data, reference));
   }
@@ -120,7 +120,7 @@ class ReplayDataParserTest {
     Files.copy(getClass().getResourceAsStream("/replay/test.fafreplay"), replayFile);
     Files.copy(getClass().getResourceAsStream("/replay/test.raw"), referenceFile);
 
-    byte[] data = new ReplayDataParser(replayFile, objectMapper).parse().getRawData();
+    byte[] data = new ReplayDataParser(replayFile, objectMapper).parse().getData();
     byte[] reference = Files.readAllBytes(referenceFile);
     assertThat("Legacy compressed file matches reference", Arrays.equals(data, reference));
   }
