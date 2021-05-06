@@ -136,7 +136,7 @@ public class ReplayDataParser {
   }
 
   @SneakyThrows
-  public byte[] decompress(byte[] data, @NotNull ReplayMetadata metadata) {
+  private byte[] decompress(byte[] data, @NotNull ReplayMetadata metadata) {
     CompressionType compressionType = Objects.requireNonNullElse(metadata.getCompression(), CompressionType.QTCOMPRESS);
 
     switch (compressionType) {
