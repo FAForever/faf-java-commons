@@ -1,11 +1,15 @@
 package com.faforever.commons.replay;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@Getter
+@AllArgsConstructor
 public enum VictoryCondition {
   // Order is crucial
   DEMORALIZATION(0),
@@ -25,10 +29,6 @@ public enum VictoryCondition {
 
   private final Object value;
 
-  VictoryCondition(Object value) {
-    this.value = value;
-  }
-
   public static VictoryCondition fromNumber(Object number) {
     VictoryCondition victoryCondition = fromNumber.get(number);
     if (victoryCondition == null) {
@@ -36,9 +36,5 @@ public enum VictoryCondition {
       return UNKNOWN;
     }
     return victoryCondition;
-  }
-
-  public Object getValue() {
-    return value;
   }
 }

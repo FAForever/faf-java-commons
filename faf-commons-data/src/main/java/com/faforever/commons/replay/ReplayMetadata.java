@@ -21,7 +21,8 @@ public class ReplayMetadata {
   //TODO what is this?
   private Boolean[] options;
   // FAF calls this "game_type" but it's actually the victory condition.
-  private VictoryCondition gameType;
+  @JsonProperty("game_type")
+  private VictoryCondition victoryCondition;
   @JsonProperty("featured_mod")
   private String featuredMod;
   @JsonProperty("max_players")
@@ -56,8 +57,8 @@ public class ReplayMetadata {
   }
 
   @JsonSetter("game_type")
-  public void setGameType(Object gameType) {
-    this.gameType = VictoryCondition.fromNumber(gameType);
+  public void setVictoryCondition(Object victoryCondition) {
+    this.victoryCondition = VictoryCondition.fromNumber(victoryCondition);
   }
 
   @JsonSetter("state")

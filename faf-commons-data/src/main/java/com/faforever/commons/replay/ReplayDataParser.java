@@ -20,7 +20,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -45,7 +50,7 @@ public class ReplayDataParser {
   @Getter
   private String map;
   @Getter
-  private Map<String, Map<?, ?>> mods;
+  private Map<String, Map<String, ?>> mods;
   @Getter
   private Map<Integer, Map<String, Object>> armies;
   private int randomSeed;
@@ -74,11 +79,8 @@ public class ReplayDataParser {
   @VisibleForTesting
   static String readString(LittleEndianDataInputStream dataStream) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte tempByte;
-    while ((tempByte = dataStream.readByte()) != 0) {
-      out.write(tempByte);
-    }
-    return new String(out.toByteArray(), StandardCharsets.UTF_8);
+    IOUtils.copy(dataStream, out);
+    return out.toString(StandardCharsets.UTF_8);
   }
 
   private Object parseLua(LittleEndianDataInputStream dataStream) throws IOException {
@@ -169,7 +171,7 @@ public class ReplayDataParser {
     dataStream.skipBytes(4);
 
     int numberOfMods = dataStream.readInt();
-    mods = (Map<String, Map<?, ?>>) parseLua(dataStream);
+    mods = (Map<String, Map<String, ?>>) parseLua(dataStream);
 
     int scenarioSize = dataStream.readInt();
     this.gameOptions = ((Map<String, Object>) parseLua(dataStream)).entrySet().stream()
