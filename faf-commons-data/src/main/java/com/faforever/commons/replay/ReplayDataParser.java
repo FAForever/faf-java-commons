@@ -79,7 +79,10 @@ public class ReplayDataParser {
   @VisibleForTesting
   static String readString(LittleEndianDataInputStream dataStream) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    IOUtils.copy(dataStream, out);
+    byte tempByte;
+    while ((tempByte = dataStream.readByte()) != 0) {
+      out.write(tempByte);
+    }
     return out.toString(StandardCharsets.UTF_8);
   }
 
