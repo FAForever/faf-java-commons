@@ -12,7 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -57,15 +56,13 @@ class ReplayDataParserTest {
 
   @Test
   void testReadString() throws Exception {
-    ReplayDataParser replayDataParser = new ReplayDataParser(Paths.get("."), objectMapper);
-
     String unicodeString = "Oh, helloäöüthere!";
 
     byte[] stringBytes = (unicodeString + "\0").getBytes(StandardCharsets.UTF_8);
     ByteArrayInputStream byteInputStream = new ByteArrayInputStream(stringBytes);
     LittleEndianDataInputStream dataInputStream = new LittleEndianDataInputStream(byteInputStream);
 
-    String result = replayDataParser.readString(dataInputStream);
+    String result = ReplayDataParser.readString(dataInputStream);
 
     assertThat(result, is(unicodeString));
   }

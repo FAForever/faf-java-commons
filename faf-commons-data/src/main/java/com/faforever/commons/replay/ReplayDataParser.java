@@ -72,7 +72,7 @@ public class ReplayDataParser {
   }
 
   @VisibleForTesting
-  String readString(LittleEndianDataInputStream dataStream) throws IOException {
+  static String readString(LittleEndianDataInputStream dataStream) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte tempByte;
     while ((tempByte = dataStream.readByte()) != 0) {
