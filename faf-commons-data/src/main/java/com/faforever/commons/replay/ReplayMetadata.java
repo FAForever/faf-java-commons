@@ -20,7 +20,6 @@ public class ReplayMetadata {
   private GameStatus state;
   //TODO what is this?
   private Boolean[] options;
-  // FAF calls this "game_type" but it's actually the victory condition.
   @JsonProperty("game_type")
   private VictoryCondition victoryCondition;
   @JsonProperty("featured_mod")

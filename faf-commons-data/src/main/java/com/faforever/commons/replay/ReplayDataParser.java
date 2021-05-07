@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
@@ -67,7 +68,7 @@ public class ReplayDataParser {
   @Getter
   private List<GameOption> gameOptions;
 
-  public ReplayDataParser(Path path, ObjectMapper objectMapper) {
+  public ReplayDataParser(Path path, ObjectMapper objectMapper) throws IOException, CompressorException {
     this.path = path;
     this.objectMapper = objectMapper;
     armies = new HashMap<>();
@@ -122,8 +123,7 @@ public class ReplayDataParser {
     return next;
   }
 
-  // TODO don't duplicate code
-  private void readReplayData(Path replayFile) throws IOException {
+  private void readReplayData(Path replayFile) throws IOException, CompressorException {
     byte[] allReplayData = Files.readAllBytes(replayFile);
     int headerEnd = findReplayHeaderEnd(allReplayData);
     metadata = objectMapper.readValue(new String(Arrays.copyOf(allReplayData, headerEnd), StandardCharsets.UTF_8), ReplayMetadata.class);
@@ -140,8 +140,7 @@ public class ReplayDataParser {
     throw new IllegalArgumentException("Missing separator between replay header and body");
   }
 
-  @SneakyThrows
-  private byte[] decompress(byte[] data, @NotNull ReplayMetadata metadata) {
+  private byte[] decompress(byte[] data, @NotNull ReplayMetadata metadata) throws IOException, CompressorException {
     CompressionType compressionType = Objects.requireNonNullElse(metadata.getCompression(), CompressionType.QTCOMPRESS);
 
     switch (compressionType) {
@@ -383,8 +382,7 @@ public class ReplayDataParser {
     return bytes;
   }
 
-  @SneakyThrows
-  private void parse() {
+  private void parse() throws IOException, CompressorException {
     readReplayData(path);
     try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
       parseHeader(dataStream);
