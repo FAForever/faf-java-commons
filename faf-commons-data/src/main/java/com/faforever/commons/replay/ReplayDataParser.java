@@ -6,7 +6,6 @@ import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
 import lombok.Data;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -352,19 +351,18 @@ public class ReplayDataParser {
   }
 
   private void parseGiveResourcesToPlayer(Map<String, Object> lua) {
-    Map<String, Object> map = lua;
-    if (map.containsKey("Msg")) {
-      int fromArmy = ((Number) map.get("From")).intValue() - 1;
+    if (lua.containsKey("Msg") && lua.containsKey("From") && lua.containsKey("Sender")) {
+      int fromArmy = ((Number) lua.get("From")).intValue() - 1;
       if (fromArmy != -2) {
-        Map<String, String> msg = (Map<String, String>) map.get("Msg");
-        String sender = (String) map.get("Sender");
+        Map<String, String> msg = (Map<String, String>) lua.get("Msg");
+        String sender = (String) lua.get("Sender");
         // This can either be a player name or a Map of something, in which case it's actually giving resources
         Object receiver = msg.get("to");
         if (receiver instanceof String) {
           String text = msg.get("text");
 
           Map<String, Object> army = armies.get(fromArmy);
-          if (Objects.equals(army.get("PlayerName"), sender)) {
+          if (army != null && Objects.equals(army.get("PlayerName"), sender)) {
             chatMessages.add(new ChatMessage(tickToTime(ticks), sender, String.valueOf(receiver), text));
           }
         }
@@ -384,12 +382,9 @@ public class ReplayDataParser {
 
   private void parse() throws IOException, CompressorException {
     readReplayData(path);
-    try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
-      parseHeader(dataStream);
-      parseTicks(dataStream);
-    } catch (Exception e) {
-      log.warn("Could not parse replay ", e);
-    }
+    LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data));
+    parseHeader(dataStream);
+    parseTicks(dataStream);
   }
 
 
