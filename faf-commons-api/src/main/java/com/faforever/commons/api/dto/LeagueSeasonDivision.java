@@ -1,6 +1,5 @@
 package com.faforever.commons.api.dto;
 
-import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Relationship;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
@@ -8,14 +7,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Type("leagueSeasonDivision")
-public class LeagueSeasonDivision {
-  @Id
-  @ToString.Include
-  @EqualsAndHashCode.Include
-  private String id;
+public class LeagueSeasonDivision extends AbstractEntity {
   private String descriptionKey;
   private Integer divisionIndex;
   @ToString.Include
