@@ -23,6 +23,6 @@ public class LeagueSeason extends AbstractEntity {
   @Relationship("league")
   private League league;
 
-  @Relationship("leagueLeaderboard")
+  @Relationship("leaderboard")
   private LeagueLeaderboard leagueLeaderboard;
 }
