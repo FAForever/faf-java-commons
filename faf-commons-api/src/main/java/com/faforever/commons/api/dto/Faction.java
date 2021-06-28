@@ -33,11 +33,11 @@ public enum Faction {
 
   private final String string;
 
-  @JsonCreator
   public static Faction fromFaValue(int value) {
     return Faction.values()[value - 1];
   }
 
+  @JsonCreator
   public static Faction fromString(String string) {
     return fromString.get(string);
   }
@@ -45,7 +45,6 @@ public enum Faction {
   /**
    * Returns the faction value used as in "Forged Alliance Forever".
    */
-  @JsonValue
   public int toFaValue() {
     return ordinal() + 1;
   }
@@ -53,6 +52,7 @@ public enum Faction {
   /**
    * Returns the string value of the faction, as used in the game and the server.
    */
+  @JsonValue
   public String getString() {
     return string;
   }
