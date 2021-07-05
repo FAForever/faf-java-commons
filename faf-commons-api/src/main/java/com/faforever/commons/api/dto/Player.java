@@ -46,7 +46,7 @@ public class Player extends AbstractEntity {
 
   @Relationship("uniqueIds")
   @RestrictedVisibility("IsModerator")
-  private Set<UniqueId> uniqueIds;
+  private List<UniqueId> uniqueIds;
 
   @Relationship("bans")
   @RestrictedVisibility("IsModerator")
