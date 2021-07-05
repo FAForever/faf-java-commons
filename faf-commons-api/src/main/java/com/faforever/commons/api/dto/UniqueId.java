@@ -1,5 +1,6 @@
 package com.faforever.commons.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jasminb.jsonapi.annotations.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,6 +22,7 @@ public class UniqueId extends AbstractEntity {
   private String manufacturer;
   private String name;
   private String processorId;
+  @JsonProperty("SMBIOSBIOSVersion")
   private String SMBIOSBIOSVersion;
   private String serialNumber;
   private String volumeSerialNumber;
