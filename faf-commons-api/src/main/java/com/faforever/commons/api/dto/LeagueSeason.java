@@ -16,7 +16,7 @@ import java.time.OffsetDateTime;
 @Type("leagueSeason")
 public class LeagueSeason extends AbstractEntity {
   @ToString.Include
-  private String technicalName; // not provided yet
+  private String nameKey;
   private OffsetDateTime startDate;
   private OffsetDateTime endDate;
 
