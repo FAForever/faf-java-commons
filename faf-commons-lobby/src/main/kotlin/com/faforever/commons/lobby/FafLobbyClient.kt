@@ -73,7 +73,7 @@ class FafLobbyClient(
       .handle { inbound, outbound ->
         val inboundMono = inbound.receive()
           .asString(Charsets.UTF_8)
-          .doOnError { LOG.error("Inbound channel closed with error {}", it) }
+          .doOnError { LOG.error("Inbound channel closed with error", it) }
           .doOnComplete { LOG.info("Inbound channel closed") }
           .doOnCancel { LOG.info("Inbound channel cancelled") }
           .flatMap {
