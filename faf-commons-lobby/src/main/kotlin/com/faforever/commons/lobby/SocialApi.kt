@@ -1,7 +1,7 @@
 package com.faforever.commons.lobby
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import reactor.core.publisher.Mono
+import reactor.core.publisher.Flux
 
 /**
  * API for all social relationship related activities
@@ -18,7 +18,7 @@ interface SocialApi {
 
   fun selectAvatar(url: String?)
 
-  fun getAvailableAvatars(): Mono<Collection<Player.Avatar>>
+  fun getAvailableAvatars(): Flux<Player.Avatar>
 }
 
 

@@ -7,6 +7,7 @@ import io.netty.handler.codec.string.LineEncoder
 import io.netty.handler.codec.string.LineSeparator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import reactor.netty.Connection
@@ -246,14 +247,14 @@ class FafLobbyClient(
 
   override fun selectAvatar(url: String?) = send(SelectAvatarRequest(url))
 
-  override fun getAvailableAvatars(): Mono<Collection<Player.Avatar>> = Mono.fromCallable { send(AvatarListRequest()) }
-    .then(
+  override fun getAvailableAvatars(): Flux<Player.Avatar> = Mono.fromCallable { send(AvatarListRequest()) }
+    .thenMany {
       events
         .filter { it is AvatarListInfo }
         .cast(AvatarListInfo::class.java)
         .next()
-        .map { it.avatarList }
-    )
+        .flatMapIterable { it.avatarList }
+    }
 
   override fun requestMatchmakerInfo() = send(MatchmakerInfoRequest())
 
