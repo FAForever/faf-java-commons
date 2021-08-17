@@ -229,7 +229,7 @@ class FafLobbyClient(
 
   override fun getIceServers(): Flux<IceServer> =
     Mono.fromCallable { send(IceServerListRequest()) }
-      .thenMany {
+      .flatMapMany {
         events
           .filter { it is IceServerListResponse }
           .cast(IceServerListResponse::class.java)
@@ -248,7 +248,7 @@ class FafLobbyClient(
   override fun selectAvatar(url: String?) = send(SelectAvatarRequest(url))
 
   override fun getAvailableAvatars(): Flux<Player.Avatar> = Mono.fromCallable { send(AvatarListRequest()) }
-    .thenMany {
+    .flatMapMany {
       events
         .filter { it is AvatarListInfo }
         .cast(AvatarListInfo::class.java)
