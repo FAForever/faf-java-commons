@@ -3,6 +3,7 @@ package com.faforever.commons.lobby
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 /**
@@ -14,7 +15,7 @@ interface ConnectionApi {
 
   fun disconnect()
 
-  fun getIceServers(): Mono<Collection<IceServer>>
+  fun getIceServers(): Flux<IceServer>
 }
 
 class LoginException(reason: String?) : Exception(reason)

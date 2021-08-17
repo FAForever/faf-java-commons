@@ -227,15 +227,15 @@ class FafLobbyClient(
 
   override fun restoreGameSession(gameId: Int) = send(RestoreGameSessionRequest(gameId))
 
-  override fun getIceServers(): Mono<Collection<IceServer>> =
+  override fun getIceServers(): Flux<IceServer> =
     Mono.fromCallable { send(IceServerListRequest()) }
-      .then(
+      .thenMany {
         events
           .filter { it is IceServerListResponse }
           .cast(IceServerListResponse::class.java)
           .next()
-          .map { it.iceServers }
-      )
+          .flatMapIterable { it.iceServers }
+      }
 
   override fun addFriend(playerId: Int) = send(AddFriendRequest(playerId))
 
