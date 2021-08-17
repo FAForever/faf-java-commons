@@ -29,14 +29,14 @@ interface SocialApi {
 /**
  * Regular update on the players currently online
  */
-data class PlayerInfo(
+internal data class PlayerInfo(
   val players: List<Player>,
 ) : ServerMessage
 
 /**
  * A list of social information the server sends after login
  */
-data class SocialInfo(
+internal data class SocialInfo(
   val autojoin: List<String>,
   val channels: List<String>,
   val friends: List<Int>,
@@ -47,7 +47,7 @@ data class SocialInfo(
 /**
  * A list of avatars available to the requesting player
  */
-data class AvatarListInfo(
+internal data class AvatarListInfo(
   @JsonProperty("avatarlist")
   val avatarList: List<Player.Avatar>,
 ) : ServerMessage
@@ -55,14 +55,14 @@ data class AvatarListInfo(
 /**
  * Party invite from another player
  */
-data class PartyInvite(
+internal data class PartyInvite(
   val sender: Int,
 ) : ServerMessage
 
 /**
  * Notice you have been kicked from the party
  */
-class PartyKick : ServerMessage
+internal class PartyKick : ServerMessage
 
 // ***********************
 // *** CLIENT MESSAGES ***
