@@ -109,7 +109,7 @@ interface FafLobbyApi :
 
 enum class Faction(
   @JsonValue
-  val string: String,
+  val faString: String,
   val faIndex: Int
 ) {
   UEF("uef", 1),
@@ -125,7 +125,7 @@ enum class Faction(
   CIVILIAN("civilian", 6);
 
   companion object {
-    private val fromString: Map<String, Faction> = values().asList().associateBy { it.string }
+    private val fromFAString: Map<String, Faction> = values().asList().associateBy { it.faString }
     private val fromFAIndex: Map<Int, Faction> = values().asList().associateBy { it.faIndex }
 
     @JvmStatic
@@ -133,7 +133,7 @@ enum class Faction(
     fun fromObject(value: Any?): Faction? {
       return when (value) {
         is Int -> fromFAIndex[value]
-        is String -> fromString[value]
+        is String -> fromFAString[value]
         else -> null
       }
     }
