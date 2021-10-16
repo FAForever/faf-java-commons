@@ -171,8 +171,6 @@ data class GameLaunchResponse(
    */
   @JsonProperty("rating_type")
   val leaderboard: String,
-  val args: List<String>,
-
   @JsonProperty("mapname")
   val mapName: String? = null,
   @JsonProperty("expected_players")
