@@ -1,7 +1,6 @@
 package com.faforever.commons.lobby
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.netty.buffer.Unpooled
 import io.netty.handler.codec.LineBasedFrameDecoder
 import io.netty.handler.codec.string.LineEncoder
 import io.netty.handler.codec.string.LineSeparator
@@ -40,6 +39,7 @@ class FafLobbyClient(
   )
 
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().multicast().directBestEffort()
+  private val disconnectsSink: Sinks.Many<Unit> = Sinks.many().multicast().directBestEffort()
   private val rawEvents = eventSink.asFlux()
 
   override val events = eventSink.asFlux().filter {
@@ -49,6 +49,8 @@ class FafLobbyClient(
       it !is LoginSuccessResponse &&
       it !is LoginFailedResponse
   }
+
+  override val disconnect = disconnectsSink.asFlux();
 
   private val client = TcpClient.newConnection()
     .resolver(DefaultAddressResolverGroup.INSTANCE)
@@ -65,6 +67,7 @@ class FafLobbyClient(
     .doOnDisconnected {
       LOG.info("Disconnected from server")
       it.dispose()
+      disconnectsSink.tryEmitNext(Unit)
     }
 
   private fun openConnection(): Mono<out Connection> {
