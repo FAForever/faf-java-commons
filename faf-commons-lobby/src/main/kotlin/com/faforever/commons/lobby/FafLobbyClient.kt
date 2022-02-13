@@ -127,12 +127,15 @@ class FafLobbyClient(
             }
         ).then()
 
+        /* The lobby protocol requires two-way communication. If either the outbound or inbound connections complete/close
+           then we are better off closing the connection to the server. This is why we return a mono that completes when one
+           of the connections finishes */
         Mono.firstWithSignal(inboundMono, outboundMono)
       }
       .connect()
   }
 
-  override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse>{
+  override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse> {
     this.config = config
     return openConnection()
       .doOnSuccess { connection = it }
