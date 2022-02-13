@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled
 import io.netty.handler.codec.LineBasedFrameDecoder
 import io.netty.handler.codec.string.LineEncoder
 import io.netty.handler.codec.string.LineSeparator
+import io.netty.resolver.DefaultAddressResolverGroup
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Flux
@@ -49,7 +50,8 @@ class FafLobbyClient(
       it !is LoginFailedResponse
   }
 
-  private val client = TcpClient.create()
+  private val client = TcpClient.newConnection()
+    .resolver(DefaultAddressResolverGroup.INSTANCE)
     .doOnResolveError { connection, throwable ->
       LOG.error("Could not connect to server", throwable)
       connection.dispose()
@@ -122,18 +124,18 @@ class FafLobbyClient(
             }
         ).then()
 
-        inboundMono.mergeWith(outboundMono)
+        Mono.firstWithSignal(inboundMono, outboundMono)
       }
       .connect()
   }
 
   override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse>{
     this.config = config
-    return Mono.fromCallable {
-      openConnection().subscribe({connection = it}, {LOG.error("Error during connection", it)})
-      send(SessionRequest(config.version, config.userAgent))
-    }.then(
-      rawEvents
+    return openConnection()
+      .doOnSuccess { connection = it }
+      .doOnError { LOG.error("Error during connection", it) }
+      .then(Mono.fromCallable { send(SessionRequest(config.version, config.userAgent)) })
+      .then(rawEvents
         .flatMap {
           when (it) {
             is LoginSuccessResponse -> Mono.just(it)
@@ -142,8 +144,7 @@ class FafLobbyClient(
           }
         }
         .cast(LoginSuccessResponse::class.java)
-        .next()
-    )
+        .next())
   }
 
   override fun disconnect() {
