@@ -340,7 +340,7 @@ data class GpgGameOutboundMessage(
   @JsonTypeId
   val command: String,
   val args: List<Any> = listOf(),
-  val target: MessageTarget? = MessageTarget.GAME,
+  val target: MessageTarget = MessageTarget.GAME,
 ) : ClientMessage {
   companion object {
     fun disconnectedMessage() = GpgGameOutboundMessage("Disconnected")

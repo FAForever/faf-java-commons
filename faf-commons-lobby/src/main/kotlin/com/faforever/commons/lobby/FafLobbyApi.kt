@@ -105,7 +105,7 @@ interface FafLobbyApi :
   /**
    * Emits whenever the tcp connection is closed
    */
-  val disconnect: Flux<Unit>
+  val disconnects: Flux<Unit>
 }
 
 /// ****************

@@ -50,7 +50,7 @@ class FafLobbyClient(
       it !is LoginFailedResponse
   }
 
-  override val disconnect = disconnectsSink.asFlux();
+  override val disconnects = disconnectsSink.asFlux();
 
   private val client = TcpClient.newConnection()
     .resolver(DefaultAddressResolverGroup.INSTANCE)
