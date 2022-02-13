@@ -25,6 +25,14 @@ subprojects {
     jcenter()
   }
 
+  publishing {
+    publications {
+      maven(MavenPublication) {
+        from components.java
+      }
+    }
+  }
+
   dependencies {
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
