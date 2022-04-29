@@ -8,7 +8,6 @@ import io.netty.handler.codec.LineBasedFrameDecoder
 import io.netty.handler.codec.string.LineEncoder
 import io.netty.handler.codec.string.LineSeparator
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,7 +38,7 @@ class LobbyClientTest {
     .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
     .enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
   private val token = "abc"
-  private val serverReceivedSink = Sinks.many().replay().latest<String>()
+  private val serverReceivedSink = Sinks.many().replay().all<String>()
   private val serverMessagesReceived = serverReceivedSink.asFlux()
   private val serverSentSink = Sinks.many().unicast().onBackpressureBuffer<String>()
   private lateinit var disposableServer: DisposableServer
@@ -47,6 +46,7 @@ class LobbyClientTest {
 
   @BeforeEach
   fun setUp() {
+    instance.minPingIntervalSeconds = Int.MAX_VALUE.toLong()
     startFakeFafLobbyServer()
     connectAndLogIn()
   }
@@ -115,7 +115,8 @@ class LobbyClientTest {
       disposableServer.port(),
       { "abc" },
       1024 * 1024,
-      false
+      false,
+      1
     )
     instance.connectAndLogin(config).subscribe()
     assertMessageCommandTypeSent("ask_session")
@@ -305,5 +306,51 @@ class LobbyClientTest {
     instance.sendGpgGameMessage(GpgGameOutboundMessage("Test", listOf()))
 
     assertMessageCommandTypeSent("Test")
+  }
+
+  @Test
+  fun testPingInterval() {
+    instance.minPingIntervalSeconds = 1
+
+    sendFromServer(ServerPongMessage())
+
+    assertMessageCommandTypeSent("ping")
+  }
+
+  @Test
+  fun testPingOnceInterval() {
+    instance.minPingIntervalSeconds = 1
+
+    sendFromServer(ServerPongMessage())
+    sendFromServer(ServerPongMessage())
+
+    assertTrue(
+      serverMessagesReceived.filter {
+        it.contains(
+          "\"command\":\"ping\""
+        )
+      }.take(Duration.ofSeconds(2)).count().block() == 1L)
+  }
+
+  @Test
+  fun testPongInterval() {
+    instance.minPingIntervalSeconds = 1
+
+    sendFromServer(ServerPongMessage())
+
+    assertMessageCommandTypeSent("ping")
+
+    sendFromServer(ServerPongMessage())
+  }
+
+  @Test
+  fun testPongIntervalFailure() {
+    instance.minPingIntervalSeconds = 1
+
+    sendFromServer(ServerPongMessage())
+
+    assertMessageCommandTypeSent("ping")
+
+    instance.disconnects.blockFirst(Duration.ofSeconds(5))
   }
 }

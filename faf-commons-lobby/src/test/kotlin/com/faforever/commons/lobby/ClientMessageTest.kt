@@ -130,7 +130,7 @@ class ClientMessageTest {
     assertEquals("""
       {"command":"ping"}
       """.trimIndent(),
-      objectMapper.writeValueAsString(PingMessage()))
+      objectMapper.writeValueAsString(ClientPingMessage()))
   }
 
   @Test
@@ -138,7 +138,7 @@ class ClientMessageTest {
     assertEquals("""
       {"command":"pong"}
       """.trimIndent(),
-      objectMapper.writeValueAsString(PongMessage()))
+      objectMapper.writeValueAsString(ClientPongMessage()))
   }
 
   @Test

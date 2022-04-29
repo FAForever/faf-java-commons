@@ -28,12 +28,12 @@ class LoginException(reason: String?) : Exception(reason)
 /**
  * Holds no data, just checks if the connection is still alive
  */
-internal class PingMessage : ServerMessage
+internal class ServerPingMessage : ServerMessage
 
 /**
  * Holds no data, just checks if the connection is still alive
  */
-internal class PongMessage : ServerMessage
+internal class ServerPongMessage : ServerMessage
 
 /**
  * Indicates the previous client message could not be parsed.
@@ -164,4 +164,14 @@ internal data class SessionRequest(
  * Requests a list of ice servers, which will be returned as a [IceServerListResponse]
  */
 internal class IceServerListRequest : ClientMessage
+
+/**
+ * Holds no data, just checks if the connection is still alive
+ */
+internal class ClientPingMessage : ClientMessage
+
+/**
+ * Holds no data, just checks if the connection is still alive
+ */
+internal class ClientPongMessage : ClientMessage
 

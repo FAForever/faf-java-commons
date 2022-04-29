@@ -7,12 +7,15 @@ import io.netty.handler.codec.string.LineSeparator
 import io.netty.resolver.DefaultAddressResolverGroup
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
+import reactor.core.scheduler.Schedulers
 import reactor.netty.Connection
 import reactor.netty.tcp.TcpClient
 import java.net.InetSocketAddress
+import java.time.Duration
 import java.util.function.Function
 
 
@@ -26,6 +29,8 @@ class FafLobbyClient(
   private lateinit var config: Config
   private lateinit var outboundSink: Sinks.Many<ClientMessage>
   private var connection: Connection? = null
+  private var pingDisposable: Disposable? = null;
+  var minPingIntervalSeconds: Long = 60;
 
   data class Config(
     val token: String,
@@ -36,6 +41,7 @@ class FafLobbyClient(
     val generateUid: Function<Long, String>,
     val bufferSize: Int,
     val wiretap: Boolean = false,
+    val pongResponseWaitSeconds: Long,
   )
 
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().multicast().directBestEffort()
@@ -43,8 +49,8 @@ class FafLobbyClient(
   private val rawEvents = eventSink.asFlux()
 
   override val events = eventSink.asFlux().filter {
-    it !is PingMessage &&
-      it !is PongMessage &&
+    it !is ServerPingMessage &&
+      it !is ServerPongMessage &&
       it !is SessionResponse &&
       it !is LoginSuccessResponse &&
       it !is LoginFailedResponse
@@ -102,6 +108,11 @@ class FafLobbyClient(
                 LOG.error("Error during handling of message {}", message, it)
                 Mono.empty()
               }
+          }
+          .publishOn(Schedulers.boundedElastic())
+          .doOnNext {
+            pingDisposable?.dispose()
+            pingDisposable = ping().delaySubscription(Duration.ofSeconds(minPingIntervalSeconds)).subscribe()
           }
           .then()
 
@@ -162,6 +173,19 @@ class FafLobbyClient(
       }
     }
   }
+
+  private fun ping(): Mono<Unit> =
+    Mono.fromCallable {
+      send(ClientPingMessage())
+    }.then(
+      events.filter {it is ServerPongMessage}
+        .next()
+        .timeout(Duration.ofSeconds(config.pongResponseWaitSeconds))
+        .map { }
+    ).doOnError {
+      LOG.error("Server did not respond to ping disconnecting")
+      disconnect()
+    }
 
   private fun send(message: ClientMessage) {
     outboundSink.tryEmitNext(message)
