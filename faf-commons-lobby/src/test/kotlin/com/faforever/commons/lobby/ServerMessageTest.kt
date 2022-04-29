@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.OffsetDateTime
 
@@ -335,10 +336,7 @@ class ServerMessageTest {
     """.trimIndent()
     )
 
-    assertEquals(
-      ServerPingMessage(),
-      result
-    )
+    assertTrue(result is ServerPingMessage)
   }
 
   @Test
@@ -349,9 +347,6 @@ class ServerMessageTest {
     """.trimIndent()
     )
 
-    assertEquals(
-      ServerPongMessage(),
-      result
-    )
+    assertTrue(result is ServerPongMessage)
   }
 }
