@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory
 import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.publisher.SignalType
 import reactor.core.publisher.Sinks
+import reactor.core.publisher.Sinks.EmitFailureHandler
+import reactor.core.publisher.Sinks.EmitResult
 import reactor.core.scheduler.Schedulers
 import reactor.netty.Connection
 import reactor.netty.tcp.TcpClient
@@ -67,6 +70,11 @@ class FafLobbyClient(
       it !is LoginFailedResponse
   }
 
+  private val RETRY_SERIAL_FAILURE =
+    EmitFailureHandler { signalType: SignalType?, emitResult: EmitResult ->
+      (emitResult == EmitResult.FAIL_NON_SERIALIZED)
+    }
+
   private val client = TcpClient.newConnection()
     .resolver(DefaultAddressResolverGroup.INSTANCE)
     .doOnResolveError { connection, throwable ->
@@ -82,7 +90,7 @@ class FafLobbyClient(
       LOG.info("Disconnected from server")
       it.dispose()
       pingDisposable?.dispose()
-      connectionStatusSink.tryEmitNext(ConnectionStatus.DISCONNECTED)
+      connectionStatusSink.emitNext(ConnectionStatus.DISCONNECTED, RETRY_SERIAL_FAILURE)
     }
 
   init {
@@ -95,7 +103,7 @@ class FafLobbyClient(
           connecting = false
           if (autoReconnect) {
             LOG.info("Attempting to reconnect")
-            connectAndLogin(this.config).subscribeOn(Schedulers.single()).subscribe()
+            connectAndLogin(this.config).subscribeOn(Schedulers.immediate()).subscribe()
           }
         }
       }
@@ -180,7 +188,7 @@ class FafLobbyClient(
         Mono.firstWithSignal(inboundMono, outboundMono)
       }
       .connect()
-      .doOnSubscribe { connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTING) }
+      .doOnSubscribe { connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, RETRY_SERIAL_FAILURE) }
   }
 
   override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse> {
@@ -202,7 +210,7 @@ class FafLobbyClient(
         .doOnError { LOG.error("Error during connection", it) }
         .flatMap { loginSink.asMono().timeout(Duration.ofMinutes(1)) }
         .doOnNext {
-          connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTED)
+          connectionStatusSink.emitNext(ConnectionStatus.CONNECTED, RETRY_SERIAL_FAILURE)
           this.autoReconnect = autoReconnect
         }.cache()
     }
@@ -217,10 +225,10 @@ class FafLobbyClient(
       it is LoginSuccessResponse || it is LoginFailedResponse
     }.next().doOnNext {
       when (it) {
-        is LoginSuccessResponse -> loginSink.tryEmitValue(it)
-        is LoginFailedResponse -> loginSink.tryEmitError(LoginException(it.text))
+        is LoginSuccessResponse -> loginSink.emitValue(it, RETRY_SERIAL_FAILURE)
+        is LoginFailedResponse -> loginSink.emitError(LoginException(it.text), RETRY_SERIAL_FAILURE)
       }
-    }.subscribeOn(Schedulers.single()).subscribe()
+    }.subscribeOn(Schedulers.immediate()).subscribe()
   }
 
   private fun authenticateOnNextSession(config: Config) {
@@ -233,7 +241,7 @@ class FafLobbyClient(
       config.tokenMono.doOnNext { token ->
         LOG.debug("using {}", token)
         send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
-      }.subscribeOn(Schedulers.single()).subscribe()
+      }.subscribeOn(Schedulers.immediate()).subscribe()
     }.subscribe()
   }
 
@@ -264,7 +272,7 @@ class FafLobbyClient(
         }
 
         LOG.info("Disconnecting from server")
-        outboundSink.tryEmitComplete()
+        outboundSink.emitComplete(RETRY_SERIAL_FAILURE)
         conn.dispose()
       }
     }
@@ -286,15 +294,13 @@ class FafLobbyClient(
     }
 
   private fun send(message: ClientMessage) {
-    Mono.fromCallable {
-      LOG.debug("sending {}", message)
-      LOG.debug("Emit is {}", outboundSink.tryEmitNext(message))
-    }.subscribeOn(Schedulers.single()).subscribe()
+    LOG.debug("sending {}", message)
+    LOG.debug("Emit is {}", outboundSink.emitNext(message, RETRY_SERIAL_FAILURE))
   }
 
   private fun handle(message: ServerMessage): Mono<Unit> =
     Mono.fromCallable {
-      LOG.debug("Emit is {}", eventSink.tryEmitNext(message))
+      LOG.debug("Emit is {}", eventSink.emitNext(message, RETRY_SERIAL_FAILURE))
     }
 
   override fun broadcastMessage(message: String) = send(BroadcastRequest(message))
