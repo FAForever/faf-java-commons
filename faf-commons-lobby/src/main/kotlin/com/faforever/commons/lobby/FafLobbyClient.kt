@@ -231,7 +231,7 @@ class FafLobbyClient(
     }
   }
 
-  private fun pingWithDelay(): Mono<Unit> = ping().delaySubscription(Duration.ofSeconds(config.pongResponseWaitSeconds))
+  private fun pingWithDelay(): Mono<Unit> = ping().delaySubscription(Duration.ofSeconds(minPingIntervalSeconds))
 
   private fun ping(): Mono<Unit> =
     Mono.fromCallable {
