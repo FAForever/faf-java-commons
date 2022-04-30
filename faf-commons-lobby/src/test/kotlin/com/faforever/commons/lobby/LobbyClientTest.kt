@@ -83,7 +83,8 @@ class LobbyClientTest {
         val outboundMono = outbound.sendString(
           serverMessagesSent
             .doOnNext { LOG.debug("Sending message from fake server {}", it) }
-            .map { message: String -> message + "\n"
+            .map { message: String ->
+              message + "\n"
             }, StandardCharsets.UTF_8
         ).then()
         inboundMono.mergeWith(outboundMono)
@@ -134,7 +135,8 @@ class LobbyClientTest {
       .expectComplete()
       .verifyLater()
 
-    StepVerifier.create(instance.connectAndLogin(config)).expectNextCount(1).expectComplete().verify(verificationDuration)
+    StepVerifier.create(instance.connectAndLogin(config)).expectNextCount(1).expectComplete()
+      .verify(verificationDuration)
 
     stepVerifier.verify(verificationDuration)
   }
@@ -188,18 +190,23 @@ class LobbyClientTest {
   @Test
   fun testHostGame() {
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .assertNext { assertCommandMatch(it, HostGameRequest("map",
-        "blah",
-        "faf",
-        BooleanArray(0),
-        GameAccess.PUBLIC,
-        0,
-        null,
-        GameVisibility.PUBLIC,
-        null,
-        null,
-        false
-      )) }
+      .assertNext {
+        assertCommandMatch(
+          it, HostGameRequest(
+            "map",
+            "blah",
+            "faf",
+            BooleanArray(0),
+            GameAccess.PUBLIC,
+            0,
+            null,
+            GameVisibility.PUBLIC,
+            null,
+            null,
+            false
+          )
+        )
+      }
       .expectComplete()
       .verifyLater()
 

@@ -44,6 +44,7 @@ class FafLobbyClient(
 
   private lateinit var config: Config
   private lateinit var outboundSink: Sinks.Many<ClientMessage>
+  private lateinit var outboundMessages: Flux<ClientMessage>
 
   private var connection: Connection? = null
   private var pingDisposable: Disposable? = null
@@ -103,6 +104,7 @@ class FafLobbyClient(
 
   private fun openConnection(): Mono<out Connection> {
     outboundSink = Sinks.many().unicast().onBackpressureBuffer()
+    outboundMessages = outboundSink.asFlux().publish().autoConnect()
     return client
       .wiretap(config.wiretap)
       .host(config.host)
@@ -143,7 +145,7 @@ class FafLobbyClient(
           .then()
 
         val outboundMono = outbound.sendString(
-          outboundSink.asFlux()
+          outboundMessages
             .doOnError { LOG.error("Outbound channel closed with error", it) }
             .doOnComplete { LOG.info("Outbound channel closed") }
             .doOnCancel { LOG.info("Outbound channel cancelled") }
