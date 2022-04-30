@@ -191,8 +191,6 @@ class FafLobbyClient(
       val autoReconnect = this.autoReconnect
       this.autoReconnect = false
 
-      LOG.debug("Starting login listeners")
-
       authenticateOnNextSession(config)
 
       val loginSink = Sinks.one<LoginSuccessResponse>()
@@ -285,8 +283,7 @@ class FafLobbyClient(
 
   private fun handle(message: ServerMessage): Mono<Unit> =
     Mono.fromCallable {
-      eventSink.tryEmitNext(message)
-      Unit
+      LOG.debug("Emit is {}", eventSink.tryEmitNext(message))
     }
 
   override fun broadcastMessage(message: String) = send(BroadcastRequest(message))
