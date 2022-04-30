@@ -43,8 +43,6 @@ class FafLobbyClient(
   )
 
   private lateinit var config: Config
-  private lateinit var outboundSink: Sinks.Many<ClientMessage>
-  private lateinit var outboundMessages: Flux<ClientMessage>
 
   private var connection: Connection? = null
   private var pingDisposable: Disposable? = null
@@ -54,6 +52,8 @@ class FafLobbyClient(
   var minPingIntervalSeconds: Long = 60
   var autoReconnect: Boolean = true
 
+  private val outboundSink: Sinks.Many<ClientMessage> = Sinks.many().unicast().onBackpressureBuffer()
+  private val outboundMessages: Flux<ClientMessage> = outboundSink.asFlux().publish().autoConnect()
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().unicast().onBackpressureBuffer()
   private val connectionStatusSink: Sinks.Many<ConnectionStatus> = Sinks.many().unicast().onBackpressureBuffer()
   private val rawEvents = eventSink.asFlux().publish().autoConnect()
@@ -103,8 +103,6 @@ class FafLobbyClient(
   }
 
   private fun openConnection(): Mono<out Connection> {
-    outboundSink = Sinks.many().unicast().onBackpressureBuffer()
-    outboundMessages = outboundSink.asFlux().publish().autoConnect()
     return client
       .wiretap(config.wiretap)
       .host(config.host)
