@@ -82,14 +82,24 @@ class FafLobbyClient(
       it.dispose()
       pingDisposable?.dispose()
       connectionStatusSink.tryEmitNext(ConnectionStatus.DISCONNECTED)
-      if (autoReconnect && !connecting) {
-        LOG.info("Attempting to reconnect")
-        connectAndLogin(this.config).subscribe()
-      }
     }
 
   init {
     rawEvents.filter { it is ServerPingMessage }.doOnNext { send(ClientPongMessage()) }.subscribe()
+    connectionStatus.doOnNext {
+      LOG.info("{}", it)
+      when (it) {
+        ConnectionStatus.CONNECTING -> connecting = true
+        ConnectionStatus.CONNECTED -> connecting = false
+        ConnectionStatus.DISCONNECTED, null -> {
+          connecting = false
+          if (autoReconnect) {
+            LOG.info("Attempting to reconnect")
+            connectAndLogin(this.config).subscribeOn(Schedulers.immediate()).subscribe()
+          }
+        }
+      }
+    }.subscribe()
   }
 
   private fun openConnection(): Mono<out Connection> {
@@ -175,23 +185,11 @@ class FafLobbyClient(
   override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse> {
     this.config = config
 
-    val retry = Retry.fixedDelay(config.maxRetryAttempts, Duration.ofSeconds(config.retryWaitSeconds))
-      .doBeforeRetry { retry: RetrySignal ->
-        LOG.warn(
-          "Could not reach server retrying: Attempt #{} of {}",
-          retry.totalRetries(),
-          config.maxRetryAttempts,
-          retry.failure()
-        )
-      }.onRetryExhaustedThrow { spec, retrySignal ->
-        LoginException(
-          "Could not reach server after ${spec.maxAttempts} attempts",
-          retrySignal.failure()
-        )
-      }
-
     if (loginMono == null || (!connecting && (connection == null || connection?.isDisposed == true))) {
-      connecting = true
+      val retry = createRetrySpec(config)
+      val autoReconnect = this.autoReconnect
+      this.autoReconnect = false
+
       loginMono = openConnection()
         .then(Mono.fromCallable { send(SessionRequest(config.version, config.userAgent)) })
         .retryWhen(retry)
@@ -208,13 +206,29 @@ class FafLobbyClient(
             .next()
         )
         .doOnNext {
-          connecting = false
           connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTED)
+          this.autoReconnect = autoReconnect
         }.cache()
     }
 
     return loginMono as Mono<LoginSuccessResponse>
   }
+
+  private fun createRetrySpec(config: Config) =
+    Retry.fixedDelay(config.maxRetryAttempts, Duration.ofSeconds(config.retryWaitSeconds))
+      .doBeforeRetry { retry: RetrySignal ->
+        LOG.warn(
+          "Could not reach server retrying: Attempt #{} of {}",
+          retry.totalRetries(),
+          config.maxRetryAttempts,
+          retry.failure()
+        )
+      }.onRetryExhaustedThrow { spec, retrySignal ->
+        LoginException(
+          "Could not reach server after ${spec.maxAttempts} attempts",
+          retrySignal.failure()
+        )
+      }
 
   override fun disconnect() {
     autoReconnect = false
@@ -228,7 +242,7 @@ class FafLobbyClient(
 
         LOG.info("Disconnecting from server")
         outboundSink.tryEmitComplete()
-        conn.disposeNow()
+        conn.dispose()
       }
     }
   }

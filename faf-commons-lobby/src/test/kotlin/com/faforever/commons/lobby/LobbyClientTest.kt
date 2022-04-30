@@ -10,6 +10,7 @@ import io.netty.handler.codec.string.LineSeparator
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
@@ -41,7 +42,9 @@ class LobbyClientTest {
   private val serverReceivedSink = Sinks.many().unicast().onBackpressureBuffer<String>()
   private val serverMessagesReceived = serverReceivedSink.asFlux().publish().autoConnect()
   private val serverSentSink = Sinks.many().unicast().onBackpressureBuffer<String>()
+  private val serverMessagesSent = serverSentSink.asFlux().publish().autoConnect()
   private lateinit var disposableServer: DisposableServer
+  private lateinit var currentConnection: Connection
   private val instance: FafLobbyClient = FafLobbyClient(objectMapper)
   private val playerUid = 123
   private val sessionId: Long = 456
@@ -51,13 +54,15 @@ class LobbyClientTest {
   fun setUp() {
     instance.minPingIntervalSeconds = Int.MAX_VALUE.toLong()
     startFakeFafLobbyServer()
+    connectAndLogIn()
   }
 
   private fun startFakeFafLobbyServer() {
     disposableServer = TcpServer.create()
-      .doOnConnection { connection: Connection ->
+      .doOnConnection {
         LOG.debug("New Client connected to server")
-        connection.addHandler(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
+        currentConnection = it
+        it.addHandler(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
           .addHandler(LineBasedFrameDecoder(1024 * 1024))
       }.doOnBound { disposableServer: DisposableServer ->
         LOG.debug(
@@ -76,9 +81,9 @@ class LobbyClientTest {
           }
           .then()
         val outboundMono = outbound.sendString(
-          serverSentSink.asFlux()
+          serverMessagesSent
             .doOnNext { LOG.debug("Sending message from fake server {}", it) }
-            .map { message: String -> message.plus("\n")
+            .map { message: String -> message + "\n"
             }, StandardCharsets.UTF_8
         ).then()
         inboundMono.mergeWith(outboundMono)
@@ -89,6 +94,9 @@ class LobbyClientTest {
   private fun commandMatches(message: String, command: String) = message.contains(
     "\"command\":\"$command\""
   )
+
+  private fun assertCommandMatch(message: String, command: ClientMessage) =
+    JSONAssert.assertEquals(objectMapper.writeValueAsString(command), message, true)
 
   private fun connectAndLogIn() {
     val config = FafLobbyClient.Config(
@@ -121,8 +129,8 @@ class LobbyClientTest {
       }.subscribe()
 
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(2))
-      .expectNextMatches { commandMatches(it, "ask_session") }
-      .expectNextMatches { commandMatches(it, "auth") }
+      .assertNext { assertCommandMatch(it, SessionRequest(config.version, config.userAgent)) }
+      .assertNext { assertCommandMatch(it, AuthenticateRequest(token, sessionId, config.generateUid.apply(sessionId))) }
       .expectComplete()
       .verifyLater()
 
@@ -143,10 +151,8 @@ class LobbyClientTest {
 
   @Test
   fun testBroadcast() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "admin") }
+      .assertNext { assertCommandMatch(it, BroadcastRequest("test")) }
       .expectComplete()
       .verifyLater()
 
@@ -157,10 +163,8 @@ class LobbyClientTest {
 
   @Test
   fun testClosePlayerGame() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "admin") }
+      .assertNext { assertCommandMatch(it, ClosePlayerGameRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -171,10 +175,8 @@ class LobbyClientTest {
 
   @Test
   fun testClosePlayerLobby() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "admin") }
+      .assertNext { assertCommandMatch(it, ClosePlayerLobbyRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -185,10 +187,19 @@ class LobbyClientTest {
 
   @Test
   fun testHostGame() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "game_host") }
+      .assertNext { assertCommandMatch(it, HostGameRequest("map",
+        "blah",
+        "faf",
+        BooleanArray(0),
+        GameAccess.PUBLIC,
+        0,
+        null,
+        GameVisibility.PUBLIC,
+        null,
+        null,
+        false
+      )) }
       .expectComplete()
       .verifyLater()
 
@@ -208,10 +219,8 @@ class LobbyClientTest {
 
   @Test
   fun testJoinGame() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "game_join") }
+      .assertNext { assertCommandMatch(it, JoinGameRequest(0, null)) }
       .expectComplete()
       .verifyLater()
 
@@ -222,10 +231,8 @@ class LobbyClientTest {
 
   @Test
   fun testRestoreGameSession() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "restore_game_session") }
+      .assertNext { assertCommandMatch(it, RestoreGameSessionRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -236,10 +243,8 @@ class LobbyClientTest {
 
   @Test
   fun testGetIceServers() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "ice_servers") }
+      .assertNext { assertCommandMatch(it, IceServerListRequest()) }
       .expectComplete()
       .verifyLater()
 
@@ -250,10 +255,8 @@ class LobbyClientTest {
 
   @Test
   fun testAddFriend() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "social_add") }
+      .assertNext { assertCommandMatch(it, AddFriendRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -264,10 +267,8 @@ class LobbyClientTest {
 
   @Test
   fun testAddFoe() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "social_add") }
+      .assertNext { assertCommandMatch(it, AddFoeRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -278,10 +279,8 @@ class LobbyClientTest {
 
   @Test
   fun testRemoveFriend() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "social_remove") }
+      .assertNext { assertCommandMatch(it, RemoveFriendRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -292,10 +291,8 @@ class LobbyClientTest {
 
   @Test
   fun testRemoveFoe() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "social_remove") }
+      .assertNext { assertCommandMatch(it, RemoveFoeRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -306,10 +303,8 @@ class LobbyClientTest {
 
   @Test
   fun testSelectAvatar() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "avatar") }
+      .assertNext { assertCommandMatch(it, SelectAvatarRequest(null)) }
       .expectComplete()
       .verifyLater()
 
@@ -320,10 +315,8 @@ class LobbyClientTest {
 
   @Test
   fun testGetAvailableAvatars() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "avatar") }
+      .assertNext { assertCommandMatch(it, AvatarListRequest()) }
       .expectComplete()
       .verifyLater()
 
@@ -334,10 +327,8 @@ class LobbyClientTest {
 
   @Test
   fun testRequestMatchmakerInfo() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "matchmaker_info") }
+      .assertNext { assertCommandMatch(it, MatchmakerInfoRequest()) }
       .expectComplete()
       .verifyLater()
 
@@ -348,10 +339,8 @@ class LobbyClientTest {
 
   @Test
   fun testGameMatchmaking() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "game_matchmaking") }
+      .assertNext { assertCommandMatch(it, GameMatchmakingRequest("test", MatchmakerState.START)) }
       .expectComplete()
       .verifyLater()
 
@@ -362,10 +351,8 @@ class LobbyClientTest {
 
   @Test
   fun testInviteToParty() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "invite_to_party") }
+      .assertNext { assertCommandMatch(it, InviteToPartyRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -376,10 +363,8 @@ class LobbyClientTest {
 
   @Test
   fun testAcceptInvite() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "accept_party_invite") }
+      .assertNext { assertCommandMatch(it, AcceptInviteToPartyRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -390,10 +375,8 @@ class LobbyClientTest {
 
   @Test
   fun testKickPlayer() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "kick_player_from_party") }
+      .assertNext { assertCommandMatch(it, KickPlayerFromPartyRequest(0)) }
       .expectComplete()
       .verifyLater()
 
@@ -404,10 +387,8 @@ class LobbyClientTest {
 
   @Test
   fun testReadyParty() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "ready_party") }
+      .assertNext { assertCommandMatch(it, ReadyPartyRequest()) }
       .expectComplete()
       .verifyLater()
 
@@ -418,10 +399,8 @@ class LobbyClientTest {
 
   @Test
   fun testUnreadyParty() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "unready_party") }
+      .assertNext { assertCommandMatch(it, UnreadyPartyRequest()) }
       .expectComplete()
       .verifyLater()
 
@@ -432,10 +411,8 @@ class LobbyClientTest {
 
   @Test
   fun testLeaveParty() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "leave_party") }
+      .assertNext { assertCommandMatch(it, LeavePartyRequest()) }
       .expectComplete()
       .verifyLater()
 
@@ -446,10 +423,8 @@ class LobbyClientTest {
 
   @Test
   fun testSetPartyFactions() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "set_party_factions") }
+      .assertNext { assertCommandMatch(it, SelectPartyFactionsRequest(setOf())) }
       .expectComplete()
       .verifyLater()
 
@@ -460,10 +435,8 @@ class LobbyClientTest {
 
   @Test
   fun testSendGpgGameMessage() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "Test") }
+      .assertNext { assertCommandMatch(it, GpgGameOutboundMessage("Test", listOf())) }
       .expectComplete()
       .verifyLater()
 
@@ -474,10 +447,8 @@ class LobbyClientTest {
 
   @Test
   fun testPingInterval() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "ping") }
+      .assertNext { assertCommandMatch(it, ClientPingMessage()) }
       .expectComplete()
       .verifyLater()
 
@@ -490,10 +461,8 @@ class LobbyClientTest {
 
   @Test
   fun testPingOnceInterval() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(Duration.ofSeconds(2)))
-      .expectNextMatches { commandMatches(it, "ping") }
+      .assertNext { assertCommandMatch(it, ClientPingMessage()) }
       .expectComplete()
       .verifyLater()
 
@@ -507,10 +476,8 @@ class LobbyClientTest {
 
   @Test
   fun testPongInterval() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "ping") }
+      .assertNext { assertCommandMatch(it, ClientPingMessage()) }
       .expectComplete()
       .verifyLater()
 
@@ -523,10 +490,8 @@ class LobbyClientTest {
 
   @Test
   fun testPongIntervalFailure() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "ping") }
+      .assertNext { assertCommandMatch(it, ClientPingMessage()) }
       .expectComplete()
       .verifyLater()
 
@@ -541,10 +506,8 @@ class LobbyClientTest {
 
   @Test
   fun testPingResponse() {
-    connectAndLogIn()
-
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .expectNextMatches { commandMatches(it, "pong") }
+      .assertNext { assertCommandMatch(it, ClientPongMessage()) }
       .expectComplete()
       .verifyLater()
 
@@ -555,11 +518,7 @@ class LobbyClientTest {
 
   @Test
   fun testOnAuthenticationFailed() {
-    val stepVerifierServer = StepVerifier.create(serverMessagesReceived.take(2))
-      .expectNextMatches { commandMatches(it, "ask_session") }
-      .expectNextMatches { commandMatches(it, "auth") }
-      .expectComplete()
-      .verifyLater()
+    instance.disconnect()
 
     val config = FafLobbyClient.Config(
       Mono.just(token),
@@ -574,6 +533,12 @@ class LobbyClientTest {
       5,
       5
     )
+
+    val stepVerifierServer = StepVerifier.create(serverMessagesReceived.take(2))
+      .assertNext { assertCommandMatch(it, SessionRequest(config.version, config.userAgent)) }
+      .assertNext { assertCommandMatch(it, AuthenticateRequest(token, sessionId, config.generateUid.apply(sessionId))) }
+      .expectComplete()
+      .verifyLater()
 
     serverMessagesReceived.filter { commandMatches(it, "ask_session") }
       .next()
@@ -594,5 +559,41 @@ class LobbyClientTest {
       .verify(verificationDuration)
 
     stepVerifierServer.verify(verificationDuration)
+  }
+
+  @Test
+  fun testAutoReconnect() {
+    currentConnection.dispose()
+
+    val stepVerifier = StepVerifier.create(serverMessagesReceived.take(2))
+      .assertNext { commandMatches(it, "ask_session") }
+      .assertNext { commandMatches(it, "auth") }
+      .expectComplete()
+      .verifyLater()
+
+    serverMessagesReceived.filter { commandMatches(it, "ask_session") }
+      .next()
+      .doOnNext {
+        val sessionMessage = SessionResponse(sessionId)
+        sendFromServer(sessionMessage)
+      }.subscribe()
+
+    serverMessagesReceived.filter { commandMatches(it, "auth") }
+      .next()
+      .doOnNext {
+        val me = Player(playerUid, "Junit", null, null, "", HashMap(), HashMap())
+        val loginServerMessage = LoginSuccessResponse(me)
+        sendFromServer(loginServerMessage)
+      }.subscribe()
+
+    stepVerifier.verify()
+  }
+
+  @Test
+  fun testNoAutoReconnect() {
+    instance.disconnect()
+
+    StepVerifier.create(serverMessagesReceived.take(Duration.ofSeconds(5)))
+      .verifyComplete()
   }
 }
