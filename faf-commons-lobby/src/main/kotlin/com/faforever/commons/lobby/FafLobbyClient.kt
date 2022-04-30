@@ -212,7 +212,10 @@ class FafLobbyClient(
 
   private fun emitNextLoginResponse(loginSink: Sinks.One<LoginSuccessResponse>) {
     LOG.debug("Starting login listener")
-    rawEvents.filter { it is LoginSuccessResponse || it is LoginFailedResponse }.next().doOnNext {
+    rawEvents.filter {
+      LOG.debug("Seeing {}", it)
+      it is LoginSuccessResponse || it is LoginFailedResponse
+    }.next().doOnNext {
       when (it) {
         is LoginSuccessResponse -> loginSink.tryEmitValue(it)
         is LoginFailedResponse -> loginSink.tryEmitError(LoginException(it.text))
@@ -222,7 +225,10 @@ class FafLobbyClient(
 
   private fun authenticateOnNextSession(config: Config) {
     LOG.debug("Starting session listener")
-    rawEvents.filter { it is SessionResponse }.next().cast(SessionResponse::class.java).doOnNext { message ->
+    rawEvents.filter {
+      LOG.debug("Seeing {}", it)
+      it is SessionResponse
+    }.next().cast(SessionResponse::class.java).doOnNext { message ->
       config.tokenMono.doOnNext { token ->
         send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
       }.subscribeOn(Schedulers.immediate()).subscribe()
