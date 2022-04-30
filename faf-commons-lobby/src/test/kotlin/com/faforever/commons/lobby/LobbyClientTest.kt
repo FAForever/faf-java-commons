@@ -43,6 +43,8 @@ class LobbyClientTest {
   private val serverSentSink = Sinks.many().unicast().onBackpressureBuffer<String>()
   private lateinit var disposableServer: DisposableServer
   private val instance: FafLobbyClient = FafLobbyClient(objectMapper)
+  private val playerUid = 123
+  private val sessionId: Long = 456
 
   @BeforeEach
   fun setUp() {
@@ -105,8 +107,6 @@ class LobbyClientTest {
   }
 
   private fun connectAndLogIn() {
-    val playerUid = 123
-    val sessionId: Long = 456
     val config = FafLobbyClient.Config(
       token,
       "0",
@@ -116,8 +116,11 @@ class LobbyClientTest {
       { "abc" },
       1024 * 1024,
       false,
-      1
+      1,
+      5,
+      5
     )
+
     instance.connectAndLogin(config).subscribe()
     assertMessageCommandTypeSent("ask_session")
     val sessionMessage = SessionResponse(sessionId)
@@ -358,7 +361,7 @@ class LobbyClientTest {
 
     assertMessageCommandTypeSent("ping")
 
-    instance.disconnects.blockFirst(Duration.ofSeconds(5))
+    instance.disconnects.blockFirst(Duration.ofSeconds(10))
   }
 
   @Test

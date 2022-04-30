@@ -18,7 +18,7 @@ interface ConnectionApi {
   fun getIceServers(): Flux<IceServer>
 }
 
-class LoginException(reason: String?) : Exception(reason)
+class LoginException(reason: String?, throwable: Throwable? = null) : Exception(reason, throwable)
 
 
 // ***********************

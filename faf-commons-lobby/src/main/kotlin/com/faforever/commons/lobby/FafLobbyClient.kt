@@ -14,6 +14,8 @@ import reactor.core.publisher.Sinks
 import reactor.core.scheduler.Schedulers
 import reactor.netty.Connection
 import reactor.netty.tcp.TcpClient
+import reactor.util.retry.Retry
+import reactor.util.retry.Retry.RetrySignal
 import java.net.InetSocketAddress
 import java.time.Duration
 import java.util.function.Function
@@ -26,12 +28,6 @@ class FafLobbyClient(
     val LOG: Logger = LoggerFactory.getLogger(FafLobbyApi::class.java)
   }
 
-  private lateinit var config: Config
-  private lateinit var outboundSink: Sinks.Many<ClientMessage>
-  private var connection: Connection? = null
-  private var pingDisposable: Disposable? = null;
-  var minPingIntervalSeconds: Long = 60;
-
   data class Config(
     val token: String,
     val version: String,
@@ -42,11 +38,25 @@ class FafLobbyClient(
     val bufferSize: Int,
     val wiretap: Boolean = false,
     val pongResponseWaitSeconds: Long,
+    val maxRetryAttempts: Long,
+    val retryWaitSeconds: Long,
   )
+
+  private lateinit var config: Config
+  private lateinit var outboundSink: Sinks.Many<ClientMessage>
+
+  private var connection: Connection? = null
+  private var pingDisposable: Disposable? = null
+  private var loginMono: Mono<LoginSuccessResponse>? = null
+
+  var minPingIntervalSeconds: Long = 60
+  var autoReconnect: Boolean = true
+  var connecting: Boolean = false
 
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().multicast().directBestEffort()
   private val disconnectsSink: Sinks.Many<Unit> = Sinks.many().multicast().directBestEffort()
   private val rawEvents = eventSink.asFlux()
+  override val disconnects = disconnectsSink.asFlux()
 
   override val events = eventSink.asFlux().filter {
     it !is ServerPingMessage &&
@@ -56,29 +66,30 @@ class FafLobbyClient(
       it !is LoginFailedResponse
   }
 
-  override val disconnects = disconnectsSink.asFlux();
-
   private val client = TcpClient.newConnection()
     .resolver(DefaultAddressResolverGroup.INSTANCE)
     .doOnResolveError { connection, throwable ->
-      LOG.error("Could not connect to server", throwable)
+      LOG.error("Could not find server", throwable)
       connection.dispose()
-    }
-    .doOnConnected {
+    }.doOnConnected {
       val address = it.channel().remoteAddress() as InetSocketAddress
       LOG.info("Connected to {} on port {}", address.hostName, address.port)
       it.addHandler(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
         .addHandler(LineBasedFrameDecoder(config.bufferSize))
-    }
-    .doOnDisconnected {
+      connection = it
+    }.doOnDisconnected {
       LOG.info("Disconnected from server")
       it.dispose()
       pingDisposable?.dispose()
       disconnectsSink.tryEmitNext(Unit)
+      if (autoReconnect && !connecting) {
+        LOG.info("Attempting to reconnect")
+        connectAndLogin(this.config).subscribe()
+      }
     }
 
   init {
-    rawEvents.filter{ it is ServerPingMessage }.doOnNext { send(ClientPongMessage()) }.subscribe()
+    rawEvents.filter { it is ServerPingMessage }.doOnNext { send(ClientPongMessage()) }.subscribe()
   }
 
   private fun openConnection(): Mono<out Connection> {
@@ -127,6 +138,14 @@ class FafLobbyClient(
             .doOnError { LOG.error("Outbound channel closed with error", it) }
             .doOnComplete { LOG.info("Outbound channel closed") }
             .doOnCancel { LOG.info("Outbound channel cancelled") }
+            .doOnNext {
+              if (it !is ClientPingMessage) {
+                pingDisposable?.dispose()
+                pingDisposable = pingWithDelay()
+                  .subscribeOn(Schedulers.single())
+                  .subscribe()
+              }
+            }
             // appending line ending is workaround due to broken encoder
             .flatMap {
               Mono.fromCallable {
@@ -141,11 +160,6 @@ class FafLobbyClient(
                 LOG.error("Error during serialization of message {}", it, throwable)
                 Mono.empty()
               }
-            }.doOnNext {
-              pingDisposable?.dispose()
-              pingDisposable = pingWithDelay()
-                .subscribeOn(Schedulers.single())
-                .subscribe()
             }
         ).then()
 
@@ -159,39 +173,71 @@ class FafLobbyClient(
 
   override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse> {
     this.config = config
-    return openConnection()
-      .doOnSuccess { connection = it }
-      .doOnError { LOG.error("Error during connection", it) }
-      .then(Mono.fromCallable { send(SessionRequest(config.version, config.userAgent)) })
-      .then(rawEvents
-        .flatMap {
-          when (it) {
-            is LoginSuccessResponse -> Mono.just(it)
-            is LoginFailedResponse -> Mono.error(LoginException(it.text))
-            else -> Mono.empty()
-          }
-        }
-        .cast(LoginSuccessResponse::class.java)
-        .next())
+
+    val retry = Retry.fixedDelay(config.maxRetryAttempts, Duration.ofSeconds(config.retryWaitSeconds))
+      .doBeforeRetry { retry: RetrySignal ->
+        LOG.warn(
+          "Could not reach server retrying: Attempt #{} of {}",
+          retry.totalRetries(),
+          config.maxRetryAttempts,
+          retry.failure()
+        )
+      }.onRetryExhaustedThrow { spec, retrySignal ->
+        LoginException(
+          "Could not reach server after ${spec.maxAttempts} attempts",
+          retrySignal.failure()
+        )
+      }
+
+    if (loginMono == null || (!connecting && (connection == null || connection?.isDisposed == true))) {
+      connecting = true
+      loginMono = openConnection()
+        .then(Mono.fromCallable { send(SessionRequest(config.version, config.userAgent)) })
+        .retryWhen(retry)
+        .doOnError { LOG.error("Error during connection", it) }
+        .then(
+          rawEvents
+            .flatMap {
+              when (it) {
+                is LoginSuccessResponse -> Mono.just(it)
+                is LoginFailedResponse -> Mono.error(LoginException(it.text))
+                else -> Mono.empty()
+              }
+            }.cast(LoginSuccessResponse::class.java)
+            .next()
+        )
+        .doOnNext {
+          connecting = false
+        }.cache()
+    }
+
+    return loginMono as Mono<LoginSuccessResponse>
   }
 
   override fun disconnect() {
+    autoReconnect = false
     when (val conn = connection) {
       null -> LOG.warn("Attempting to disconnect while never connected")
-      else -> LOG.info("Disconnecting from server").also {
+      else -> {
+        if (conn.isDisposed) {
+          LOG.info("Already disconnected")
+          return
+        }
+
+        LOG.info("Disconnecting from server")
         outboundSink.tryEmitComplete()
         conn.dispose()
       }
     }
   }
 
-  private fun pingWithDelay(): Mono<Unit> = ping().delaySubscription(Duration.ofSeconds(minPingIntervalSeconds))
+  private fun pingWithDelay(): Mono<Unit> = ping().delaySubscription(Duration.ofSeconds(config.pongResponseWaitSeconds))
 
   private fun ping(): Mono<Unit> =
     Mono.fromCallable {
       send(ClientPingMessage())
     }.then(
-      events.filter {it is ServerPongMessage}
+      events.filter { it is ServerPongMessage }
         .next()
         .timeout(Duration.ofSeconds(config.pongResponseWaitSeconds))
         .map { }
