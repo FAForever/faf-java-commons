@@ -286,7 +286,8 @@ class FafLobbyClient(
     }
 
   private fun send(message: ClientMessage) {
-    outboundSink.tryEmitNext(message)
+    LOG.debug("sending {}", message)
+    LOG.debug("Emit is {}", outboundSink.tryEmitNext(message))
   }
 
   private fun handle(message: ServerMessage): Mono<Unit> =
