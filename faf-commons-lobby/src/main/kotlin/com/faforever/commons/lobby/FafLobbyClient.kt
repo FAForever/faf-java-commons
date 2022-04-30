@@ -221,7 +221,6 @@ class FafLobbyClient(
   private fun emitNextLoginResponse(loginSink: Sinks.One<LoginSuccessResponse>) {
     LOG.debug("Starting login listener")
     rawEvents.filter {
-      LOG.debug("Seeing {}", it)
       it is LoginSuccessResponse || it is LoginFailedResponse
     }.next().doOnNext {
       when (it) {
@@ -234,12 +233,9 @@ class FafLobbyClient(
   private fun authenticateOnNextSession(config: Config) {
     LOG.debug("Starting session listener")
     rawEvents.filter {
-      LOG.debug("Seeing {}", it)
       it is SessionResponse
     }.next().cast(SessionResponse::class.java).doOnNext { message ->
-      LOG.debug("processing {}", message)
       config.tokenMono.doOnNext { token ->
-        LOG.debug("using {}", token)
         send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
       }.subscribeOn(Schedulers.immediate()).subscribe()
     }.subscribe()
@@ -294,13 +290,12 @@ class FafLobbyClient(
     }
 
   private fun send(message: ClientMessage) {
-    LOG.debug("sending {}", message)
-    LOG.debug("Emit is {}", outboundSink.emitNext(message, retrySerialFailure))
+    outboundSink.emitNext(message, retrySerialFailure)
   }
 
   private fun handle(message: ServerMessage): Mono<Unit> =
     Mono.fromCallable {
-      LOG.debug("Emit is {}", eventSink.emitNext(message, retrySerialFailure))
+      eventSink.emitNext(message, retrySerialFailure)
     }
 
   override fun broadcastMessage(message: String) = send(BroadcastRequest(message))
