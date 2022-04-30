@@ -191,16 +191,16 @@ class FafLobbyClient(
       val autoReconnect = this.autoReconnect
       this.autoReconnect = false
 
+      authenticateOnNextSession(config)
+
+      val loginSink = Sinks.one<LoginSuccessResponse>()
+      emitNextLoginResponse(loginSink)
+
       loginMono = openConnection()
         .then(Mono.fromCallable { send(SessionRequest(config.version, config.userAgent)) })
         .retryWhen(retry)
         .doOnError { LOG.error("Error during connection", it) }
-        .flatMap {
-          LOG.info("Waiting for session response")
-          authenticateFromSession(config) }
-        .flatMap {
-          LOG.info("Waiting for auth response")
-          waitForLoginResponse() }
+        .flatMap { loginSink.asMono().timeout(Duration.ofMinutes(1)) }
         .doOnNext {
           connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTED)
           this.autoReconnect = autoReconnect
@@ -210,26 +210,32 @@ class FafLobbyClient(
     return loginMono as Mono<LoginSuccessResponse>
   }
 
+  private fun emitNextLoginResponse(loginSink: Sinks.One<LoginSuccessResponse>) {
+    rawEvents.filter { it is LoginSuccessResponse || it is LoginFailedResponse }.next().doOnNext {
+      when (it) {
+        is LoginSuccessResponse -> loginSink.tryEmitValue(it)
+        is LoginFailedResponse -> loginSink.tryEmitError(LoginException(it.text))
+      }
+    }.subscribeOn(Schedulers.immediate()).subscribe()
+  }
+
+  private fun authenticateOnNextSession(config: Config) {
+    rawEvents.filter { it is SessionResponse }.next().cast(SessionResponse::class.java).doOnNext { message ->
+      config.tokenMono.doOnNext { token ->
+        send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
+      }.subscribeOn(Schedulers.immediate()).subscribe()
+    }.subscribeOn(Schedulers.immediate()).subscribe()
+  }
+
   private fun waitForLoginResponse() = rawEvents
     .flatMap {
       when (it) {
         is LoginSuccessResponse -> Mono.just(it)
         is LoginFailedResponse -> Mono.error(LoginException(it.text))
-        else -> Mono.error(IllegalStateException("Login message not received instead was: $it"))
+        else -> Mono.empty()
       }
     }.cast(LoginSuccessResponse::class.java)
     .next()
-
-  private fun authenticateFromSession(config: Config) = rawEvents.flatMap { message ->
-      when (message) {
-        is SessionResponse -> config.tokenMono.flatMap { token ->
-          Mono.fromCallable {
-            send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
-          }
-        }
-        else -> Mono.error(IllegalStateException("Session response not received instead was: $message"))
-      }
-    }.next()
 
   private fun createRetrySpec(config: Config) =
     Retry.fixedDelay(config.maxRetryAttempts, Duration.ofSeconds(config.retryWaitSeconds))
