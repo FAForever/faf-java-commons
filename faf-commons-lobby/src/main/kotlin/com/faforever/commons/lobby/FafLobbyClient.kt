@@ -196,17 +196,7 @@ class FafLobbyClient(
         .then(authenticateFromSession(config))
         .retryWhen(retry)
         .doOnError { LOG.error("Error during connection", it) }
-        .then(
-          rawEvents
-            .flatMap {
-              when (it) {
-                is LoginSuccessResponse -> Mono.just(it)
-                is LoginFailedResponse -> Mono.error(LoginException(it.text))
-                else -> Mono.empty()
-              }
-            }.cast(LoginSuccessResponse::class.java)
-            .next()
-        ).doOnNext {
+        .then(waitForLoginResponse()).doOnNext {
           connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTED)
           this.autoReconnect = autoReconnect
         }.cache()
@@ -215,6 +205,16 @@ class FafLobbyClient(
     return loginMono as Mono<LoginSuccessResponse>
   }
 
+  private fun waitForLoginResponse() = rawEvents
+    .flatMap {
+      when (it) {
+        is LoginSuccessResponse -> Mono.just(it)
+        is LoginFailedResponse -> Mono.error(LoginException(it.text))
+        else -> Mono.error(IllegalStateException("Login message not received instead was: $it"))
+      }
+    }.cast(LoginSuccessResponse::class.java)
+    .next()
+
   private fun authenticateFromSession(config: Config) = rawEvents.flatMap { message ->
       when (message) {
         is SessionResponse -> config.tokenMono.flatMap { token ->
@@ -222,7 +222,7 @@ class FafLobbyClient(
             send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
           }
         }
-        else -> Mono.empty()
+        else -> Mono.error(IllegalStateException("Session response not received instead was: $message"))
       }
     }.next()
 
