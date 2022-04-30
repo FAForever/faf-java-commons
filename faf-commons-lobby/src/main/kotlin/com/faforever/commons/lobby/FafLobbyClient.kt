@@ -48,10 +48,10 @@ class FafLobbyClient(
   private var connection: Connection? = null
   private var pingDisposable: Disposable? = null
   private var loginMono: Mono<LoginSuccessResponse>? = null
+  private var connecting: Boolean = false
 
   var minPingIntervalSeconds: Long = 60
   var autoReconnect: Boolean = true
-  var connecting: Boolean = false
 
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().multicast().directBestEffort()
   private val disconnectsSink: Sinks.Many<Unit> = Sinks.many().multicast().directBestEffort()
