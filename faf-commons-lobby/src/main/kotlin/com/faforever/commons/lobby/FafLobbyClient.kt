@@ -286,8 +286,10 @@ class FafLobbyClient(
     }
 
   private fun send(message: ClientMessage) {
-    LOG.debug("sending {}", message)
-    LOG.debug("Emit is {}", outboundSink.tryEmitNext(message))
+    Mono.fromCallable {
+      LOG.debug("sending {}", message)
+      LOG.debug("Emit is {}", outboundSink.tryEmitNext(message))
+    }.subscribeOn(Schedulers.single()).subscribe()
   }
 
   private fun handle(message: ServerMessage): Mono<Unit> =
