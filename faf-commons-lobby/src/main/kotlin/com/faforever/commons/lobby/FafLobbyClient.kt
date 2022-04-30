@@ -53,12 +53,12 @@ class FafLobbyClient(
   var minPingIntervalSeconds: Long = 60
   var autoReconnect: Boolean = true
 
-  private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().multicast().directBestEffort()
-  private val disconnectsSink: Sinks.Many<Unit> = Sinks.many().multicast().directBestEffort()
-  private val rawEvents = eventSink.asFlux()
-  override val disconnects = disconnectsSink.asFlux()
+  private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().unicast().onBackpressureBuffer()
+  private val disconnectsSink: Sinks.Many<Unit> = Sinks.many().unicast().onBackpressureBuffer()
+  private val rawEvents = eventSink.asFlux().publish().autoConnect()
+  override val disconnects = disconnectsSink.asFlux().publish().autoConnect()
 
-  override val events = eventSink.asFlux().filter {
+  override val events = rawEvents.filter {
     it !is ServerPingMessage &&
       it !is ServerPongMessage &&
       it !is SessionResponse &&
@@ -226,7 +226,7 @@ class FafLobbyClient(
 
         LOG.info("Disconnecting from server")
         outboundSink.tryEmitComplete()
-        conn.dispose()
+        conn.disposeNow()
       }
     }
   }
