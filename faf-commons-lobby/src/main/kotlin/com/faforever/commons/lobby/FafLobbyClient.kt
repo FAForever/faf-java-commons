@@ -229,7 +229,9 @@ class FafLobbyClient(
       LOG.debug("Seeing {}", it)
       it is SessionResponse
     }.next().cast(SessionResponse::class.java).doOnNext { message ->
+      LOG.debug("processing {}", message)
       config.tokenMono.doOnNext { token ->
+        LOG.debug("using {}", token)
         send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
       }.subscribeOn(Schedulers.immediate()).subscribe()
     }.subscribe()
