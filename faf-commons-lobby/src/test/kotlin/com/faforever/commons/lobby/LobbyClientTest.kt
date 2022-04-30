@@ -312,9 +312,16 @@ class LobbyClientTest {
   fun testPingInterval() {
     instance.minPingIntervalSeconds = 1
 
+    assertMessageCommandTypeSent("ping")
+
     sendFromServer(ServerPongMessage())
 
-    assertMessageCommandTypeSent("ping")
+    assertTrue(
+      serverMessagesReceived.filter {
+        it.contains(
+          "\"command\":\"ping\""
+        )
+      }.take(Duration.ofSeconds(2)).count().block() == 2L)
   }
 
   @Test

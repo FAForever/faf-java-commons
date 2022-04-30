@@ -115,7 +115,7 @@ class FafLobbyClient(
           }
           .doOnNext {
             pingDisposable?.dispose()
-            pingDisposable = ping().delaySubscription(Duration.ofSeconds(minPingIntervalSeconds))
+            pingDisposable = pingWithDelay()
               .subscribeOn(Schedulers.single())
               .subscribe()
           }
@@ -140,6 +140,11 @@ class FafLobbyClient(
                 LOG.error("Error during serialization of message {}", it, throwable)
                 Mono.empty()
               }
+            }.doOnNext {
+              pingDisposable?.dispose()
+              pingDisposable = pingWithDelay()
+                .subscribeOn(Schedulers.single())
+                .subscribe()
             }
         ).then()
 
@@ -178,6 +183,8 @@ class FafLobbyClient(
       }
     }
   }
+
+  private fun pingWithDelay(): Mono<Unit> = ping().delaySubscription(Duration.ofSeconds(minPingIntervalSeconds))
 
   private fun ping(): Mono<Unit> =
     Mono.fromCallable {
