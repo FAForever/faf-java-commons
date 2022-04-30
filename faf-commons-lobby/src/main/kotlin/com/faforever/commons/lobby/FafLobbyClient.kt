@@ -193,10 +193,15 @@ class FafLobbyClient(
 
       loginMono = openConnection()
         .then(Mono.fromCallable { send(SessionRequest(config.version, config.userAgent)) })
-        .then(authenticateFromSession(config))
         .retryWhen(retry)
         .doOnError { LOG.error("Error during connection", it) }
-        .then(waitForLoginResponse()).doOnNext {
+        .flatMap {
+          LOG.info("Waiting for session response")
+          authenticateFromSession(config) }
+        .flatMap {
+          LOG.info("Waiting for auth response")
+          waitForLoginResponse() }
+        .doOnNext {
           connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTED)
           this.autoReconnect = autoReconnect
         }.cache()
