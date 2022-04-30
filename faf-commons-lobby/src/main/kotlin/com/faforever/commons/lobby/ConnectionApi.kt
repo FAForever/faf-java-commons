@@ -20,6 +20,9 @@ interface ConnectionApi {
 
 class LoginException(reason: String?, throwable: Throwable? = null) : Exception(reason, throwable)
 
+enum class ConnectionStatus {
+  DISCONNECTED, CONNECTING, CONNECTED
+}
 
 // ***********************
 // *** SERVER MESSAGES ***
@@ -43,7 +46,7 @@ internal class InvalidResponse : ServerMessage
 
 /**
  * A general message from the server (automated or broadcast from admin) to display to the user.
- * FIXME: Should maybe offer event codes for translations inc ase of automated responses.
+ * FIXME: Should maybe offer event codes for translations in case of automated responses.
  */
 data class NoticeInfo(
   val style: String?,

@@ -103,9 +103,9 @@ interface FafLobbyApi :
   val events: Flux<ServerMessage>
 
   /**
-   * Emits whenever the tcp connection is closed
+   * Emits whenever the tcp connection status changes
    */
-  val disconnects: Flux<Unit>
+  val connectionStatus: Flux<ConnectionStatus>
 }
 
 /// ****************

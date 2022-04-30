@@ -29,7 +29,7 @@ class FafLobbyClient(
   }
 
   data class Config(
-    val token: String,
+    val tokenMono: Mono<String>,
     val version: String,
     val userAgent: String,
     val host: String,
@@ -54,9 +54,9 @@ class FafLobbyClient(
   var autoReconnect: Boolean = true
 
   private val eventSink: Sinks.Many<ServerMessage> = Sinks.many().unicast().onBackpressureBuffer()
-  private val disconnectsSink: Sinks.Many<Unit> = Sinks.many().unicast().onBackpressureBuffer()
+  private val connectionStatusSink: Sinks.Many<ConnectionStatus> = Sinks.many().unicast().onBackpressureBuffer()
   private val rawEvents = eventSink.asFlux().publish().autoConnect()
-  override val disconnects = disconnectsSink.asFlux().publish().autoConnect()
+  override val connectionStatus = connectionStatusSink.asFlux().publish().autoConnect()
 
   override val events = rawEvents.filter {
     it !is ServerPingMessage &&
@@ -81,7 +81,7 @@ class FafLobbyClient(
       LOG.info("Disconnected from server")
       it.dispose()
       pingDisposable?.dispose()
-      disconnectsSink.tryEmitNext(Unit)
+      connectionStatusSink.tryEmitNext(ConnectionStatus.DISCONNECTED)
       if (autoReconnect && !connecting) {
         LOG.info("Attempting to reconnect")
         connectAndLogin(this.config).subscribe()
@@ -169,6 +169,7 @@ class FafLobbyClient(
         Mono.firstWithSignal(inboundMono, outboundMono)
       }
       .connect()
+      .doOnSubscribe { connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTING) }
   }
 
   override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse> {
@@ -208,6 +209,7 @@ class FafLobbyClient(
         )
         .doOnNext {
           connecting = false
+          connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTED)
         }.cache()
     }
 
@@ -251,10 +253,10 @@ class FafLobbyClient(
   }
 
   private fun handle(message: ServerMessage): Mono<Unit> = when (message) {
-    is SessionResponse -> Mono.fromCallable {
+    is SessionResponse -> config.tokenMono.map {
       send(
         AuthenticateRequest(
-          config.token,
+          it,
           message.session,
           config.generateUid.apply(message.session),
         )
