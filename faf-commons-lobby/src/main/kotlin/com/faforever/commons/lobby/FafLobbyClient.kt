@@ -95,7 +95,7 @@ class FafLobbyClient(
           connecting = false
           if (autoReconnect) {
             LOG.info("Attempting to reconnect")
-            connectAndLogin(this.config).subscribeOn(Schedulers.immediate()).subscribe()
+            connectAndLogin(this.config).subscribeOn(Schedulers.single()).subscribe()
           }
         }
       }
@@ -220,7 +220,7 @@ class FafLobbyClient(
         is LoginSuccessResponse -> loginSink.tryEmitValue(it)
         is LoginFailedResponse -> loginSink.tryEmitError(LoginException(it.text))
       }
-    }.subscribeOn(Schedulers.immediate()).subscribe()
+    }.subscribeOn(Schedulers.single()).subscribe()
   }
 
   private fun authenticateOnNextSession(config: Config) {
@@ -233,7 +233,7 @@ class FafLobbyClient(
       config.tokenMono.doOnNext { token ->
         LOG.debug("using {}", token)
         send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
-      }.subscribeOn(Schedulers.immediate()).subscribe()
+      }.subscribeOn(Schedulers.single()).subscribe()
     }.subscribe()
   }
 
