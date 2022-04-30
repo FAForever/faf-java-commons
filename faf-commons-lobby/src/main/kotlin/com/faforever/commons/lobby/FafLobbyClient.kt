@@ -73,6 +73,7 @@ class FafLobbyClient(
     .doOnDisconnected {
       LOG.info("Disconnected from server")
       it.dispose()
+      pingDisposable?.dispose()
       disconnectsSink.tryEmitNext(Unit)
     }
 
