@@ -593,7 +593,7 @@ class LobbyClientTest {
         sendFromServer(loginServerMessage)
       }.subscribe()
 
-    stepVerifier.verify()
+    stepVerifier.verify(verificationDuration)
   }
 
   @Test
