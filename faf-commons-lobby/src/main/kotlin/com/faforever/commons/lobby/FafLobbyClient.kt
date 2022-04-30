@@ -228,7 +228,7 @@ class FafLobbyClient(
       config.tokenMono.doOnNext { token ->
         send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
       }.subscribeOn(Schedulers.immediate()).subscribe()
-    }.subscribeOn(Schedulers.immediate()).subscribe()
+    }.subscribe()
   }
 
   private fun createRetrySpec(config: Config) =
