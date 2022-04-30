@@ -134,7 +134,7 @@ class LobbyClientTest {
       .expectComplete()
       .verifyLater()
 
-    StepVerifier.create(instance.connectAndLogin(config)).expectNextCount(1).verifyComplete()
+    StepVerifier.create(instance.connectAndLogin(config)).expectNextCount(1).expectComplete().verify(verificationDuration)
 
     stepVerifier.verify(verificationDuration)
   }

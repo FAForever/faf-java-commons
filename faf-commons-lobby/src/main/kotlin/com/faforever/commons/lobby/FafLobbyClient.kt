@@ -87,7 +87,6 @@ class FafLobbyClient(
   init {
     rawEvents.filter { it is ServerPingMessage }.doOnNext { send(ClientPongMessage()) }.subscribe()
     connectionStatus.doOnNext {
-      LOG.info("{}", it)
       when (it) {
         ConnectionStatus.CONNECTING -> connecting = true
         ConnectionStatus.CONNECTED -> connecting = false
