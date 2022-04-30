@@ -191,6 +191,8 @@ class FafLobbyClient(
       val autoReconnect = this.autoReconnect
       this.autoReconnect = false
 
+      LOG.debug("Starting login listeners")
+
       authenticateOnNextSession(config)
 
       val loginSink = Sinks.one<LoginSuccessResponse>()
@@ -211,6 +213,7 @@ class FafLobbyClient(
   }
 
   private fun emitNextLoginResponse(loginSink: Sinks.One<LoginSuccessResponse>) {
+    LOG.debug("Starting login listener")
     rawEvents.filter { it is LoginSuccessResponse || it is LoginFailedResponse }.next().doOnNext {
       when (it) {
         is LoginSuccessResponse -> loginSink.tryEmitValue(it)
@@ -220,22 +223,13 @@ class FafLobbyClient(
   }
 
   private fun authenticateOnNextSession(config: Config) {
+    LOG.debug("Starting session listener")
     rawEvents.filter { it is SessionResponse }.next().cast(SessionResponse::class.java).doOnNext { message ->
       config.tokenMono.doOnNext { token ->
         send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
       }.subscribeOn(Schedulers.immediate()).subscribe()
     }.subscribeOn(Schedulers.immediate()).subscribe()
   }
-
-  private fun waitForLoginResponse() = rawEvents
-    .flatMap {
-      when (it) {
-        is LoginSuccessResponse -> Mono.just(it)
-        is LoginFailedResponse -> Mono.error(LoginException(it.text))
-        else -> Mono.empty()
-      }
-    }.cast(LoginSuccessResponse::class.java)
-    .next()
 
   private fun createRetrySpec(config: Config) =
     Retry.fixedDelay(config.maxRetryAttempts, Duration.ofSeconds(config.retryWaitSeconds))
