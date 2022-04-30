@@ -1,10 +1,4 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
-import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
-import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
-import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR
-import org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_OUT
-import org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -31,7 +25,6 @@ tasks.withType<Test> {
   useJUnitPlatform()
 
   testLogging {
-    events(FAILED, STANDARD_ERROR, SKIPPED, STARTED, PASSED, STANDARD_OUT, STANDARD_ERROR)
     exceptionFormat = FULL
     showExceptions = true
     showCauses = true
