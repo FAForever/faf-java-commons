@@ -353,4 +353,11 @@ class LobbyClientTest {
 
     instance.disconnects.blockFirst(Duration.ofSeconds(5))
   }
+
+  @Test
+  fun testPingResponse() {
+    sendFromServer(ServerPingMessage())
+
+    assertMessageCommandTypeSent("pong")
+  }
 }

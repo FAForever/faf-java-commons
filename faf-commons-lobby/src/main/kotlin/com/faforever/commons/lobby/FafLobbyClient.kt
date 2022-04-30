@@ -76,6 +76,10 @@ class FafLobbyClient(
       disconnectsSink.tryEmitNext(Unit)
     }
 
+  init {
+    rawEvents.filter{ it is ServerPingMessage }.doOnNext { send(ClientPongMessage()) }.subscribe()
+  }
+
   private fun openConnection(): Mono<out Connection> {
     outboundSink = Sinks.many().unicast().onBackpressureBuffer()
     return client
@@ -109,10 +113,11 @@ class FafLobbyClient(
                 Mono.empty()
               }
           }
-          .publishOn(Schedulers.boundedElastic())
           .doOnNext {
             pingDisposable?.dispose()
-            pingDisposable = ping().delaySubscription(Duration.ofSeconds(minPingIntervalSeconds)).subscribe()
+            pingDisposable = ping().delaySubscription(Duration.ofSeconds(minPingIntervalSeconds))
+              .subscribeOn(Schedulers.single())
+              .subscribe()
           }
           .then()
 
