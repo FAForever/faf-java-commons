@@ -70,8 +70,8 @@ class FafLobbyClient(
       it !is LoginFailedResponse
   }
 
-  private val RETRY_SERIAL_FAILURE =
-    EmitFailureHandler { signalType: SignalType?, emitResult: EmitResult ->
+  private val retrySerialFailure =
+    EmitFailureHandler { _: SignalType?, emitResult: EmitResult ->
       (emitResult == EmitResult.FAIL_NON_SERIALIZED)
     }
 
@@ -90,7 +90,7 @@ class FafLobbyClient(
       LOG.info("Disconnected from server")
       it.dispose()
       pingDisposable?.dispose()
-      connectionStatusSink.emitNext(ConnectionStatus.DISCONNECTED, RETRY_SERIAL_FAILURE)
+      connectionStatusSink.emitNext(ConnectionStatus.DISCONNECTED, retrySerialFailure)
     }
 
   init {
@@ -188,7 +188,7 @@ class FafLobbyClient(
         Mono.firstWithSignal(inboundMono, outboundMono)
       }
       .connect()
-      .doOnSubscribe { connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, RETRY_SERIAL_FAILURE) }
+      .doOnSubscribe { connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, retrySerialFailure) }
   }
 
   override fun connectAndLogin(config: Config): Mono<LoginSuccessResponse> {
@@ -210,7 +210,7 @@ class FafLobbyClient(
         .doOnError { LOG.error("Error during connection", it) }
         .flatMap { loginSink.asMono().timeout(Duration.ofMinutes(1)) }
         .doOnNext {
-          connectionStatusSink.emitNext(ConnectionStatus.CONNECTED, RETRY_SERIAL_FAILURE)
+          connectionStatusSink.emitNext(ConnectionStatus.CONNECTED, retrySerialFailure)
           this.autoReconnect = autoReconnect
         }.cache()
     }
@@ -225,8 +225,8 @@ class FafLobbyClient(
       it is LoginSuccessResponse || it is LoginFailedResponse
     }.next().doOnNext {
       when (it) {
-        is LoginSuccessResponse -> loginSink.emitValue(it, RETRY_SERIAL_FAILURE)
-        is LoginFailedResponse -> loginSink.emitError(LoginException(it.text), RETRY_SERIAL_FAILURE)
+        is LoginSuccessResponse -> loginSink.emitValue(it, retrySerialFailure)
+        is LoginFailedResponse -> loginSink.emitError(LoginException(it.text), retrySerialFailure)
       }
     }.subscribeOn(Schedulers.immediate()).subscribe()
   }
@@ -272,7 +272,7 @@ class FafLobbyClient(
         }
 
         LOG.info("Disconnecting from server")
-        outboundSink.emitComplete(RETRY_SERIAL_FAILURE)
+        outboundSink.emitComplete(retrySerialFailure)
         conn.dispose()
       }
     }
@@ -295,12 +295,12 @@ class FafLobbyClient(
 
   private fun send(message: ClientMessage) {
     LOG.debug("sending {}", message)
-    LOG.debug("Emit is {}", outboundSink.emitNext(message, RETRY_SERIAL_FAILURE))
+    LOG.debug("Emit is {}", outboundSink.emitNext(message, retrySerialFailure))
   }
 
   private fun handle(message: ServerMessage): Mono<Unit> =
     Mono.fromCallable {
-      LOG.debug("Emit is {}", eventSink.emitNext(message, RETRY_SERIAL_FAILURE))
+      LOG.debug("Emit is {}", eventSink.emitNext(message, retrySerialFailure))
     }
 
   override fun broadcastMessage(message: String) = send(BroadcastRequest(message))

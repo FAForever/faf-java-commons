@@ -14,6 +14,7 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
+import reactor.core.publisher.SignalType
 import reactor.core.publisher.Sinks
 import reactor.netty.Connection
 import reactor.netty.DisposableServer
@@ -49,6 +50,10 @@ class LobbyClientTest {
   private val playerUid = 123
   private val sessionId: Long = 456
   private val verificationDuration = Duration.of(TIMEOUT, TIMEOUT_UNIT)
+  private val retrySerialFailure =
+    Sinks.EmitFailureHandler { _: SignalType?, emitResult: Sinks.EmitResult ->
+      (emitResult == Sinks.EmitResult.FAIL_NON_SERIALIZED)
+    }
 
   @BeforeEach
   fun setUp() {
@@ -142,7 +147,7 @@ class LobbyClientTest {
   }
 
   private fun sendFromServer(fafServerMessage: ServerMessage) {
-    serverSentSink.tryEmitNext(objectMapper.writeValueAsString(fafServerMessage))
+    serverSentSink.emitNext(objectMapper.writeValueAsString(fafServerMessage), retrySerialFailure)
   }
 
   @AfterEach
