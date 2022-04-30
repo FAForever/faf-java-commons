@@ -191,6 +191,7 @@ class FafLobbyClient(
 
       loginMono = openConnection()
         .then(Mono.fromCallable { send(SessionRequest(config.version, config.userAgent)) })
+        .then(authenticateFromSession(config))
         .retryWhen(retry)
         .doOnError { LOG.error("Error during connection", it) }
         .then(
@@ -203,8 +204,7 @@ class FafLobbyClient(
               }
             }.cast(LoginSuccessResponse::class.java)
             .next()
-        )
-        .doOnNext {
+        ).doOnNext {
           connectionStatusSink.tryEmitNext(ConnectionStatus.CONNECTED)
           this.autoReconnect = autoReconnect
         }.cache()
@@ -212,6 +212,17 @@ class FafLobbyClient(
 
     return loginMono as Mono<LoginSuccessResponse>
   }
+
+  private fun authenticateFromSession(config: Config) = rawEvents.flatMap { message ->
+      when (message) {
+        is SessionResponse -> config.tokenMono.flatMap { token ->
+          Mono.fromCallable {
+            send(AuthenticateRequest(token, message.session, config.generateUid.apply(message.session)))
+          }
+        }
+        else -> Mono.empty()
+      }
+    }.next()
 
   private fun createRetrySpec(config: Config) =
     Retry.fixedDelay(config.maxRetryAttempts, Duration.ofSeconds(config.retryWaitSeconds))
@@ -265,21 +276,11 @@ class FafLobbyClient(
     outboundSink.tryEmitNext(message)
   }
 
-  private fun handle(message: ServerMessage): Mono<Unit> = when (message) {
-    is SessionResponse -> config.tokenMono.map {
-      send(
-        AuthenticateRequest(
-          it,
-          message.session,
-          config.generateUid.apply(message.session),
-        )
-      )
-    }
-    else -> Mono.fromCallable {
+  private fun handle(message: ServerMessage): Mono<Unit> =
+    Mono.fromCallable {
       eventSink.tryEmitNext(message)
       Unit
     }
-  }
 
   override fun broadcastMessage(message: String) = send(BroadcastRequest(message))
 
