@@ -130,7 +130,7 @@ class FafLobbyClient(
               for (string in serverMessage.stringsToMask()) {
                 logMessage = logMessage.replace(string, LobbyProtocolMessage.CONFIDENTIAL_MASK)
               }
-              LOG.debug("Inbound message: {}", logMessage)
+              LOG.trace("Inbound message: {}", logMessage)
               serverMessage
             }.onErrorResume { throwable ->
               LOG.error("Error during deserialization of message {}", it, throwable)
@@ -173,7 +173,7 @@ class FafLobbyClient(
                 for (string in it.stringsToMask()) {
                   logMessage = logMessage.replace(string, LobbyProtocolMessage.CONFIDENTIAL_MASK)
                 }
-                LOG.debug("Outbound message: {}", logMessage)
+                LOG.trace("Outbound message: {}", logMessage)
                 jsonMessage + "\n"
               }.onErrorResume { throwable ->
                 LOG.error("Error during serialization of message {}", it, throwable)
