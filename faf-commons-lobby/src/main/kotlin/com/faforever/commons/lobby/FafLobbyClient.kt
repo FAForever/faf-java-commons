@@ -40,7 +40,6 @@ class FafLobbyClient(
     val generateUid: Function<Long, String>,
     val bufferSize: Int,
     val wiretap: Boolean = false,
-    val pongResponseWaitSeconds: Long,
     val maxRetryAttempts: Long,
     val retryWaitSeconds: Long,
   )

@@ -114,7 +114,6 @@ class LobbyClientTest {
       { "abc" },
       1024 * 1024,
       false,
-      1,
       5,
       5
     )
@@ -511,7 +510,6 @@ class LobbyClientTest {
       { "abc" },
       1024 * 1024,
       false,
-      1,
       5,
       5
     )
