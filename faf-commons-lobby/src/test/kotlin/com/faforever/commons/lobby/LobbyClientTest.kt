@@ -487,36 +487,6 @@ class LobbyClientTest {
   }
 
   @Test
-  fun testPongInterval() {
-    val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .assertNext { assertCommandMatch(it, ClientPingMessage()) }
-      .expectComplete()
-      .verifyLater()
-
-    instance.minPingIntervalSeconds = 1
-
-    sendFromServer(ServerPongMessage())
-
-    stepVerifier.verify(verificationDuration)
-  }
-
-  @Test
-  fun testPongIntervalFailure() {
-    val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
-      .assertNext { assertCommandMatch(it, ClientPingMessage()) }
-      .expectComplete()
-      .verifyLater()
-
-    instance.minPingIntervalSeconds = 1
-
-    sendFromServer(ServerPongMessage())
-
-    instance.connectionStatus.blockFirst(Duration.ofSeconds(10))
-
-    stepVerifier.verify(verificationDuration)
-  }
-
-  @Test
   fun testPingResponse() {
     val stepVerifier = StepVerifier.create(serverMessagesReceived.take(1))
       .assertNext { assertCommandMatch(it, ClientPongMessage()) }
