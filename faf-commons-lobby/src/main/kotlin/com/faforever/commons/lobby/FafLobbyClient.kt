@@ -279,14 +279,6 @@ class FafLobbyClient(
   private fun ping(): Mono<Unit> =
     Mono.fromCallable {
       send(ClientPingMessage())
-    }.then(
-      events.filter { it is ServerPongMessage }
-        .next()
-        .timeout(Duration.ofSeconds(config.pongResponseWaitSeconds))
-        .map { }
-    ).doOnError {
-      LOG.error("Server did not respond to ping disconnecting")
-      disconnect()
     }
 
   private fun send(message: ClientMessage) {
