@@ -13,6 +13,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -26,6 +27,17 @@ import static java.nio.file.Files.list;
 
 // TODO: move to shared faf code
 public final class PreviewGenerator {
+
+  public static class IllegalInput extends RuntimeException{
+
+    public IllegalInput(String message) {
+      super(message);
+    }
+
+    public IllegalInput(String message, Exception cause) {
+      super(message, cause);
+    }
+  }
 
   private static final double RESOURCE_ICON_RATIO = 20 / 1024d;
   private static final String MASS_IMAGE = "/images/map_markers/mass.png";
@@ -48,13 +60,15 @@ public final class PreviewGenerator {
 
       MapData mapData = parseMap(mapPath);
       if (mapData == null) {
-        throw new RuntimeException("mapdata is null after parseMap from: " + mapPath);
+        throw new IllegalInput("mapdata is null after parseMap from: " + mapPath);
       }
 
       previewImage = getDdsImage(mapData);
       previewImage = scale(previewImage, width, height);
 
       addMarkers(previewImage, mapData);
+    } catch (EOFException e){
+      throw new IllegalInput("File too short and/or inconsistent", e);
     }
     return previewImage;
   }
@@ -71,13 +85,16 @@ public final class PreviewGenerator {
       int ddsSize = mapInput.readInt();
       // Skip DDS header
       mapInput.skipBytes(128);
-
+      if(ddsSize<128 || ddsSize > 1_000_000){
+        throw new IllegalInput("Invalid image size");
+      }
       byte[] buffer = new byte[ddsSize - 128];
       mapInput.readFully(buffer);
 
       mapData.setDdsData(buffer);
 
       Path lua;
+      assert mapPath != null;
       try (Stream<Path> fileStream = list(mapPath.getParent())) {
         Optional<Path> saveLua = fileStream
           .filter(filePath -> filePath.toString().toLowerCase().endsWith("_save.lua"))
@@ -98,6 +115,9 @@ public final class PreviewGenerator {
     int ddsDimension = (int) (Math.sqrt(ddsData.length) / 2);
 
     bgraToAbgr(ddsData);
+    if(ddsDimension <=0){
+      throw new IllegalInput("DDS image must have size >=0");
+    }
     BufferedImage previewImage = new BufferedImage(ddsDimension, ddsDimension, BufferedImage.TYPE_4BYTE_ABGR);
     previewImage.setData(Raster.createRaster(previewImage.getSampleModel(), new DataBufferByte(ddsData, ddsData.length), new Point()));
     return previewImage;
@@ -147,6 +167,9 @@ public final class PreviewGenerator {
   }
 
   private static void bgraToAbgr(byte[] buffer) {
+    if(buffer.length %4 != 0){
+      throw new IllegalInput("buffer is not in bgra format");
+    }
     for (int i = 0; i < buffer.length; i += 4) {
       byte a = buffer[i + 3];
       buffer[i + 3] = buffer[i + 2];

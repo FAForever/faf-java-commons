@@ -5,7 +5,18 @@ dependencies {
   implementation("com.google.guava:guava:${guavaVersion}")
   implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
   implementation("com.github.luben:zstd-jni:${zstdVersion}")
+  testImplementation 'com.code-intelligence:jazzer-api:0.11.0'
   api("org.apache.commons:commons-compress:${apacheCommonsCompressVersion}")
 
   testImplementation("ch.qos.logback:logback-classic:${logbackVersion}")
+}
+
+task fuzzFatJar(type: Jar) {
+  baseName = 'fuzz-target-jar'
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  from sourceSets.test.output
+  from {
+    configurations.testRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  with jar
 }
