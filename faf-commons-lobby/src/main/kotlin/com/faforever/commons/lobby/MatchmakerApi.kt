@@ -28,6 +28,9 @@ interface MatchmakerApi {
   fun leaveParty()
 
   fun setPartyFactions(factions: Set<Faction>)
+
+  fun sendReady(ready: Boolean, requestId: String)
+
 }
 
 
@@ -105,9 +108,33 @@ data class SearchInfo(
 ) : ServerMessage
 
 
+
+/**
+ * Server asked if the client is ready for a gw or tournament game
+ */
+data class IsReadyRequest(
+  @JsonProperty("game_name")
+  val gameName: String,
+  @JsonProperty("response_time_seconds")
+  val responseTimeSeconds: Int,
+  @JsonProperty("request_id")
+  val requestId: String,
+) : ServerMessage
+
+
 // ***********************
 // *** CLIENT MESSAGES ***
 // ***********************
+
+
+/**
+ * Client answers if the client is ready for a gw or tournament game
+ */
+internal data class IsReadyResponse(
+  val ready: Boolean,
+  @JsonProperty("request_id")
+  val requestId: String,
+) : ClientMessage
 
 internal data class GameMatchmakingRequest(
   @JsonProperty("queue_name")

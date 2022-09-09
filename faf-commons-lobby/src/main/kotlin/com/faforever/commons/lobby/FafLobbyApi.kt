@@ -48,6 +48,7 @@ interface LobbyProtocolMessage {
   JsonSubTypes.Type(value = GameMatchmakingRequest::class, name = "game_matchmaking"),
   JsonSubTypes.Type(value = MatchmakerInfoRequest::class, name = "matchmaker_info"),
   JsonSubTypes.Type(value = AuthenticateRequest::class, name = "auth"),
+  JsonSubTypes.Type(value = IsReadyResponse::class, name = "is_ready_response"),
   // GPG Client Messages not directly instantiated they are only forwarded from the game so are serialized directly
 )
 interface ClientMessage : LobbyProtocolMessage
@@ -82,6 +83,7 @@ interface ClientMessage : LobbyProtocolMessage
   JsonSubTypes.Type(value = ConnectToPeerGpgCommand::class, name = "ConnectToPeer"),
   JsonSubTypes.Type(value = IceMsgGpgCommand::class, name = "IceMsg"),
   JsonSubTypes.Type(value = DisconnectFromPeerGpgCommand::class, name = "DisconnectFromPeer"),
+  JsonSubTypes.Type(value = IsReadyRequest::class, name = "is_ready"),
 )
 interface ServerMessage : LobbyProtocolMessage
 

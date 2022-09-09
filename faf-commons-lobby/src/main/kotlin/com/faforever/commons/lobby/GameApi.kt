@@ -82,6 +82,9 @@ enum class GameType {
   @JsonProperty("custom")
   CUSTOM,
 
+  @JsonProperty("tournament")
+  TOURNAMENT,
+
   @JsonProperty("matchmaker")
   MATCHMAKER,
 
