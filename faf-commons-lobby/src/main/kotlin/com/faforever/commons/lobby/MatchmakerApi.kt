@@ -29,7 +29,7 @@ interface MatchmakerApi {
 
   fun setPartyFactions(factions: Set<Faction>)
 
-  fun sendReady(ready: Boolean, requestId: String)
+  fun sendReady(requestId: String)
 
 }
 
@@ -131,7 +131,6 @@ data class IsReadyRequest(
  * Client answers if the client is ready for a gw or tournament game
  */
 internal data class IsReadyResponse(
-  val ready: Boolean,
   @JsonProperty("request_id")
   val requestId: String,
 ) : ClientMessage

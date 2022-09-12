@@ -370,7 +370,7 @@ class FafLobbyClient(
         .flatMapIterable { it.avatarList }
     )
 
-  override fun sendReady(ready: Boolean, requestId: String) = send(IsReadyResponse(ready, requestId))
+  override fun sendReady(requestId: String) = send(IsReadyResponse(requestId))
 
   override fun requestMatchmakerInfo() = send(MatchmakerInfoRequest())
 
