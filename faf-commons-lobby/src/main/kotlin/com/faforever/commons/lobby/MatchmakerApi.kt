@@ -115,6 +115,8 @@ data class SearchInfo(
 data class IsReadyRequest(
   @JsonProperty("game_name")
   val gameName: String,
+  @JsonProperty("featured_mod")
+  val featuredMod: String,
   @JsonProperty("response_time_seconds")
   val responseTimeSeconds: Int,
   @JsonProperty("request_id")
