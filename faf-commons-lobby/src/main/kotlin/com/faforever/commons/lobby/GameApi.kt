@@ -186,7 +186,7 @@ data class GameLaunchResponse(
    * Technical name of the leaderboard to select ratings to be shown
    */
   @JsonProperty("rating_type")
-  val leaderboard: String,
+  val leaderboard: String?,
   val args: List<String>,
 
   @JsonProperty("mapname")
