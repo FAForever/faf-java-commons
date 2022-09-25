@@ -158,8 +158,6 @@ internal data class KickPlayerFromPartyRequest(
   val playerId: Int
 ) : ClientMessage
 
-internal class ReadyPartyRequest : ClientMessage
-
 internal class UnreadyPartyRequest : ClientMessage
 
 internal class LeavePartyRequest : ClientMessage
