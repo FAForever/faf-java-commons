@@ -383,8 +383,6 @@ class FafLobbyClient(
 
   override fun kickPlayerFromParty(playerId: Int) = send(KickPlayerFromPartyRequest(playerId))
 
-  override fun readyParty() = send(ReadyPartyRequest())
-
   override fun unreadyParty() = send(UnreadyPartyRequest())
 
   override fun leaveParty() = send(LeavePartyRequest())

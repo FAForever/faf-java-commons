@@ -21,8 +21,6 @@ interface MatchmakerApi {
 
   fun kickPlayerFromParty(playerId: Int)
 
-  fun readyParty()
-
   fun unreadyParty()
 
   fun leaveParty()
