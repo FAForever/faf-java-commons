@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Type("coopResult")
+@Type("coopScenario")
 public class CoopScenario implements ElideEntity {
 
   @Id
