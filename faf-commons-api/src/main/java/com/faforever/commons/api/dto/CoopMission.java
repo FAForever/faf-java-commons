@@ -18,6 +18,7 @@ public class CoopMission implements ElideEntity {
   private String id;
   @ToString.Include
   private String name;
+  private int order;
   @ToString.Include
   private int version;
   private String category;
