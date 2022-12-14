@@ -27,6 +27,6 @@ public class CoopScenario implements ElideEntity {
   @ToString.Include
   private CoopType type;
   private CoopFaction faction;
-  @Relationship("missions")
-  private List<CoopMission> missions;
+  @Relationship("maps")
+  private List<CoopMission> maps;
 }
