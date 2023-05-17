@@ -1,5 +1,6 @@
 package com.faforever.commons.lobby
 
+import ch.qos.logback.classic.Level
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -8,6 +9,7 @@ import io.netty.handler.codec.LineBasedFrameDecoder
 import io.netty.handler.codec.string.LineEncoder
 import io.netty.handler.codec.string.LineSeparator
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -33,6 +35,13 @@ class LobbyClientTest {
     val TIMEOUT_UNIT = ChronoUnit.MILLIS
     val LOOPBACK_ADDRESS = InetAddress.getLoopbackAddress()
     val LOG: Logger = LoggerFactory.getLogger(FafLobbyClient::class.java)
+
+    @JvmStatic
+    @BeforeAll
+    fun setLogLevel(): Unit {
+      val lobbyLogger = LoggerFactory.getLogger("com.faforever.commons.lobby") as ch.qos.logback.classic.Logger
+      lobbyLogger.level = Level.TRACE
+    }
   }
 
   private val objectMapper: ObjectMapper = ObjectMapper().registerModule(KotlinModule())

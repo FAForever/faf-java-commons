@@ -16,7 +16,7 @@ dependencies {
   implementation("io.projectreactor.netty:reactor-netty:1.1.6")
   api("io.projectreactor:reactor-core:3.5.5")
   testImplementation("io.projectreactor:reactor-test:3.4.3")
-  testImplementation("ch.qos.logback:logback-classic:1.2.3")
+  testImplementation("ch.qos.logback:logback-classic:1.2.9")
   testImplementation("org.slf4j:slf4j-api:1.7.25")
   val jacksonVersion = "2.12.2"
   testImplementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
