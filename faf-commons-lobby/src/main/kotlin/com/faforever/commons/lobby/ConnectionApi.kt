@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono
  */
 interface ConnectionApi {
 
-  fun connectAndLogin(config: FafLobbyClient.Config): Mono<Void>
+  fun connectAndLogin(config: FafLobbyClient.Config): Mono<Player>
 
   fun disconnect()
 

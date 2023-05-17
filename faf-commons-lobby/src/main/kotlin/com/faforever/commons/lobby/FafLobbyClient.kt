@@ -69,13 +69,14 @@ class FafLobbyClient(
       it !is LoginFailedResponse
   }
 
-  private val loginResponseMono = rawEvents.ofType(LoginResponse::class.java).next()
-    .flatMap<Unit> {
+  private val loginResponseMono = rawEvents.ofType(LoginResponse::class.java).next().flatMap {
       when (it) {
-        is LoginSuccessResponse -> Mono.empty()
+        is LoginSuccessResponse -> Mono.just(it.me)
         is LoginFailedResponse -> Mono.error(LoginException(it.text))
       }
     }.timeout(Duration.ofMinutes(1))
+    .doOnError(LoginException::class.java) { kicked = true }
+
 
   private val loginRequestMono = Mono.fromRunnable<Unit> {
     prepareAuthenticateOnNextSession(config)
@@ -84,18 +85,18 @@ class FafLobbyClient(
 
   private val loggedInMono = Mono.defer {
     openConnection()
-      .then(Mono.`when`(loginResponseMono, loginRequestMono))
+      .then(loginRequestMono)
+      .then(loginResponseMono)
       .retryWhen(createRetrySpec(config))
   }
-    .doOnError { LOG.error("Error during connection", it); disconnect() }
+    .doOnError { LOG.error("Error during connection", it); connection?.dispose() }
     .doOnCancel { LOG.debug("Login cancelled"); disconnect() }
     .doOnSuccess {
       connectionStatusSink.emitNext(ConnectionStatus.CONNECTED, retrySerialFailure)
     }
     .materialize()
-    .filter { it.isOnComplete || it.isOnError }
     .cacheInvalidateIf { it.isOnError || (!connecting && (connection == null || connection?.isDisposed == true)) }
-    .dematerialize<Void>()
+    .dematerialize<Player>()
 
 
   private val retrySerialFailure =
@@ -224,7 +225,7 @@ class FafLobbyClient(
       .doOnSubscribe { connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, retrySerialFailure) }
   }
 
-  override fun connectAndLogin(config: Config): Mono<Void> {
+  override fun connectAndLogin(config: Config): Mono<Player> {
     this.config = config
     kicked = false
     return loggedInMono
