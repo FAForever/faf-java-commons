@@ -530,6 +530,30 @@ class LobbyClientTest {
   }
 
   @Test
+  fun testOnlySingleConnect() {
+    val config = FafLobbyClient.Config(
+      Mono.just(token),
+      "0",
+      "downlords-faf-client",
+      disposableServer.host(),
+      disposableServer.port(),
+      { "abc" },
+      1024 * 1024,
+      false,
+      5,
+      5
+    )
+
+    val verifyLater = StepVerifier.create(serverMessagesReceived.take(Duration.ofSeconds(5)))
+      .expectComplete()
+      .verifyLater();
+
+    StepVerifier.create(instance.connectAndLogin(config)).expectNextCount(1).verifyComplete()
+
+    verifyLater.verify()
+  }
+
+  @Test
   fun testAutoReconnect() {
     currentConnection.dispose()
 
