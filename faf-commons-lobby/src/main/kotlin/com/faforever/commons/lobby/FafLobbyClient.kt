@@ -76,16 +76,13 @@ class FafLobbyClient(
       }
     }.timeout(Duration.ofMinutes(1))
     .doOnError(LoginException::class.java) { kicked = true }
+    .doOnSubscribe {
+      prepareAuthenticateOnNextSession()
+      send(SessionRequest(config.version, config.userAgent))
+    }
 
-
-  private val loginRequestMono = Mono.fromRunnable<Unit> {
-    prepareAuthenticateOnNextSession(config)
-    send(SessionRequest(config.version, config.userAgent))
-  }
-
-  private val loggedInMono = Mono.defer {
+  private val loginMono = Mono.defer {
     openConnection()
-      .then(loginRequestMono)
       .then(loginResponseMono)
       .retryWhen(createRetrySpec(config))
   }
@@ -229,15 +226,15 @@ class FafLobbyClient(
     this.config = config
     kicked = false
     autoReconnect = true
-    return loggedInMono
+    return loginMono
   }
 
-  private fun prepareAuthenticateOnNextSession(config: Config) {
+  private fun prepareAuthenticateOnNextSession() {
     LOG.debug("Starting session listener")
     rawEvents.ofType(SessionResponse::class.java).next()
       .zipWith(config.tokenMono).doOnNext { messageTokenTuple ->
         send(AuthenticateRequest(messageTokenTuple.t2, messageTokenTuple.t1.session, config.generateUid.apply(messageTokenTuple.t1.session)))
-      }.subscribe()
+      }.subscribeOn(Schedulers.single()).subscribe()
   }
 
   private fun createRetrySpec(config: Config) =
