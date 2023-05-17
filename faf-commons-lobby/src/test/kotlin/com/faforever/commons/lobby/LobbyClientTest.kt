@@ -67,8 +67,8 @@ class LobbyClientTest {
       .doOnConnection {
         LOG.debug("New Client connected to server")
         currentConnection = it
-        it.addHandler(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
-          .addHandler(LineBasedFrameDecoder(1024 * 1024))
+        it.addHandlerFirst(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
+          .addHandlerLast(LineBasedFrameDecoder(1024 * 1024))
       }.doOnBound { disposableServer: DisposableServer ->
         LOG.debug(
           "Fake server listening at {} on port {}",
