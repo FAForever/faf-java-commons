@@ -51,8 +51,8 @@ class FafLobbyClient(
   private var connecting: Boolean = false
 
   var minPingIntervalSeconds: Long = 60
-  var autoReconnect: Boolean = true
 
+  private var autoReconnect: Boolean = false
   private var kicked: Boolean = false
   private val outboundSink: Sinks.Many<ClientMessage> = Sinks.many().unicast().onBackpressureBuffer()
   private val outboundMessages: Flux<ClientMessage> = outboundSink.asFlux().publish().autoConnect()
@@ -228,6 +228,7 @@ class FafLobbyClient(
   override fun connectAndLogin(config: Config): Mono<Player> {
     this.config = config
     kicked = false
+    autoReconnect = true
     return loggedInMono
   }
 
