@@ -276,8 +276,14 @@ public class ReplayDataParser {
             String functionName = readString(dataStream);
             Object lua = parseLua(dataStream);
 
+            // (ab)used by chat messages
             if (Objects.equals("GiveResourcesToPlayer", functionName)) {
               parseGiveResourcesToPlayer((Map<String, Object>) lua);
+            }
+
+            // used by specific events, such as pausing
+            if (Objects.equals("EventMessage", functionName)) {
+              parseEventMessage((Map<String, Object>) lua);
             }
 
             // No idea what this skips
@@ -372,6 +378,16 @@ public class ReplayDataParser {
           }
         }
       }
+    }
+  }
+
+  private void parseEventMessage(Map<String, Object> lua) {
+    if (lua.containsKey("fromFocusArmy") && lua.containsKey("event")) {
+      String sender = (String) lua.get("fromFocusArmy");
+      String event = (String) lua.get("event");
+
+      // this is a bit of a hack as it is not a chat message that players see ingame
+      chatMessages.add(new ChatMessage(tickToTime(ticks), sender, "", event));
     }
   }
 
