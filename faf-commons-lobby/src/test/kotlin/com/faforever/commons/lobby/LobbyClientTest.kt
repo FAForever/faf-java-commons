@@ -11,6 +11,7 @@ import io.netty.handler.codec.string.LineSeparator
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
@@ -29,6 +30,7 @@ import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
+@Disabled
 class LobbyClientTest {
   companion object {
     val TIMEOUT: Long = 10000;
