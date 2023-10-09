@@ -148,7 +148,7 @@ class FafLobbyClient(
 
   private fun openConnection(): Disposable {
     return webSocketClient
-      .uri(URI("wss", "", config.host, config.port, "", "", ""))
+      .uri(URI("ws", "", config.host, config.port, "", "", ""))
       .handle { inbound, outbound ->
         val inboundMono = inbound.receive()
           .asString(Charsets.UTF_8)
