@@ -150,7 +150,7 @@ class FafLobbyClient(
     return webSocketClient
       .uri(config.url)
       .handle { inbound, outbound ->
-        val inboundMono = inbound.aggregateFrames(100 * 1024 * 1024)
+        val inboundMono = inbound.aggregateFrames(config.bufferSize)
           .receive()
           .asString(Charsets.UTF_8)
           .doOnError { LOG.error("Inbound channel closed with error", it) }
