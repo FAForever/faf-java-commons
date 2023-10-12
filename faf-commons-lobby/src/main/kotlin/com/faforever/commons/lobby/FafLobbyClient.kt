@@ -38,8 +38,7 @@ class FafLobbyClient(
     val tokenMono: Mono<String>,
     val version: String,
     val userAgent: String,
-    val host: String,
-    val port: Int,
+    val url: String,
     val generateUid: Function<Long, String>,
     val bufferSize: Int,
     val wiretap: Boolean = false,
@@ -148,7 +147,7 @@ class FafLobbyClient(
 
   private fun openConnection(): Disposable {
     return webSocketClient
-      .uri(URI("ws", "", config.host, config.port, "", "", ""))
+      .uri(config.url)
       .handle { inbound, outbound ->
         val inboundMono = inbound.receive()
           .asString(Charsets.UTF_8)
