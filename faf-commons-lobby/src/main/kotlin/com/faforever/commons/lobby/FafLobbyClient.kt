@@ -26,6 +26,7 @@ import java.net.InetSocketAddress
 import java.net.URI
 import java.time.Duration
 import java.util.function.Function
+import java.util.stream.Collectors
 
 
 class FafLobbyClient(
@@ -151,7 +152,7 @@ class FafLobbyClient(
       .handle { inbound, outbound ->
         val inboundMono = inbound.receiveFrames()
           .windowUntil { it.isFinalFragment }
-          .flatMap { ByteBufFlux.fromInbound(it.map { frame -> frame.content() }).asString(Charsets.UTF_8) }
+          .flatMap { ByteBufFlux.fromInbound(it.map { frame -> frame.content() }).asString(Charsets.UTF_8).collect(Collectors.joining()) }
           .doOnError { LOG.error("Inbound channel closed with error", it) }
           .doOnComplete { LOG.info("Inbound channel closed") }
           .doOnCancel { LOG.info("Inbound channel cancelled") }
