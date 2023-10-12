@@ -115,8 +115,6 @@ class FafLobbyClient(
     .doOnConnected {
       val address = it.channel().remoteAddress() as InetSocketAddress
       LOG.info("Connected to {} on port {}", address.hostName, address.port)
-      it.addHandlerFirst(LineEncoder(LineSeparator.UNIX)) // TODO: This is not working. Raise a bug ticket! Workaround below
-        .addHandlerLast(LineBasedFrameDecoder(config.bufferSize))
       connection = it
     }.doOnDisconnected {
       LOG.info("Disconnected from server")
