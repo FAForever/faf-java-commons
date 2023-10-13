@@ -1,9 +1,6 @@
 package com.faforever.commons.lobby
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.netty.handler.codec.LineBasedFrameDecoder
-import io.netty.handler.codec.string.LineEncoder
-import io.netty.handler.codec.string.LineSeparator
 import io.netty.resolver.DefaultAddressResolverGroup
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,18 +12,13 @@ import reactor.core.publisher.Sinks
 import reactor.core.publisher.Sinks.EmitFailureHandler
 import reactor.core.publisher.Sinks.EmitResult
 import reactor.core.scheduler.Schedulers
-import reactor.netty.ByteBufFlux
 import reactor.netty.Connection
 import reactor.netty.http.client.HttpClient
-import reactor.netty.http.client.WebsocketClientSpec
-import reactor.netty.tcp.TcpClient
 import reactor.util.retry.Retry
 import reactor.util.retry.Retry.RetrySignal
 import java.net.InetSocketAddress
-import java.net.URI
 import java.time.Duration
 import java.util.function.Function
-import java.util.stream.Collectors
 
 
 class FafLobbyClient(
@@ -80,7 +72,7 @@ class FafLobbyClient(
       is LoginSuccessResponse -> Mono.just(it.me)
       is LoginFailedResponse -> Mono.error(LoginException(it.text))
     }
-  }.timeout(Duration.ofSeconds(10))
+  }.timeout(Duration.ofSeconds(30))
     .doOnError(LoginException::class.java) { kicked = true }
     .doFirst {
       prepareAuthenticateOnNextSession()
