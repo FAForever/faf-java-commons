@@ -150,9 +150,11 @@ class FafLobbyClient(
     return webSocketClient
       .uri(config.url)
       .handle { inbound, outbound ->
-        val inboundMono = inbound.receiveFrames()
-          .windowUntil { it.isFinalFragment }
-          .flatMap { ByteBufFlux.fromInbound(it.map { frame -> frame.content() }).asString(Charsets.UTF_8).collect(Collectors.joining()) }
+        val inboundMono = inbound.receive()
+          .asString()
+          .flatMapIterable { it.toCharArray().asIterable() }
+          .windowUntil { '\n' == it }
+          .flatMap { it.collectList().map { chars -> chars.toCharArray() }.map { charArray -> String(charArray) } }
           .doOnError { LOG.error("Inbound channel closed with error", it) }
           .doOnComplete { LOG.info("Inbound channel closed") }
           .doOnCancel { LOG.info("Inbound channel cancelled") }
