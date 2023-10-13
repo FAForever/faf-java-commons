@@ -50,8 +50,7 @@ class FafLobbyClient(
 
   private lateinit var config: Config
 
-  private var connection: Connection? = null;
-  private var connectionDisposable: Disposable? = null
+  private var connection: Connection? = null
   private var pingDisposable: Disposable? = null
   private var connecting: Boolean = false
 
@@ -152,8 +151,7 @@ class FafLobbyClient(
 
   private fun openConnection() {
     LOG.debug("Opening connection")
-    connectionDisposable?.dispose()
-    connectionDisposable = webSocketClient
+    webSocketClient
       .uri(config.url)
       .handle { inbound, outbound ->
         val inboundMono = inbound.receive()
@@ -228,6 +226,7 @@ class FafLobbyClient(
            of the connections finishes */
         Mono.firstWithSignal(inboundMono, outboundMono)
       }
+      .doOnCancel { LOG.info("Connection cancelled") }
       .doOnSubscribe {
         LOG.debug("Beginning connection process")
         connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, retrySerialFailure)
@@ -286,7 +285,7 @@ class FafLobbyClient(
     }
 
   private fun send(message: ClientMessage) {
-    LOG.trace("Sending {}", message)
+    LOG.trace("Sending message of type {}", message.javaClass)
     outboundSink.emitNext(message, retrySerialFailure)
   }
 
