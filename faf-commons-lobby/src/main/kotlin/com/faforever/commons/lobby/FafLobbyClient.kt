@@ -81,10 +81,7 @@ class FafLobbyClient(
       is LoginSuccessResponse -> Mono.just(it.me)
       is LoginFailedResponse -> Mono.error(LoginException(it.text))
     }
-  }.timeout(outboundMessages.ofType(SessionRequest::class.java)
-                            .next()
-                            .then(Mono.delay(Duration.ofSeconds(10)))
-                            .timeout(Duration.ofMinutes(1), Mono.empty()))
+  }.timeout(Duration.ofSeconds(10))
     .doOnError(LoginException::class.java) { kicked = true }
     .doFirst {
       prepareAuthenticateOnNextSession()
@@ -92,10 +89,9 @@ class FafLobbyClient(
     }
 
   private val loginMono = Mono.defer {
-    connectionAcquired.next().then(loginResponseMono.retryWhen(createRetrySpec(config))).doFirst {
-      connectionDisposable?.dispose()
-      connectionDisposable = openConnection()
-    }
+    connectionAcquired.next().then(loginResponseMono).doFirst {
+      openConnection()
+    }.retryWhen(createRetrySpec(config))
   }
     .doOnError { LOG.error("Error during connection", it); connection?.dispose() }
     .doOnCancel { LOG.debug("Login cancelled"); disconnect() }
@@ -154,9 +150,10 @@ class FafLobbyClient(
     }.subscribe()
   }
 
-  private fun openConnection(): Disposable {
+  private fun openConnection() {
     LOG.debug("Opening connection")
-    return webSocketClient
+    connectionDisposable?.dispose()
+    connectionDisposable = webSocketClient
       .uri(config.url)
       .handle { inbound, outbound ->
         val inboundMono = inbound.receive()
