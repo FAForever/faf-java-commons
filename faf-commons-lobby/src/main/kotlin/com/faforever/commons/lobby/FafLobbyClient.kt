@@ -79,7 +79,10 @@ class FafLobbyClient(
       is LoginSuccessResponse -> Mono.just(it.me)
       is LoginFailedResponse -> Mono.error(LoginException(it.text))
     }
-  }.timeout(Duration.ofMinutes(1))
+  }.timeout(outboundMessages.ofType(SessionRequest::class.java)
+                            .next()
+                            .then(Mono.delay(Duration.ofSeconds(10)))
+                            .timeout(Duration.ofMinutes(1), Mono.empty()))
     .doOnError(LoginException::class.java) { kicked = true }
     .doOnSubscribe {
       prepareAuthenticateOnNextSession()
@@ -96,6 +99,7 @@ class FafLobbyClient(
     .doOnSuccess {
       connectionStatusSink.emitNext(ConnectionStatus.CONNECTED, retrySerialFailure)
     }
+    .doOnSubscribe { LOG.debug("Starting login process") }
     .materialize()
     .cacheInvalidateIf { it.isOnError || (!connecting && (connection == null || connection?.isDisposed == true)) }
     .dematerialize<Player>()
@@ -147,6 +151,7 @@ class FafLobbyClient(
   }
 
   private fun openConnection(): Disposable {
+    LOG.debug("Opening connection")
     return webSocketClient
       .uri(config.url)
       .handle { inbound, outbound ->
@@ -222,8 +227,17 @@ class FafLobbyClient(
            of the connections finishes */
         Mono.firstWithSignal(inboundMono, outboundMono)
       }
-      .doOnSubscribe { connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, retrySerialFailure) }
-      .subscribe()
+      .doOnSubscribe {
+        LOG.debug("Beginning connection process")
+        connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, retrySerialFailure)
+      }
+      .subscribe(null, {
+        LOG.warn("Error in connection", it)
+        connectionStatusSink.emitNext(ConnectionStatus.DISCONNECTED, retrySerialFailure)
+      }, {
+        LOG.info("Connection closed")
+        connectionStatusSink.emitNext(ConnectionStatus.DISCONNECTED, retrySerialFailure)
+      })
   }
 
   override fun connectAndLogin(config: Config): Mono<Player> {
