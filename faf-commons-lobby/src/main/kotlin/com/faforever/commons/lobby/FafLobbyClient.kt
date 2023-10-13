@@ -46,6 +46,7 @@ class FafLobbyClient(
 
   private lateinit var config: Config
 
+  private var connectionDisposable: Disposable? = null
   private var connection: Connection? = null
   private var pingDisposable: Disposable? = null
   private var connecting: Boolean = false
@@ -149,7 +150,8 @@ class FafLobbyClient(
 
   private fun openConnection() {
     LOG.debug("Opening connection")
-    httpClient
+    connectionDisposable?.dispose()
+    connectionDisposable = httpClient
       .wiretap(config.wiretap)
       .websocket(WebsocketClientSpec.builder().maxFramePayloadLength(config.bufferSize).build())
       .uri(config.url)
@@ -189,7 +191,7 @@ class FafLobbyClient(
               .subscribeOn(Schedulers.single())
               .subscribe()
           }
-          .then(Mono.never<Unit>())
+          .then()
 
         val outboundMono = outbound.sendString(
           outboundMessages
@@ -231,6 +233,19 @@ class FafLobbyClient(
         LOG.debug("Beginning connection process")
         connectionStatusSink.emitNext(ConnectionStatus.CONNECTING, retrySerialFailure)
       }
+      .retryWhen(Retry.fixedDelay(5, Duration.ofSeconds(config.retryWaitSeconds / 5))
+        .doBeforeRetry { retry: RetrySignal ->
+          LOG.warn(
+            "Could not connect to server retrying: Attempt #{} of 5",
+            retry.totalRetries(),
+            retry.failure()
+          )
+        }.onRetryExhaustedThrow { spec, retrySignal ->
+          LoginException(
+            "Could not connect to server after ${spec.maxAttempts} attempts",
+            retrySignal.failure()
+          )
+        })
       .subscribe(null, {
         LOG.warn("Error in connection", it)
         connectionStatusSink.emitNext(ConnectionStatus.DISCONNECTED, retrySerialFailure)
