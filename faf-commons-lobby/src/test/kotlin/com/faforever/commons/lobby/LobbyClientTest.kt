@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -31,6 +33,7 @@ import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
+@Execution(ExecutionMode.CONCURRENT)
 class LobbyClientTest {
   companion object {
     val TIMEOUT: Long = 30;
