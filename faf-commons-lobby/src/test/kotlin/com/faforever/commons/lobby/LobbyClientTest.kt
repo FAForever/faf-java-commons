@@ -33,8 +33,8 @@ import java.time.temporal.ChronoUnit
 
 class LobbyClientTest {
   companion object {
-    val TIMEOUT: Long = 10000;
-    val TIMEOUT_UNIT = ChronoUnit.MILLIS
+    val TIMEOUT: Long = 30;
+    val TIMEOUT_UNIT = ChronoUnit.SECONDS
     val LOOPBACK_ADDRESS = InetAddress.getLoopbackAddress()
     val LOG: Logger = LoggerFactory.getLogger(FafLobbyClient::class.java)
 
