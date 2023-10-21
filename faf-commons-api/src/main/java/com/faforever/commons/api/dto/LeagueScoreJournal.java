@@ -9,7 +9,7 @@ import lombok.ToString;
 @Data
 @ToString(onlyExplicitlyIncluded = true, callSuper = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Type("leagueSeasonScore")
+@Type("leagueScoreJournal")
 public class LeagueScoreJournal extends AbstractEntity<LeagueScoreJournal> {
   private Integer gameId;
   private Integer loginId;
