@@ -20,9 +20,9 @@ public class LeagueScoreJournal extends AbstractEntity<LeagueScoreJournal> {
   @Relationship("leagueSeason")
   private LeagueSeason leagueSeason;
 
-  @Relationship("leagueSeasonDivisionSubdivision")
+  @Relationship("leagueSeasonDivisionSubdivisionBefore")
   private LeagueSeasonDivisionSubdivision leagueSeasonDivisionSubdivisionBefore;
 
-  @Relationship("leagueSeasonDivisionSubdivision")
+  @Relationship("leagueSeasonDivisionSubdivisionAfter")
   private LeagueSeasonDivisionSubdivision leagueSeasonDivisionSubdivisionAfter;
 }
