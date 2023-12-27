@@ -26,7 +26,7 @@ class ServerMessageTest {
   fun deserializeLoginResponse() {
     val result = objectMapper.readValue<ServerMessage>(
       """
-       {"command":"welcome","me":{"id":76365,"login":"Brutus5000","avatar":{"url":"https://content.faforever.com/faf/avatars/SystemSoftware.png","tooltip":"DevOps Councillor"},"country":"DE","ratings":{"global":{"rating":[1194.13,80.9685],"number_of_games":224, "state":"offline"}}}}
+       {"command":"welcome","me":{"id":76365,"login":"Brutus5000","avatar":{"url":"https://content.faforever.com/faf/avatars/SystemSoftware.png","tooltip":"DevOps Councillor"},"country":"DE","ratings":{"global":{"rating":[1194.13,80.9685],"number_of_games":224}},"state":"offline"}}
      """.trimIndent()
     )
     assertEquals(
@@ -39,7 +39,8 @@ class ServerMessageTest {
           "DE",
           null,
           mapOf(
-            "global" to Player.LeaderboardStats(224, Player.LeaderboardStats.LeaderboardRating(1194.13f, 80.9685f))), Player.State.OFFLINE
+            "global" to Player.LeaderboardStats(224, Player.LeaderboardStats.LeaderboardRating(1194.13f, 80.9685f))),
+          Player.State.OFFLINE
         )
       ), result
     )
