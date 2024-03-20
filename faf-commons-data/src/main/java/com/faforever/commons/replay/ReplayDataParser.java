@@ -379,18 +379,13 @@ public class ReplayDataParser {
 
 
   void parseModeratorEvent(Map<String, Object> lua) {
-    System.out.println("DEBUG HIT moderatorEvent");
-    //System.out.println(lua);
-    //{Message=Created a marker with the text: 'my fabelous marker test', From=1.0}
-    //{Message=Created a ping of type 'Alert', From=1.0}
-    //{Message=Created a ping of type 'Move', From=1.0}
-    //{Message=Created a ping of type 'Move', From=1.0}
-    //{Message=Created a ping of type 'Attack', From=1.0}
-    //{Message=Self-destructed 1 units, From=1.0}
     String messageContent = (String) lua.get("Message");
     Float fromFloat = (Float) lua.get("From");
-    //TODO activeCommandSource 0 for now, needs to be handled later, dunno how to replicate that in replay file
-    moderatorEvents.add(new ModeratorEvent(tickToTime(ticks), Float.toString(fromFloat), messageContent, 0));
+    int activeCommandSource = 0; // activeCommandSource is not available in TestModeratorEvents.fafreplay, yet
+    if (lua.containsKey("activeCommandSource")) {
+      activeCommandSource = ((Number) lua.get("activeCommandSource")).intValue();
+    }
+    moderatorEvents.add(new ModeratorEvent(tickToTime(ticks), Float.toString(fromFloat), messageContent, activeCommandSource));
   }
 
 

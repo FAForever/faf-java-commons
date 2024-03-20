@@ -16,9 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -130,15 +129,13 @@ class ReplayDataParserTest {
   @Test
   public void testParseModeratorEvent() throws CompressorException, IOException {
     Path replayFile = temporaryFolder.resolve("TestModeratorEvents.fafreplay");
-    Files.copy(getClass().getResourceAsStream("/replay/TestModeratorEvents.fafreplay"), replayFile);
+    Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/TestModeratorEvents.fafreplay")), replayFile);
 
     ReplayDataParser parser = new ReplayDataParser(replayFile, objectMapper);
 
     List<ModeratorEvent> moderatorEvents = parser.getModeratorEvents();
-    //TODO test cases when parser is working
-    System.out.println("testParseModeratorEvent:");
-    for (ModeratorEvent moderatorEvent : moderatorEvents) {
-      System.out.println(moderatorEvent);
+    ModeratorEvent firstEvent = moderatorEvents.getFirst();
+    assertEquals(Duration.ofSeconds(20), firstEvent.getTime());
+    assertEquals("Created a marker with the text: 'my fabelous marker test'", firstEvent.getMessage());
     }
-  }
 }
