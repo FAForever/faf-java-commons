@@ -58,6 +58,8 @@ public class ReplayDataParser {
   @Getter
   private List<ChatMessage> chatMessages;
   @Getter
+  private List<ModeratorEvent> moderatorEvents;
+  @Getter
   private Map<Integer, Map<Integer, AtomicInteger>> commandsPerMinuteByPlayer;
   private float x;
   private float y;
@@ -73,6 +75,7 @@ public class ReplayDataParser {
     this.objectMapper = objectMapper;
     armies = new HashMap<>();
     chatMessages = new ArrayList<>();
+    moderatorEvents = new ArrayList<>();
     commandsPerMinuteByPlayer = new HashMap<>();
     parse();
   }
@@ -278,6 +281,13 @@ public class ReplayDataParser {
 
             if (Objects.equals("GiveResourcesToPlayer", functionName)) {
               parseGiveResourcesToPlayer((Map<String, Object>) lua);
+            }
+
+            if (Objects.equals("ModeratorEvent", functionName)) {
+              Map<String, Object> event = (Map<String, Object>) lua;
+              int from = (Integer) event.get("From");
+              String message = (String) event.get("Message");
+              int activeCommandSource = (Integer) event.get("activeCommandSource");
             }
 
             // No idea what this skips
