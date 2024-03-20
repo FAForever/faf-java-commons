@@ -380,12 +380,12 @@ public class ReplayDataParser {
 
   void parseModeratorEvent(Map<String, Object> lua) {
     String messageContent = (String) lua.get("Message");
-    Float fromFloat = (Float) lua.get("From");
-    int activeCommandSource = 0; // activeCommandSource is not available in TestModeratorEvents.fafreplay, yet
+    int fromInt = ((Number) lua.get("From")).intValue();
+    int activeCommandSource = 0; // activeCommandSource is not available in .fafreplay, yet
     if (lua.containsKey("activeCommandSource")) {
       activeCommandSource = ((Number) lua.get("activeCommandSource")).intValue();
     }
-    moderatorEvents.add(new ModeratorEvent(tickToTime(ticks), Float.toString(fromFloat), messageContent, activeCommandSource));
+    moderatorEvents.add(new ModeratorEvent(tickToTime(ticks), Integer.toString(fromInt), messageContent, activeCommandSource));
   }
 
 
