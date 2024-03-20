@@ -20,12 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -284,10 +279,7 @@ public class ReplayDataParser {
             }
 
             if (Objects.equals("ModeratorEvent", functionName)) {
-              Map<String, Object> event = (Map<String, Object>) lua;
-              int from = (Integer) event.get("From");
-              String message = (String) event.get("Message");
-              int activeCommandSource = (Integer) event.get("activeCommandSource");
+              parseModeratorEvent((Map<String, Object>) lua);
             }
 
             // No idea what this skips
@@ -384,6 +376,23 @@ public class ReplayDataParser {
       }
     }
   }
+
+
+  void parseModeratorEvent(Map<String, Object> lua) {
+    System.out.println("DEBUG HIT moderatorEvent");
+    //System.out.println(lua);
+    //{Message=Created a marker with the text: 'my fabelous marker test', From=1.0}
+    //{Message=Created a ping of type 'Alert', From=1.0}
+    //{Message=Created a ping of type 'Move', From=1.0}
+    //{Message=Created a ping of type 'Move', From=1.0}
+    //{Message=Created a ping of type 'Attack', From=1.0}
+    //{Message=Self-destructed 1 units, From=1.0}
+    String messageContent = (String) lua.get("Message");
+    Float fromFloat = (Float) lua.get("From");
+    //TODO activeCommandSource 0 for now, needs to be handled later, dunno how to replicate that in replay file
+    moderatorEvents.add(new ModeratorEvent(tickToTime(ticks), Float.toString(fromFloat), messageContent, 0));
+  }
+
 
   private Duration tickToTime(int tick) {
     return Duration.ofSeconds(tick / 10);

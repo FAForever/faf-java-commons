@@ -4,20 +4,25 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.LittleEndianDataInputStream;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ReplayDataParserTest {
 
@@ -120,5 +125,20 @@ class ReplayDataParserTest {
     byte[] data = new ReplayDataParser(replayFile, objectMapper).getData();
     byte[] reference = Files.readAllBytes(referenceFile);
     assertThat("Legacy compressed file matches reference", Arrays.equals(data, reference));
+  }
+
+  @Test
+  public void testParseModeratorEvent() throws CompressorException, IOException {
+    Path replayFile = temporaryFolder.resolve("TestModeratorEvents.fafreplay");
+    Files.copy(getClass().getResourceAsStream("/replay/TestModeratorEvents.fafreplay"), replayFile);
+
+    ReplayDataParser parser = new ReplayDataParser(replayFile, objectMapper);
+
+    List<ModeratorEvent> moderatorEvents = parser.getModeratorEvents();
+    //TODO test cases when parser is working
+    System.out.println("testParseModeratorEvent:");
+    for (ModeratorEvent moderatorEvent : moderatorEvents) {
+      System.out.println(moderatorEvent);
+    }
   }
 }
