@@ -11,11 +11,4 @@ public class ModeratorEvent {
   private final String sender;
   private final String message;
   private final int activeCommandSource;
-
-  public ModeratorEvent(Duration time, String sender, String message, int activeCommandSource) {
-    this.time = time;
-    this.sender = sender;
-    this.message = message;
-    this.activeCommandSource = activeCommandSource;
-  }
 }
