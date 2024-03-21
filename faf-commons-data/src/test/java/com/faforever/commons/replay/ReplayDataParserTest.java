@@ -135,7 +135,7 @@ class ReplayDataParserTest {
 
     List<ModeratorEvent> moderatorEvents = parser.getModeratorEvents();
     ModeratorEvent firstEvent = moderatorEvents.getFirst();
-    assertEquals(Duration.ofSeconds(20), firstEvent.getTime());
-    assertEquals("Created a marker with the text: 'my fabelous marker test'", firstEvent.getMessage());
+    assertEquals(Duration.ofSeconds(20), firstEvent.time());
+    assertEquals("Created a marker with the text: 'my fabelous marker test'", firstEvent.message());
     }
 }
