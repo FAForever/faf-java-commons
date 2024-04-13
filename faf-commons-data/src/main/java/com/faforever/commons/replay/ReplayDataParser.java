@@ -383,11 +383,11 @@ public class ReplayDataParser {
     int fromInt = -1; // Default Value
     int activeCommandSource = -1; // Default Value
 
-    if (lua.containsKey("Message") && lua.get("Message") instanceof String) {
-      messageContent = (String) lua.get("Message");
+    if (lua.containsKey("Message") && lua.get("Message") instanceof String value) {
+      messageContent = value;
     }
-    if (lua.containsKey("From") && lua.get("From") instanceof Number) {
-      fromInt = ((Number) lua.get("From")).intValue();
+    if (lua.containsKey("From") && lua.get("From") instanceof Number value) {
+      fromInt = value.intValue();
     }
     if (player != null) {
       activeCommandSource = player;
