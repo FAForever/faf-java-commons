@@ -379,9 +379,9 @@ public class ReplayDataParser {
 
 
   void parseModeratorEvent(Map<String, Object> lua, Integer player) {
-    String messageContent = "Content of Message Missing";
-    String playerNameFromArmy = "Player Name Army Missing";
-    String playerNameFromCommandSource = "Player Name Command Source Missing";
+    String messageContent = null;
+    String playerNameFromArmy = null;
+    String playerNameFromCommandSource = null;
     int activeCommandSource = -1; // Default Value
     int fromArmy = -1; // Default Value
 
