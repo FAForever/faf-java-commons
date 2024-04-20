@@ -382,8 +382,8 @@ public class ReplayDataParser {
     String messageContent = null;
     String playerNameFromArmy = null;
     String playerNameFromCommandSource = null;
-    int activeCommandSource = -2; // Default Value
-    int fromArmy = -2; // Default Value
+    Integer activeCommandSource = null;
+    Integer fromArmy = null;
 
     if (lua.containsKey("Message") && lua.get("Message") instanceof String value) {
       messageContent = value;
@@ -404,7 +404,10 @@ public class ReplayDataParser {
     if (player != null) {
       activeCommandSource = player;
       Map<String, Object> army = armies.get(activeCommandSource);
-      playerNameFromCommandSource = (String) army.get("PlayerName");
+
+      if (army != null) {
+        playerNameFromCommandSource = (String) army.get("PlayerName");
+      }
     }
 
     moderatorEvents.add(new ModeratorEvent(tickToTime(ticks), activeCommandSource, fromArmy,
