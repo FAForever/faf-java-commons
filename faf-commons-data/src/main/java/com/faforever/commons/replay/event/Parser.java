@@ -66,7 +66,7 @@ public class Parser {
   }
 
   private static Event.CommandTarget parseCommandTarget(LittleEndianDataInputStream stream) throws IOException {
-    Event.CommandTargetType target = Event.CommandTargetType.values()[stream.readByte()];
+    CommandTargetType target = CommandTargetType.values()[stream.readByte()];
     switch (target) {
       case ENTITY -> {
         int entityId = stream.readInt();
@@ -89,7 +89,7 @@ public class Parser {
   private static Event.CommandData parseCommandData(LittleEndianDataInputStream stream) throws IOException {
     int commandId = stream.readInt();
     byte[] arg1 = stream.readNBytes(4);
-    Event.CommandType commandType = Event.CommandType.values()[stream.readByte()];
+    EventCommandType commandType = EventCommandType.values()[stream.readByte()];
     byte[] arg2 = stream.readNBytes(4);
 
     Event.CommandTarget commandTarget = parseCommandTarget(stream);
@@ -321,5 +321,11 @@ public class Parser {
 
       default -> new Event.Unprocessed(token, "Unknown");
     };
+  }
+
+  private enum CommandTargetType {
+    NONE,
+    ENTITY,
+    POSITION
   }
 }
