@@ -5,10 +5,6 @@ public record Token(TokenId tokenId, int tokenSize, byte[] tokenContent) {
   public enum TokenId {
     CMDST_ADVANCE,
     CMDST_SET_COMMAND_SOURCE,
-
-    /**
-     * When a player leaves the game
-     */
     CMDST_COMMAND_SOURCE_TERMINATED,
     CMDST_VERIFY_CHECKSUM,
     CMDST_REQUEST_PAUSE,
@@ -23,15 +19,7 @@ public record Token(TokenId tokenId, int tokenSize, byte[] tokenContent) {
     CMDST_ISSUE_FACTORY_COMMAND,
     CMDST_INCREASE_COMMAND_COUNT,
     CMDST_DECRASE_COMMAND_COUNT,
-
-    /**
-     * When you adjust the target of an order
-     */
     CMDST_SET_COMMAND_TARGET,
-
-    /**
-     * When you transform a move order into a patrol order
-     */
     CMDST_SET_COMMAND_TYPE,
     CMDST_SET_COMMAND_CELLS,
     CMDST_REMOVE_COMMAND_FROM_QUEUE,
