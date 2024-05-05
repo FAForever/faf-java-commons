@@ -67,6 +67,9 @@ public class ReplayDataParser {
   private List<GameOption> gameOptions;
 
   @Getter
+  private List<Token> tokens;
+
+  @Getter
   private List<Event> events;
 
   public ReplayDataParser(Path path, ObjectMapper objectMapper) throws IOException, CompressorException {
@@ -441,7 +444,7 @@ public class ReplayDataParser {
     LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data));
     parseHeader(dataStream);
 
-    List<Token> tokens = Tokenizer.tokenize(dataStream);
+    tokens = Tokenizer.tokenize(dataStream);
     events = Parser.parseTokens(tokens);
     interpretEvents(events);
   }

@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Parser {
   public static List<Event> parseTokens (List<Token> tokens) throws IOException  {
-    return tokens.stream().map((token) -> {
+    return tokens.stream().parallel().map((token) -> {
       try {
         return parseToken(token);
       } catch (Exception exception) {
