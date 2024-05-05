@@ -1,4 +1,4 @@
-package com.faforever.commons.replay.event;
+package com.faforever.commons.replay.body.event;
 
 import java.util.Map;
 

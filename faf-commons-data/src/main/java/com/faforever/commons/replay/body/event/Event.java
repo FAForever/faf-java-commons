@@ -1,6 +1,6 @@
-package com.faforever.commons.replay.event;
+package com.faforever.commons.replay.body.event;
 
-import com.faforever.commons.replay.token.Token;
+import com.faforever.commons.replay.body.token.Token;
 
 import java.util.List;
 

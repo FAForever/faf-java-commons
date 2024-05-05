@@ -1,4 +1,4 @@
-package com.faforever.commons.replay.token;
+package com.faforever.commons.replay.body.token;
 
 public record Token(TokenId tokenId, int tokenSize, byte[] tokenContent) {
 

@@ -1,4 +1,4 @@
-package com.faforever.commons.replay.token;
+package com.faforever.commons.replay.body.token;
 
 import com.google.common.io.LittleEndianDataInputStream;
 

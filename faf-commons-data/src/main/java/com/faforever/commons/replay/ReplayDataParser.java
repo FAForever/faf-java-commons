@@ -1,10 +1,10 @@
 package com.faforever.commons.replay;
 
-import com.faforever.commons.replay.event.Event;
-import com.faforever.commons.replay.event.LuaData;
-import com.faforever.commons.replay.event.Parser;
-import com.faforever.commons.replay.token.Token;
-import com.faforever.commons.replay.token.Tokenizer;
+import com.faforever.commons.replay.body.event.Event;
+import com.faforever.commons.replay.body.event.LuaData;
+import com.faforever.commons.replay.body.event.Parser;
+import com.faforever.commons.replay.body.token.Token;
+import com.faforever.commons.replay.body.token.Tokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.BaseEncoding;
