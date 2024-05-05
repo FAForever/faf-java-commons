@@ -1,6 +1,10 @@
 package com.faforever.commons.replay.body.event;
 
+import lombok.Getter;
+
+@Getter
 public enum EventCommandType {
+  // Order is crucial
   NONE("NONE"),
   STOP("Stop"),
   MOVE("Move"),

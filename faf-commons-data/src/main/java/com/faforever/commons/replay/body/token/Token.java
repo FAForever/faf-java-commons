@@ -3,6 +3,7 @@ package com.faforever.commons.replay.body.token;
 public record Token(TokenId tokenId, int tokenSize, byte[] tokenContent) {
 
   public enum TokenId {
+    // Order is crucial
     CMDST_ADVANCE,
     CMDST_SET_COMMAND_SOURCE,
     CMDST_COMMAND_SOURCE_TERMINATED,

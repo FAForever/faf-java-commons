@@ -52,14 +52,14 @@ public class ReplayDataParser {
   @Getter
   private Map<String, Map<String, ?>> mods;
   @Getter
-  private final Map<Integer, Map<String, Object>> armies  = new HashMap<>();
+  private final Map<Integer, Map<String, Object>> armies = new HashMap<>();
   private int randomSeed;
   @Getter
-  private final List<ChatMessage> chatMessages  = new ArrayList<>();
+  private final List<ChatMessage> chatMessages = new ArrayList<>();
   @Getter
-  private final List<ModeratorEvent> moderatorEvents  = new ArrayList<>();
+  private final List<ModeratorEvent> moderatorEvents = new ArrayList<>();
   @Getter
-  private final Map<Integer, Map<Integer, AtomicInteger>> commandsPerMinuteByPlayer  = new HashMap<>();
+  private final Map<Integer, Map<Integer, AtomicInteger>> commandsPerMinuteByPlayer = new HashMap<>();
 
   private int ticks;
 
@@ -368,8 +368,8 @@ public class ReplayDataParser {
         return;
       }
 
-      int fromArmy = (int)(luaFromArmy - 1);
-      if ((int) fromArmy == -2) {
+      int fromArmy = (int) luaFromArmy - 1;
+      if (fromArmy == -2) {
         return;
       }
 
@@ -410,7 +410,7 @@ public class ReplayDataParser {
     }
 
     if (lua.value().get("From") instanceof LuaData.Number(float luaFrom)) {
-      fromArmy = (int)luaFrom - 1;
+      fromArmy = (int) luaFrom - 1;
 
 
       if (fromArmy != -2) {
@@ -441,10 +441,10 @@ public class ReplayDataParser {
 
   private void parse() throws IOException, CompressorException {
     readReplayData(path);
-    LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data));
-    parseHeader(dataStream);
-
-    tokens = Tokenizer.tokenize(dataStream);
+    try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
+      parseHeader(dataStream);
+      tokens = Tokenizer.tokenize(dataStream);
+    }
     events = Parser.parseTokens(tokens);
     interpretEvents(events);
   }
