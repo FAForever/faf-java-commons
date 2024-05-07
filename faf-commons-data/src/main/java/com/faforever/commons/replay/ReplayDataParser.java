@@ -167,17 +167,17 @@ public class ReplayDataParser {
   @SuppressWarnings("unchecked")
   private void parseHeader(LittleEndianDataInputStream dataStream) throws IOException {
     replayPatchFieldId = readString(dataStream);
-    dataStream.skipBytes(3);
+    String arg13 = readString(dataStream); // always \r\n
 
     String[] split = readString(dataStream).split("\\r\\n");
     String replayVersionId = split[0];
     map = split[1];
-    dataStream.skipBytes(4);
+    String arg23 = readString((dataStream)); // always \r\n and some unknown character
 
-    int numberOfMods = dataStream.readInt();
+    int sizeModsInBytes = dataStream.readInt();
     mods = (Map<String, Map<String, ?>>) parseLua(dataStream);
 
-    int scenarioSize = dataStream.readInt();
+    int sizeGameOptionsInBytes = dataStream.readInt();
     this.gameOptions = ((Map<String, Object>) parseLua(dataStream)).entrySet().stream()
       .filter(entry -> "Options".equals(entry.getKey()))
       .flatMap(entry -> ((Map<String, Object>) entry.getValue()).entrySet().stream())
@@ -197,7 +197,7 @@ public class ReplayDataParser {
 
     int numberOfArmies = dataStream.readUnsignedByte();
     for (int i = 0; i < numberOfArmies; i++) {
-      dataStream.skipBytes(4);
+      int sizePlayerDataInBytes = dataStream.readInt();
       Map<String, Object> playerData = (Map<String, Object>) parseLua(dataStream);
       int playerSource = dataStream.readUnsignedByte();
 
