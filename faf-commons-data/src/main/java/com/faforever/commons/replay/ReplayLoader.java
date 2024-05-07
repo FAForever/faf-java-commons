@@ -1,10 +1,13 @@
 package com.faforever.commons.replay;
 
-import com.faforever.commons.replay.body.Body;
-import com.faforever.commons.replay.header.Header;
-import com.faforever.commons.replay.header.parse.Parser;
-import com.faforever.commons.replay.header.token.Token;
-import com.faforever.commons.replay.header.token.Tokenizer;
+import com.faforever.commons.replay.body.ReplayBody;
+import com.faforever.commons.replay.body.ReplayBodyParser;
+import com.faforever.commons.replay.body.ReplayBodyToken;
+import com.faforever.commons.replay.body.ReplayBodyTokenizer;
+import com.faforever.commons.replay.header.ReplayHeader;
+import com.faforever.commons.replay.header.ReplayHeaderParser;
+import com.faforever.commons.replay.header.ReplayHeaderToken;
+import com.faforever.commons.replay.header.ReplayHeaderTokenizer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
@@ -25,23 +28,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class Replay {
+public class ReplayLoader {
 
-  private static Header loadSCFAReplayHeader(LittleEndianDataInputStream stream) throws IOException{
-    Token headerToken = Tokenizer.tokenize(stream);
-    return Parser.parseHeader(headerToken);
+  private static ReplayHeader loadSCFAReplayHeader(LittleEndianDataInputStream stream) throws IOException{
+    ReplayHeaderToken headerToken = ReplayHeaderTokenizer.tokenize(stream);
+    return ReplayHeaderParser.parseHeader(headerToken);
   }
 
-  private static Body loadSCFAReplayBody(LittleEndianDataInputStream stream) throws IOException{
-    List<com.faforever.commons.replay.body.token.Token> bodyTokens = com.faforever.commons.replay.body.token.Tokenizer.tokenize(stream);
-    return new Body(com.faforever.commons.replay.body.parse.Parser.parseTokens(bodyTokens));
+  private static ReplayBody loadSCFAReplayBody(LittleEndianDataInputStream stream) throws IOException{
+    List<ReplayBodyToken> bodyTokens = ReplayBodyTokenizer.tokenize(stream);
+    return new ReplayBody(ReplayBodyParser.parseTokens(bodyTokens));
   }
 
-  private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, ReplayBinaryFormat.BinarySCFA bytes) throws IOException {
-    try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes.bytes())))) {
-      Header replayHead = loadSCFAReplayHeader(stream);
-      Body replayBody = loadSCFAReplayBody(stream);
-      return new ReplayContainer(metadata, replayHead, replayBody, bytes.bytes());
+  private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, byte[] scfaReplayBytes) throws IOException {
+    try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(scfaReplayBytes)))) {
+      ReplayHeader replayHeader = loadSCFAReplayHeader(stream);
+      ReplayBody replayBody = loadSCFAReplayBody(stream);
+      return new ReplayContainer(metadata, replayHeader, replayBody, scfaReplayBytes);
     }
   }
 
@@ -51,21 +54,21 @@ public class Replay {
     }
 
     byte[] bytes = Files.readAllBytes(scfaReplayFile);
-    return loadSCFAReplayFromMemory(null, new ReplayBinaryFormat.BinarySCFA(bytes));
+    return loadSCFAReplayFromMemory(null, bytes);
   }
 
-  private static ReplayContainer loadFAFReplayFromMemory(ReplayBinaryFormat.WithContext fafReplayBytes)  throws IOException, CompressorException {
-    int separator = findSeparatorIndex(fafReplayBytes.bytes());
-    byte[] metadataBytes = Arrays.copyOfRange(fafReplayBytes.bytes(), 0, separator);
+  private static ReplayContainer loadFAFReplayFromMemory(byte[] fafReplayBytes)  throws IOException, CompressorException {
+    int separator = findSeparatorIndex(fafReplayBytes);
+    byte[] metadataBytes = Arrays.copyOfRange(fafReplayBytes, 0, separator);
     String metadataString = new String(metadataBytes, StandardCharsets.UTF_8);
 
     ObjectMapper parsedMetadata = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     ReplayMetadata replayMetadata = parsedMetadata.readValue(metadataString, ReplayMetadata.class);
 
-    byte[] compressedReplayBytes = Arrays.copyOfRange(fafReplayBytes.bytes(), separator + 1, fafReplayBytes.bytes().length);
-    byte[] replayBytes = decompress(compressedReplayBytes, replayMetadata);
+    byte[] compressedReplayBytes = Arrays.copyOfRange(fafReplayBytes, separator + 1, fafReplayBytes.length);
+    byte[] scfaReplayBytes = decompress(compressedReplayBytes, replayMetadata);
 
-    return loadSCFAReplayFromMemory(replayMetadata, new ReplayBinaryFormat.BinarySCFA(replayBytes));
+    return loadSCFAReplayFromMemory(replayMetadata, scfaReplayBytes);
   }
 
   public static ReplayContainer loadFAFReplayFromDisk(Path fafReplayFile) throws IOException, CompressorException, IllegalArgumentException  {
@@ -73,8 +76,8 @@ public class Replay {
       throw new IllegalArgumentException ("Unknown file format: " + fafReplayFile.getFileName());
     }
 
-    byte[] replayBytes = Files.readAllBytes(fafReplayFile);
-    return loadFAFReplayFromMemory(new ReplayBinaryFormat.WithContext(replayBytes));
+    byte[] fafReplayBytes = Files.readAllBytes(fafReplayFile);
+    return loadFAFReplayFromMemory(fafReplayBytes);
   }
 
   private static int findSeparatorIndex(byte[] replayData) {

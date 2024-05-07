@@ -1,7 +1,7 @@
 package com.faforever.commons.replay.header;
 
 /**
- * Populated by the engine and it represents the clients that are connected to the game.
+ * Populated by the engine, it represents the clients that are connected to the game.
  * @param name
  * @param sourceId
  */

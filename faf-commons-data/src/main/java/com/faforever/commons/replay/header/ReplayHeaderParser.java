@@ -1,10 +1,4 @@
-package com.faforever.commons.replay.header.parse;
-
-import com.faforever.commons.replay.header.GameMod;
-import com.faforever.commons.replay.header.GameOptions;
-import com.faforever.commons.replay.header.Header;
-import com.faforever.commons.replay.header.PlayerOptions;
-import com.faforever.commons.replay.header.token.Token;
+package com.faforever.commons.replay.header;
 
 import com.faforever.commons.replay.shared.LuaTable;
 import com.google.common.io.LittleEndianDataInputStream;
@@ -18,10 +12,10 @@ import java.util.List;
 
 import static com.faforever.commons.replay.shared.Utils.parseLua;
 
-public class Parser {
+public class ReplayHeaderParser {
 
   @Contract(pure = true)
-  public static @Nullable Header parseHeader(Token token) throws IOException {
+  public static @Nullable ReplayHeader parseHeader(ReplayHeaderToken token) throws IOException {
 
     GameOptions gameOptions = parseGameOptions(token.gameOptions());
     List<GameMod> gameMods = parseMod(token.mods());
@@ -34,7 +28,7 @@ public class Parser {
       }
     }).toList();
 
-    return new Header(
+    return new ReplayHeader(
       token.gameVersion(), token.replayVersion(), token.pathToScenario(), token.cheatsEnabled(), token.seed(),
       token.sources(),
       gameMods,

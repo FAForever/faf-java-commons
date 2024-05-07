@@ -1,6 +1,5 @@
-package com.faforever.commons.replay.header.token;
+package com.faforever.commons.replay.header;
 
-import com.faforever.commons.replay.header.Source;
 import com.faforever.commons.replay.shared.Utils;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
@@ -9,18 +8,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tokenizer {
+public class ReplayHeaderTokenizer {
 
   @Contract(pure = true)
-  public static Token tokenize(LittleEndianDataInputStream dataStream) throws IOException {
+  public static ReplayHeaderToken tokenize(LittleEndianDataInputStream dataStream) throws IOException {
 
-    String gameVersion = Utils.parseString(dataStream);
-    String arg1 = Utils.parseString(dataStream); // Always \r\n
+    String gameVersion = Utils.readString(dataStream);
+    String arg1 = Utils.readString(dataStream); // Always \r\n
 
-    String[] replayAndScenario = Utils.parseString(dataStream).split("\\r\\n");
+    String[] replayAndScenario = Utils.readString(dataStream).split("\\r\\n");
     String replayVersion = replayAndScenario[0];
     String pathToScenario = replayAndScenario[1];
-    String arg2 = Utils.parseString(dataStream); // always \r\n and some unknown character
+    String arg2 = Utils.readString(dataStream); // always \r\n and some unknown character
 
     int sizeModsInBytes = dataStream.readInt();
     byte[] mods = dataStream.readNBytes(sizeModsInBytes);
@@ -31,7 +30,7 @@ public class Tokenizer {
     int numberOfClients = dataStream.readUnsignedByte();
     List<Source> clients = new ArrayList<>(numberOfClients);
     for (int i = 0; i < numberOfClients; i++) {
-      String playerName = Utils.parseString(dataStream);
+      String playerName = Utils.readString(dataStream);
       int playerId = dataStream.readInt();
       Source source = new Source(i, playerId, playerName);
       clients.add(source);
@@ -54,6 +53,6 @@ public class Tokenizer {
 
     int seed = dataStream.readInt();
 
-    return new Token(gameVersion, replayVersion, pathToScenario, cheatsEnabled, seed, clients, mods, gameOptions, playerOptions);
+    return new ReplayHeaderToken(gameVersion, replayVersion, pathToScenario, cheatsEnabled, seed, clients, mods, gameOptions, playerOptions);
   }
 }

@@ -1,9 +1,9 @@
-package com.faforever.commons.replay.body.parse;
+package com.faforever.commons.replay.body;
 
 import lombok.Getter;
 
 @Getter
-public enum EventCommandType {
+public enum ReplayBodyEventCommandType {
   // Order is crucial
   NONE("NONE"),
   STOP("Stop"),
@@ -48,7 +48,7 @@ public enum EventCommandType {
 
   private final String string;
 
-  EventCommandType(String string) {
+  ReplayBodyEventCommandType(String string) {
     this.string = string;
   }
 }

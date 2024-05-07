@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class LoadReplayTest {
+class LoadReplayLoaderTest {
 
   @TempDir
   public Path temporaryFolder;
@@ -29,7 +29,7 @@ class LoadReplayTest {
       () -> {
         Path fafReplayFile = temporaryFolder.resolve("TestCommands01.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/TestCommands01.fafreplay")), fafReplayFile);
-        ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
+        ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
       }
     );
   }
@@ -40,7 +40,7 @@ class LoadReplayTest {
       () -> {
         Path fafReplayFile = temporaryFolder.resolve("TestModeratorEvents.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/TestModeratorEvents.fafreplay")), fafReplayFile);
-        ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
+        ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
       }
     );
   }
@@ -51,7 +51,7 @@ class LoadReplayTest {
       () -> {
         Path fafReplayFile = temporaryFolder.resolve("zstd_reference.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/zstd_reference.fafreplay")), fafReplayFile);
-        ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
+        ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
       }
     );
   }
@@ -62,7 +62,7 @@ class LoadReplayTest {
       () -> {
         Path fafReplayFile = temporaryFolder.resolve("test.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/test.fafreplay")), fafReplayFile);
-        ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
+        ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
       }
     );
   }
@@ -75,8 +75,8 @@ class LoadReplayTest {
     Path scfaReplayFile = temporaryFolder.resolve("22338092.scfareplay");
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22338092.scfareplay")), scfaReplayFile);
 
-    ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
-    ReplayContainer scfaReplayContainer = Replay.loadSCFAReplayFromDisk(scfaReplayFile);
+    ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+    ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
 
     assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
     assertArrayEquals( scfaReplayContainer.bytes(), fafReplayContainer.bytes());
@@ -90,8 +90,8 @@ class LoadReplayTest {
     Path scfaReplayFile = temporaryFolder.resolve("22373098.scfareplay");
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22373098.scfareplay")), scfaReplayFile);
 
-    ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
-    ReplayContainer scfaReplayContainer = Replay.loadSCFAReplayFromDisk(scfaReplayFile);
+    ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+    ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
 
     assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
     assertEquals(Arrays.hashCode(scfaReplayContainer.bytes()), Arrays.hashCode(fafReplayContainer.bytes()));
@@ -107,8 +107,8 @@ class LoadReplayTest {
     Path scfaReplayFile = temporaryFolder.resolve("22425616.scfareplay");
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22425616.scfareplay")), scfaReplayFile);
 
-    ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
-    ReplayContainer scfaReplayContainer = Replay.loadSCFAReplayFromDisk(scfaReplayFile);
+    ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+    ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
 
     assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
     assertEquals(Arrays.hashCode(scfaReplayContainer.bytes()), Arrays.hashCode(fafReplayContainer.bytes()));

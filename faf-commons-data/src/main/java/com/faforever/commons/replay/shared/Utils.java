@@ -26,7 +26,7 @@ public class Utils {
    * @throws IOException
    */
   @Contract(pure = true)
-  public static String parseString(LittleEndianDataInputStream dataStream) throws IOException {
+  public static String readString(LittleEndianDataInputStream dataStream) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte tempByte;
     while ((tempByte = dataStream.readByte()) != 0) {
@@ -59,7 +59,7 @@ public class Utils {
       }
 
       case LUA_STRING -> {
-        String value = parseString(dataStream);
+        String value = readString(dataStream);
         return new LuaTable.String(value);
       }
 

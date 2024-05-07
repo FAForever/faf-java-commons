@@ -1,36 +1,40 @@
-package com.faforever.commons.replay.body.parse;
+package com.faforever.commons.replay.body;
 
-import com.faforever.commons.replay.body.token.Token;
 import com.faforever.commons.replay.shared.LuaTable;
 import com.faforever.commons.replay.shared.Utils;
 import com.google.common.io.LittleEndianDataInputStream;
+import org.jetbrains.annotations.Contract;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
-public class Parser {
-  public static List<Event> parseTokens(List<Token> tokens) throws IOException {
+public class ReplayBodyParser {
+
+  @Contract(pure = true)
+  public static List<ReplayBodyEvent> parseTokens(List<ReplayBodyToken> tokens) throws IOException {
     return tokens.stream().parallel().map((token) -> {
       try {
         return parseToken(token);
       } catch (Exception exception) {
-        return new Event.ProcessingError(token, exception);
+        return new ReplayBodyEvent.ProcessingError(token, exception);
       }
     }).toList();
   }
 
-  private static Event.CommandUnits parseCommandUnits(LittleEndianDataInputStream stream) throws IOException {
+  @Contract(pure = true)
+  private static ReplayBodyEvent.CommandUnits parseCommandUnits(LittleEndianDataInputStream stream) throws IOException {
     int unitCount = stream.readInt();
     ArrayList<Integer> unitIds = new ArrayList<>(unitCount);
     for (int k = 0; k < unitCount; k++) {
       unitIds.add(stream.readInt());
     }
 
-    return new Event.CommandUnits(unitCount, unitIds);
+    return new ReplayBodyEvent.CommandUnits(unitCount, unitIds);
   }
 
-  private static Event.CommandFormation parseCommandFormation(LittleEndianDataInputStream stream) throws IOException {
+  @Contract(pure = true)
+  private static ReplayBodyEvent.CommandFormation parseCommandFormation(LittleEndianDataInputStream stream) throws IOException {
     float orientation = 0;
     float px = 0;
     float py = 0;
@@ -46,22 +50,23 @@ public class Parser {
       scale = stream.readFloat();
     }
 
-    return new Event.CommandFormation(formation, orientation, px, py, pz, scale);
+    return new ReplayBodyEvent.CommandFormation(formation, orientation, px, py, pz, scale);
   }
 
-  private static Event.CommandTarget parseCommandTarget(LittleEndianDataInputStream stream) throws IOException {
+  @Contract(pure = true)
+  private static ReplayBodyEvent.CommandTarget parseCommandTarget(LittleEndianDataInputStream stream) throws IOException {
     CommandTargetType target = CommandTargetType.values()[stream.readByte()];
     switch (target) {
       case ENTITY -> {
         int entityId = stream.readInt();
-        return new Event.CommandTarget.Entity(entityId);
+        return new ReplayBodyEvent.CommandTarget.Entity(entityId);
       }
 
       case POSITION -> {
         float px = stream.readFloat();
         float py = stream.readFloat();
         float pz = stream.readFloat();
-        return new Event.CommandTarget.Position(px, py, pz);
+        return new ReplayBodyEvent.CommandTarget.Position(px, py, pz);
       }
 
       default -> {
@@ -70,19 +75,20 @@ public class Parser {
     }
   }
 
-  private static Event.CommandData parseCommandData(LittleEndianDataInputStream stream) throws IOException {
+  @Contract(pure = true)
+  private static ReplayBodyEvent.CommandData parseCommandData(LittleEndianDataInputStream stream) throws IOException {
     int commandId = stream.readInt();
     byte[] arg1 = stream.readNBytes(4);
-    EventCommandType commandType = EventCommandType.values()[stream.readByte()];
+    ReplayBodyEventCommandType commandType = ReplayBodyEventCommandType.values()[stream.readByte()];
     byte[] arg2 = stream.readNBytes(4);
 
-    Event.CommandTarget commandTarget = parseCommandTarget(stream);
+    ReplayBodyEvent.CommandTarget commandTarget = parseCommandTarget(stream);
 
     byte[] arg3 = stream.readNBytes(1);
 
-    Event.CommandFormation commandFormation = parseCommandFormation(stream);
+    ReplayBodyEvent.CommandFormation commandFormation = parseCommandFormation(stream);
 
-    String blueprintId = Utils.parseString(stream);
+    String blueprintId = Utils.readString(stream);
     byte[] arg4 = stream.readNBytes(12);
     byte[] arg5 = new byte[0];
 
@@ -91,62 +97,63 @@ public class Parser {
       arg5 = stream.readNBytes(1);
     }
 
-    return new Event.CommandData(
+    return new ReplayBodyEvent.CommandData(
       commandId, commandType, commandTarget, commandFormation, blueprintId, parametersLua
     );
   }
 
-  private static Event parseToken(Token token) throws IOException {
+  @Contract(pure = true)
+  private static ReplayBodyEvent parseToken(ReplayBodyToken token) throws IOException {
 
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(token.tokenContent())))) {
       return switch (token.tokenId()) {
         case CMDST_ADVANCE -> {
           int ticks = stream.readInt();
-          yield new Event.Advance(ticks);
+          yield new ReplayBodyEvent.Advance(ticks);
         }
 
         case CMDST_SET_COMMAND_SOURCE -> {
           int playerIndex = stream.readByte();
-          yield new Event.SetCommandSource(playerIndex);
+          yield new ReplayBodyEvent.SetCommandSource(playerIndex);
         }
 
-        case CMDST_COMMAND_SOURCE_TERMINATED -> new Event.CommandSourceTerminated();
+        case CMDST_COMMAND_SOURCE_TERMINATED -> new ReplayBodyEvent.CommandSourceTerminated();
 
         case CMDST_VERIFY_CHECKSUM -> {
           String hash = HexFormat.of().formatHex(stream.readNBytes(16));
           int tick = stream.readInt();
 
-          yield new Event.VerifyChecksum(hash, tick);
+          yield new ReplayBodyEvent.VerifyChecksum(hash, tick);
         }
 
-        case CMDST_REQUEST_PAUSE -> new Event.RequestPause();
+        case CMDST_REQUEST_PAUSE -> new ReplayBodyEvent.RequestPause();
 
-        case CMDST_RESUME -> new Event.RequestResume();
+        case CMDST_RESUME -> new ReplayBodyEvent.RequestResume();
 
-        case CMDST_SINGLE_STEP -> new Event.SingleStep();
+        case CMDST_SINGLE_STEP -> new ReplayBodyEvent.SingleStep();
 
         case CMDST_CREATE_UNIT -> {
           int playerIndex = stream.readByte();
-          String blueprintId = Utils.parseString(stream);
+          String blueprintId = Utils.readString(stream);
           float px = stream.readFloat();
           float pz = stream.readFloat();
           float heading = stream.readFloat();
 
-          yield new Event.CreateUnit(playerIndex, blueprintId, px, pz, heading);
+          yield new ReplayBodyEvent.CreateUnit(playerIndex, blueprintId, px, pz, heading);
         }
 
         case CMDST_CREATE_PROP -> {
-          String blueprintId = Utils.parseString(stream);
+          String blueprintId = Utils.readString(stream);
           float px = stream.readFloat();
           float pz = stream.readFloat();
           float heading = stream.readFloat();
 
-          yield new Event.CreateProp(blueprintId, px, pz, heading);
+          yield new ReplayBodyEvent.CreateProp(blueprintId, px, pz, heading);
         }
 
         case CMDST_DESTROY_ENTITY -> {
           int entityId = stream.readInt();
-          yield new Event.DestroyEntity(entityId);
+          yield new ReplayBodyEvent.DestroyEntity(entityId);
         }
 
         case CMDST_WARP_ENTITY -> {
@@ -154,52 +161,52 @@ public class Parser {
           float px = stream.readFloat();
           float py = stream.readFloat();
           float pz = stream.readFloat();
-          yield new Event.WarpEntity(entityId, px, py, pz);
+          yield new ReplayBodyEvent.WarpEntity(entityId, px, py, pz);
         }
 
         case CMDST_PROCESS_INFO_PAIR -> {
           int entityId = stream.read();
-          String arg1 = Utils.parseString(stream);
-          String arg2 = Utils.parseString(stream);
-          yield new Event.ProcessInfoPair(entityId, arg1, arg2);
+          String arg1 = Utils.readString(stream);
+          String arg2 = Utils.readString(stream);
+          yield new ReplayBodyEvent.ProcessInfoPair(entityId, arg1, arg2);
         }
 
         case CMDST_ISSUE_COMMAND -> {
-          Event.CommandUnits commandUnits = parseCommandUnits(stream);
-          Event.CommandData commandData = parseCommandData(stream);
+          ReplayBodyEvent.CommandUnits commandUnits = parseCommandUnits(stream);
+          ReplayBodyEvent.CommandData commandData = parseCommandData(stream);
 
-          yield new Event.IssueCommand(commandUnits, commandData);
+          yield new ReplayBodyEvent.IssueCommand(commandUnits, commandData);
         }
 
         case CMDST_ISSUE_FACTORY_COMMAND -> {
-          Event.CommandUnits commandUnits = parseCommandUnits(stream);
-          Event.CommandData commandData = parseCommandData(stream);
+          ReplayBodyEvent.CommandUnits commandUnits = parseCommandUnits(stream);
+          ReplayBodyEvent.CommandData commandData = parseCommandData(stream);
 
-          yield new Event.IssueFactoryCommand(commandUnits, commandData);
+          yield new ReplayBodyEvent.IssueFactoryCommand(commandUnits, commandData);
         }
 
         case CMDST_INCREASE_COMMAND_COUNT -> {
           int commandId = stream.readInt();
           int delta = stream.readInt();
-          yield new Event.IncreaseCommandCount(commandId, delta);
+          yield new ReplayBodyEvent.IncreaseCommandCount(commandId, delta);
         }
 
         case CMDST_DECRASE_COMMAND_COUNT -> {
           int commandId = stream.readInt();
           int delta = stream.readInt();
-          yield new Event.DecreaseCommandCount(commandId, delta);
+          yield new ReplayBodyEvent.DecreaseCommandCount(commandId, delta);
         }
 
         case CMDST_SET_COMMAND_TARGET -> {
           int commandId = stream.readInt();
-          Event.CommandTarget commandTarget = parseCommandTarget(stream);
-          yield new Event.SetCommandTarget(commandId, commandTarget);
+          ReplayBodyEvent.CommandTarget commandTarget = parseCommandTarget(stream);
+          yield new ReplayBodyEvent.SetCommandTarget(commandId, commandTarget);
         }
 
         case CMDST_SET_COMMAND_TYPE -> {
           int commandId = stream.readInt();
           int targetCommandType = stream.readInt();
-          yield new Event.SetCommandType(commandId, targetCommandType);
+          yield new ReplayBodyEvent.SetCommandType(commandId, targetCommandType);
         }
 
         case CMDST_SET_COMMAND_CELLS -> {
@@ -213,26 +220,26 @@ public class Parser {
           float py = stream.readFloat();
           float pz = stream.readFloat();
 
-          yield new Event.SetCommandCells(commandId, parametersLua, px, py, pz);
+          yield new ReplayBodyEvent.SetCommandCells(commandId, parametersLua, px, py, pz);
         }
 
         case CMDST_REMOVE_COMMAND_FROM_QUEUE -> {
           int commandId = stream.readInt();
           int unitId = stream.readInt();
-          yield new Event.RemoveCommandFromQueue(commandId, unitId);
+          yield new ReplayBodyEvent.RemoveCommandFromQueue(commandId, unitId);
         }
 
-        case CMDST_DEBUG_COMMAND -> new Event.Unprocessed(token, "CMDST_DEBUG_COMMAND");
+        case CMDST_DEBUG_COMMAND -> new ReplayBodyEvent.Unprocessed(token, "CMDST_DEBUG_COMMAND");
 
         case CMDST_EXECUTE_LUA_IN_SIM -> {
-          String luaCode = Utils.parseString(stream);
-          yield new Event.ExecuteLuaInSim(luaCode);
+          String luaCode = Utils.readString(stream);
+          yield new ReplayBodyEvent.ExecuteLuaInSim(luaCode);
         }
 
         case CMDST_LUA_SIM_CALLBACK -> {
-          String func = Utils.parseString(stream);
+          String func = Utils.readString(stream);
           LuaTable args = Utils.parseLua(stream);
-          Event.CommandUnits commandUnits = null;
+          ReplayBodyEvent.CommandUnits commandUnits = null;
 
           // suspicion that this is just flat out wrong! Whether there's a selection in the data is not related to whether there are Lua arguments
           if (!(args instanceof LuaTable.Nil)) {
@@ -242,12 +249,12 @@ public class Parser {
             stream.readNBytes(4 + 3);
           }
 
-          yield new Event.LuaSimCallback(func, args, commandUnits);
+          yield new ReplayBodyEvent.LuaSimCallback(func, args, commandUnits);
         }
 
-        case CMDST_END_GAME -> new Event.EndGame();
+        case CMDST_END_GAME -> new ReplayBodyEvent.EndGame();
 
-        case null -> new Event.Unprocessed(token, "Unknown");
+        case null -> new ReplayBodyEvent.Unprocessed(token, "Unknown");
       };
     }
   }

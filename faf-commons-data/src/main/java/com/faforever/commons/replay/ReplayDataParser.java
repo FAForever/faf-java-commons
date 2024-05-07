@@ -1,10 +1,12 @@
 package com.faforever.commons.replay;
 
-import com.faforever.commons.replay.body.parse.Event;
+import com.faforever.commons.replay.body.ReplayBodyEvent;
+import com.faforever.commons.replay.semantics.ChatMessage;
+import com.faforever.commons.replay.semantics.ModeratorEvent;
 import com.faforever.commons.replay.shared.LuaTable;
-import com.faforever.commons.replay.body.parse.Parser;
-import com.faforever.commons.replay.body.token.Token;
-import com.faforever.commons.replay.body.token.Tokenizer;
+import com.faforever.commons.replay.body.ReplayBodyParser;
+import com.faforever.commons.replay.body.ReplayBodyToken;
+import com.faforever.commons.replay.body.ReplayBodyTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.BaseEncoding;
@@ -67,10 +69,10 @@ public class ReplayDataParser {
   private List<GameOption> gameOptions;
 
   @Getter
-  private List<Token> tokens;
+  private List<ReplayBodyToken> tokens;
 
   @Getter
-  private List<Event> events;
+  private List<ReplayBodyEvent> events;
 
   public ReplayDataParser(Path path, ObjectMapper objectMapper) throws IOException, CompressorException {
     this.path = path;
@@ -212,7 +214,7 @@ public class ReplayDataParser {
     randomSeed = dataStream.readInt();
   }
 
-  private void interpretEvents(List<Event> events) {
+  private void interpretEvents(List<ReplayBodyEvent> events) {
     Integer player = -1;
     boolean desync = false;
     String previousChecksum = null;
@@ -220,30 +222,30 @@ public class ReplayDataParser {
 
     Map<Integer, Integer> lastTicks = new HashMap<>();
 
-    for (Event event : events) {
+    for (ReplayBodyEvent event : events) {
 
       switch (event) {
-        case Event.Unprocessed(Token token, String reason) -> {
+        case ReplayBodyEvent.Unprocessed(ReplayBodyToken token, String reason) -> {
 
         }
 
-        case Event.ProcessingError(Token token, Exception exception) -> {
+        case ReplayBodyEvent.ProcessingError(ReplayBodyToken token, Exception exception) -> {
 
         }
 
-        case Event.Advance(int ticksToAdvance) -> {
+        case ReplayBodyEvent.Advance(int ticksToAdvance) -> {
           ticks += ticksToAdvance;
         }
 
-        case Event.SetCommandSource(int playerIndex) -> {
+        case ReplayBodyEvent.SetCommandSource(int playerIndex) -> {
           player = playerIndex;
         }
 
-        case Event.CommandSourceTerminated() -> {
+        case ReplayBodyEvent.CommandSourceTerminated() -> {
           lastTicks.put(player, ticks);
         }
 
-        case Event.VerifyChecksum(String hash, int tick) -> {
+        case ReplayBodyEvent.VerifyChecksum(String hash, int tick) -> {
           desync = tick == previousTick && !Objects.equals(previousChecksum, hash);
           previousChecksum = hash;
           previousTick = ticks;
@@ -254,47 +256,47 @@ public class ReplayDataParser {
           }
         }
 
-        case Event.RequestPause() -> {
+        case ReplayBodyEvent.RequestPause() -> {
 
         }
 
-        case Event.RequestResume() -> {
+        case ReplayBodyEvent.RequestResume() -> {
 
         }
 
-        case Event.SingleStep() -> {
+        case ReplayBodyEvent.SingleStep() -> {
 
         }
 
-        case Event.CreateUnit(int playerIndex, String blueprintId, float px, float pz, float heading) -> {
+        case ReplayBodyEvent.CreateUnit(int playerIndex, String blueprintId, float px, float pz, float heading) -> {
 
         }
 
-        case Event.CreateProp(String blueprintId, float px, float pz, float heading) -> {
+        case ReplayBodyEvent.CreateProp(String blueprintId, float px, float pz, float heading) -> {
 
         }
 
-        case Event.DestroyEntity(int entityId) -> {
+        case ReplayBodyEvent.DestroyEntity(int entityId) -> {
 
         }
 
-        case Event.WarpEntity(int entityId, float px, float py, float pz) -> {
+        case ReplayBodyEvent.WarpEntity(int entityId, float px, float py, float pz) -> {
 
         }
 
-        case Event.ProcessInfoPair(int entityId, String arg1, String arg2) -> {
+        case ReplayBodyEvent.ProcessInfoPair(int entityId, String arg1, String arg2) -> {
 
         }
 
-        case Event.IssueCommand(Event.CommandUnits commandUnits, Event.CommandData commandData) -> {
+        case ReplayBodyEvent.IssueCommand(ReplayBodyEvent.CommandUnits commandUnits, ReplayBodyEvent.CommandData commandData) -> {
           commandsPerMinuteByPlayer
             .computeIfAbsent(player, p -> new HashMap<>())
             .computeIfAbsent(ticks, t -> new AtomicInteger())
             .incrementAndGet();
         }
 
-        case Event.IssueFactoryCommand(
-          Event.CommandUnits commandUnits, Event.CommandData commandData
+        case ReplayBodyEvent.IssueFactoryCommand(
+          ReplayBodyEvent.CommandUnits commandUnits, ReplayBodyEvent.CommandData commandData
         ) -> {
           commandsPerMinuteByPlayer
             .computeIfAbsent(player, p -> new HashMap<>())
@@ -302,57 +304,57 @@ public class ReplayDataParser {
             .incrementAndGet();
         }
 
-        case Event.IncreaseCommandCount(int commandId, int delta) -> {
+        case ReplayBodyEvent.IncreaseCommandCount(int commandId, int delta) -> {
 
         }
 
-        case Event.DecreaseCommandCount(int commandId, int delta) -> {
+        case ReplayBodyEvent.DecreaseCommandCount(int commandId, int delta) -> {
 
         }
 
-        case Event.SetCommandTarget(int commandId, Event.CommandTarget commandTarget) -> {
+        case ReplayBodyEvent.SetCommandTarget(int commandId, ReplayBodyEvent.CommandTarget commandTarget) -> {
 
         }
 
-        case Event.SetCommandType(int commandId, int targetId) -> {
+        case ReplayBodyEvent.SetCommandType(int commandId, int targetId) -> {
 
         }
 
-        case Event.SetCommandCells(int commandId, Object parametersLua, float px, float py, float pz) -> {
+        case ReplayBodyEvent.SetCommandCells(int commandId, Object parametersLua, float px, float py, float pz) -> {
 
         }
 
-        case Event.RemoveCommandFromQueue(int commandId, int unitId) -> {
+        case ReplayBodyEvent.RemoveCommandFromQueue(int commandId, int unitId) -> {
 
         }
 
-        case Event.DebugCommand() -> {
+        case ReplayBodyEvent.DebugCommand() -> {
 
         }
 
-        case Event.ExecuteLuaInSim(String luaCode) -> {
+        case ReplayBodyEvent.ExecuteLuaInSim(String luaCode) -> {
 
         }
 
-        case Event.LuaSimCallback(
-          String func, LuaTable.Table parametersLua, Event.CommandUnits commandUnits
+        case ReplayBodyEvent.LuaSimCallback(
+          String func, LuaTable.Table parametersLua, ReplayBodyEvent.CommandUnits commandUnits
         ) when func.equals("GiveResourcesToPlayer") -> {
           parseGiveResourcesToPlayer(parametersLua);
         }
 
-        case Event.LuaSimCallback(
-          String func, LuaTable.Table parametersLua, Event.CommandUnits commandUnits
+        case ReplayBodyEvent.LuaSimCallback(
+          String func, LuaTable.Table parametersLua, ReplayBodyEvent.CommandUnits commandUnits
         ) when func.equals("ModeratorEvent") -> {
           parseModeratorEvent(parametersLua, player);
         }
 
-        case Event.LuaSimCallback(
-          String func, LuaTable parametersLua, Event.CommandUnits commandUnits
+        case ReplayBodyEvent.LuaSimCallback(
+          String func, LuaTable parametersLua, ReplayBodyEvent.CommandUnits commandUnits
         ) -> {
 
         }
 
-        case Event.EndGame() -> {
+        case ReplayBodyEvent.EndGame() -> {
 
         }
 
@@ -443,9 +445,9 @@ public class ReplayDataParser {
     readReplayData(path);
     try (LittleEndianDataInputStream dataStream = new LittleEndianDataInputStream(new ByteArrayInputStream(data))) {
       parseHeader(dataStream);
-      tokens = Tokenizer.tokenize(dataStream);
+      tokens = ReplayBodyTokenizer.tokenize(dataStream);
     }
-    events = Parser.parseTokens(tokens);
+    events = ReplayBodyParser.parseTokens(tokens);
     interpretEvents(events);
   }
 }
