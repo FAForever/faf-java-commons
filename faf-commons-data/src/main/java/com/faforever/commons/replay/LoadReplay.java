@@ -20,16 +20,20 @@ import java.util.Objects;
 
 public class LoadReplay {
 
-  public static ReplayContainer loadReplayFromMemory(ReplayMetadata metadata, ReplayBinaryFormat.BinarySCFA bytes) {
+  private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, ReplayBinaryFormat.BinarySCFA bytes) {
     return new ReplayContainer(metadata, bytes);
   }
 
-  public static ReplayContainer loadReplayFromDisk(Path scfaReplayFile)  throws IOException {
+  public static ReplayContainer loadSCFAReplayFromDisk(Path scfaReplayFile)  throws IOException, IllegalArgumentException  {
+    if (!scfaReplayFile.toString().toLowerCase().endsWith("scfareplay")) {
+      throw new IllegalArgumentException ("Unknown file format: " + scfaReplayFile.getFileName());
+    }
+
     byte[] bytes = Files.readAllBytes(scfaReplayFile);
-    return loadReplayFromMemory(null, new ReplayBinaryFormat.BinarySCFA(bytes));
+    return loadSCFAReplayFromMemory(null, new ReplayBinaryFormat.BinarySCFA(bytes));
   }
 
-  public static ReplayContainer loadFAFReplayFromMemory(ReplayBinaryFormat.WithContext fafReplayBytes)  throws IOException, CompressorException {
+  private static ReplayContainer loadFAFReplayFromMemory(ReplayBinaryFormat.WithContext fafReplayBytes)  throws IOException, CompressorException {
     int separator = findSeparatorIndex(fafReplayBytes.bytes());
     byte[] metadataBytes = Arrays.copyOfRange(fafReplayBytes.bytes(), 0, separator);
     String metadataString = new String(metadataBytes, StandardCharsets.UTF_8);
@@ -40,10 +44,14 @@ public class LoadReplay {
     byte[] compressedReplayBytes = Arrays.copyOfRange(fafReplayBytes.bytes(), separator + 1, fafReplayBytes.bytes().length);
     byte[] replayBytes = decompress(compressedReplayBytes, replayMetadata);
 
-    return loadReplayFromMemory(replayMetadata, new ReplayBinaryFormat.BinarySCFA(replayBytes));
+    return loadSCFAReplayFromMemory(replayMetadata, new ReplayBinaryFormat.BinarySCFA(replayBytes));
   }
 
-  public static ReplayContainer loadFAFReplayFromDisk(Path fafReplayFile) throws IOException, CompressorException {
+  public static ReplayContainer loadFAFReplayFromDisk(Path fafReplayFile) throws IOException, CompressorException, IllegalArgumentException  {
+    if (!fafReplayFile.toString().toLowerCase().endsWith("fafreplay")) {
+      throw new IllegalArgumentException ("Unknown file format: " + fafReplayFile.getFileName());
+    }
+
     byte[] replayBytes = Files.readAllBytes(fafReplayFile);
     return loadFAFReplayFromMemory(new ReplayBinaryFormat.WithContext(replayBytes));
   }

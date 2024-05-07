@@ -85,7 +85,7 @@ class LoadReplayTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22338092.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = LoadReplay.loadFAFReplayFromDisk(fafReplayFile);
-    ReplayContainer scfaReplayContainer = LoadReplay.loadReplayFromDisk(scfaReplayFile);
+    ReplayContainer scfaReplayContainer = LoadReplay.loadSCFAReplayFromDisk(scfaReplayFile);
 
     assertEquals(scfaReplayContainer.replay().bytes().length, fafReplayContainer.replay().bytes().length);
     assertEquals(Arrays.hashCode(scfaReplayContainer.replay().bytes()), Arrays.hashCode(fafReplayContainer.replay().bytes()));
@@ -101,7 +101,7 @@ class LoadReplayTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22373098.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = LoadReplay.loadFAFReplayFromDisk(fafReplayFile);
-    ReplayContainer scfaReplayContainer = LoadReplay.loadReplayFromDisk(scfaReplayFile);
+    ReplayContainer scfaReplayContainer = LoadReplay.loadSCFAReplayFromDisk(scfaReplayFile);
 
     assertEquals(scfaReplayContainer.replay().bytes().length, fafReplayContainer.replay().bytes().length);
     assertEquals(Arrays.hashCode(scfaReplayContainer.replay().bytes()), Arrays.hashCode(fafReplayContainer.replay().bytes()));
@@ -118,7 +118,7 @@ class LoadReplayTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22425616.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = LoadReplay.loadFAFReplayFromDisk(fafReplayFile);
-    ReplayContainer scfaReplayContainer = LoadReplay.loadReplayFromDisk(scfaReplayFile);
+    ReplayContainer scfaReplayContainer = LoadReplay.loadSCFAReplayFromDisk(scfaReplayFile);
 
     assertEquals(scfaReplayContainer.replay().bytes().length, fafReplayContainer.replay().bytes().length);
     assertEquals(Arrays.hashCode(scfaReplayContainer.replay().bytes()), Arrays.hashCode(fafReplayContainer.replay().bytes()));
