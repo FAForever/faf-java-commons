@@ -1,12 +1,12 @@
-package com.faforever.commons.replay.body.event;
+package com.faforever.commons.replay.body.parse;
 
 import com.faforever.commons.replay.body.token.Token;
+import com.faforever.commons.replay.shared.LuaTable;
+import com.faforever.commons.replay.shared.Utils;
 import com.google.common.io.LittleEndianDataInputStream;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Parser {
@@ -18,22 +18,6 @@ public class Parser {
         return new Event.ProcessingError(token, exception);
       }
     }).toList();
-  }
-
-  private static int peek(LittleEndianDataInputStream dataStream) throws IOException {
-    dataStream.mark(1);
-    int next = dataStream.readUnsignedByte();
-    dataStream.reset();
-    return next;
-  }
-
-  private static String parseString(LittleEndianDataInputStream dataStream) throws IOException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte tempByte;
-    while ((tempByte = dataStream.readByte()) != 0) {
-      out.write(tempByte);
-    }
-    return out.toString(StandardCharsets.UTF_8);
   }
 
   private static Event.CommandUnits parseCommandUnits(LittleEndianDataInputStream stream) throws IOException {
@@ -98,73 +82,18 @@ public class Parser {
 
     Event.CommandFormation commandFormation = parseCommandFormation(stream);
 
-    String blueprintId = parseString(stream);
+    String blueprintId = Utils.parseString(stream);
     byte[] arg4 = stream.readNBytes(12);
     byte[] arg5 = new byte[0];
 
-    LuaData parametersLua = parseLua(stream);
-    if (!(parametersLua instanceof LuaData.Nil)) {
+    LuaTable parametersLua = Utils.parseLua(stream);
+    if (!(parametersLua instanceof LuaTable.Nil)) {
       arg5 = stream.readNBytes(1);
     }
 
     return new Event.CommandData(
       commandId, commandType, commandTarget, commandFormation, blueprintId, parametersLua
     );
-  }
-
-  private static LuaData parseLua(LittleEndianDataInputStream dataStream) throws IOException {
-    int type = dataStream.readUnsignedByte();
-
-    final int LUA_NUMBER = 0;
-    final int LUA_STRING = 1;
-    final int LUA_NIL = 2;
-    final int LUA_BOOL = 3;
-    final int LUA_TABLE_START = 4;
-    final int LUA_TABLE_END = 5;
-
-    switch (type) {
-      case LUA_NUMBER -> {
-        float value = dataStream.readFloat();
-        return new LuaData.Number(value);
-      }
-
-      case LUA_STRING -> {
-        String value = parseString(dataStream);
-        return new LuaData.String(value);
-      }
-
-
-      case LUA_NIL -> {
-        dataStream.skipBytes(1);
-        return new LuaData.Nil();
-      }
-
-      case LUA_BOOL -> {
-        boolean value = dataStream.readUnsignedByte() == 0;
-        return new LuaData.Bool(value);
-      }
-
-      case LUA_TABLE_START -> {
-        Map<String, LuaData> value = new HashMap<>();
-        while (peek(dataStream) != LUA_TABLE_END) {
-          LuaData key = parseLua(dataStream);
-
-          switch (key) {
-            case LuaData.String(String str) -> value.put(str, parseLua(dataStream));
-
-            case LuaData.Number(float num) -> value.put(String.valueOf(num), parseLua(dataStream));
-
-            default -> throw new IllegalStateException("Unexpected data type: " + type);
-          }
-
-          dataStream.mark(1);
-        }
-        dataStream.skipBytes(1);
-
-        return new LuaData.Table(value);
-      }
-      default -> throw new IllegalStateException("Unexpected data type: " + type);
-    }
   }
 
   private static Event parseToken(Token token) throws IOException {
@@ -198,7 +127,7 @@ public class Parser {
 
         case CMDST_CREATE_UNIT -> {
           int playerIndex = stream.readByte();
-          String blueprintId = parseString(stream);
+          String blueprintId = Utils.parseString(stream);
           float px = stream.readFloat();
           float pz = stream.readFloat();
           float heading = stream.readFloat();
@@ -207,7 +136,7 @@ public class Parser {
         }
 
         case CMDST_CREATE_PROP -> {
-          String blueprintId = parseString(stream);
+          String blueprintId = Utils.parseString(stream);
           float px = stream.readFloat();
           float pz = stream.readFloat();
           float heading = stream.readFloat();
@@ -230,8 +159,8 @@ public class Parser {
 
         case CMDST_PROCESS_INFO_PAIR -> {
           int entityId = stream.read();
-          String arg1 = parseString(stream);
-          String arg2 = parseString(stream);
+          String arg1 = Utils.parseString(stream);
+          String arg2 = Utils.parseString(stream);
           yield new Event.ProcessInfoPair(entityId, arg1, arg2);
         }
 
@@ -275,8 +204,8 @@ public class Parser {
 
         case CMDST_SET_COMMAND_CELLS -> {
           int commandId = stream.readInt();
-          LuaData parametersLua = parseLua(stream);
-          if (!(parametersLua instanceof LuaData.Nil)) {
+          LuaTable parametersLua = Utils.parseLua(stream);
+          if (!(parametersLua instanceof LuaTable.Nil)) {
             stream.readNBytes(1);
           }
 
@@ -296,17 +225,17 @@ public class Parser {
         case CMDST_DEBUG_COMMAND -> new Event.Unprocessed(token, "CMDST_DEBUG_COMMAND");
 
         case CMDST_EXECUTE_LUA_IN_SIM -> {
-          String luaCode = parseString(stream);
+          String luaCode = Utils.parseString(stream);
           yield new Event.ExecuteLuaInSim(luaCode);
         }
 
         case CMDST_LUA_SIM_CALLBACK -> {
-          String func = parseString(stream);
-          LuaData args = parseLua(stream);
+          String func = Utils.parseString(stream);
+          LuaTable args = Utils.parseLua(stream);
           Event.CommandUnits commandUnits = null;
 
           // suspicion that this is just flat out wrong! Whether there's a selection in the data is not related to whether there are Lua arguments
-          if (!(args instanceof LuaData.Nil)) {
+          if (!(args instanceof LuaTable.Nil)) {
             commandUnits = parseCommandUnits(stream);
           } else {
             // the '4' we read here is the size, I suspect the 3 bytes are maybe to align the data somehow? No idea

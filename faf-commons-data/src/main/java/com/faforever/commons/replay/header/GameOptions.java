@@ -14,9 +14,9 @@ package com.faforever.commons.replay.header;
  * @param unRated
  * @param victory
  */
-public record GameOption(AutoTeams autoTeams, TeamLock teamLock, TeamSpawn teamSpawn, boolean allowObservers,
-                         boolean cheatsEnabled, boolean prebuiltUnits, boolean revealedCivilians, boolean scoreEnabled,
-                         int unitCap, boolean unRated, Victory victory) {
+public record GameOptions(AutoTeams autoTeams, TeamLock teamLock, TeamSpawn teamSpawn, boolean allowObservers,
+                          boolean cheatsEnabled, boolean prebuiltUnits, boolean revealedCivilians, boolean scoreEnabled,
+                          int unitCap, boolean unRated, Victory victory) {
 
   public enum AutoTeams {
     none("None"),

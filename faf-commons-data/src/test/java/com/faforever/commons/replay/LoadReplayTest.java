@@ -78,9 +78,8 @@ class LoadReplayTest {
     ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
     ReplayContainer scfaReplayContainer = Replay.loadSCFAReplayFromDisk(scfaReplayFile);
 
-    assertEquals(scfaReplayContainer.replay().bytes().length, fafReplayContainer.replay().bytes().length);
-    assertEquals(Arrays.hashCode(scfaReplayContainer.replay().bytes()), Arrays.hashCode(fafReplayContainer.replay().bytes()));
-    assertArrayEquals( scfaReplayContainer.replay().bytes(), fafReplayContainer.replay().bytes());
+    assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
+    assertArrayEquals( scfaReplayContainer.bytes(), fafReplayContainer.bytes());
   }
 
   @Test
@@ -94,9 +93,9 @@ class LoadReplayTest {
     ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
     ReplayContainer scfaReplayContainer = Replay.loadSCFAReplayFromDisk(scfaReplayFile);
 
-    assertEquals(scfaReplayContainer.replay().bytes().length, fafReplayContainer.replay().bytes().length);
-    assertEquals(Arrays.hashCode(scfaReplayContainer.replay().bytes()), Arrays.hashCode(fafReplayContainer.replay().bytes()));
-    assertArrayEquals( scfaReplayContainer.replay().bytes(), fafReplayContainer.replay().bytes());
+    assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
+    assertEquals(Arrays.hashCode(scfaReplayContainer.bytes()), Arrays.hashCode(fafReplayContainer.bytes()));
+    assertArrayEquals( scfaReplayContainer.bytes(), fafReplayContainer.bytes());
 
   }
 
@@ -111,9 +110,9 @@ class LoadReplayTest {
     ReplayContainer fafReplayContainer = Replay.loadFAFReplayFromDisk(fafReplayFile);
     ReplayContainer scfaReplayContainer = Replay.loadSCFAReplayFromDisk(scfaReplayFile);
 
-    assertEquals(scfaReplayContainer.replay().bytes().length, fafReplayContainer.replay().bytes().length);
-    assertEquals(Arrays.hashCode(scfaReplayContainer.replay().bytes()), Arrays.hashCode(fafReplayContainer.replay().bytes()));
-    assertArrayEquals( scfaReplayContainer.replay().bytes(), fafReplayContainer.replay().bytes());
+    assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
+    assertEquals(Arrays.hashCode(scfaReplayContainer.bytes()), Arrays.hashCode(fafReplayContainer.bytes()));
+    assertArrayEquals( scfaReplayContainer.bytes(), fafReplayContainer.bytes());
 
   }
 }

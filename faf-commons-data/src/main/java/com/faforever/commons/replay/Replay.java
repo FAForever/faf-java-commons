@@ -1,7 +1,13 @@
 package com.faforever.commons.replay;
 
+import com.faforever.commons.replay.body.Body;
+import com.faforever.commons.replay.header.Header;
+import com.faforever.commons.replay.header.parse.Parser;
+import com.faforever.commons.replay.header.token.Token;
+import com.faforever.commons.replay.header.token.Tokenizer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.io.BaseEncoding;
+import com.google.common.io.LittleEndianDataInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
@@ -16,12 +22,27 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Replay {
 
-  private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, ReplayBinaryFormat.BinarySCFA bytes) {
-    return new ReplayContainer(metadata, bytes);
+  private static Header loadSCFAReplayHeader(LittleEndianDataInputStream stream) throws IOException{
+    Token headerToken = Tokenizer.tokenize(stream);
+    return Parser.parseHeader(headerToken);
+  }
+
+  private static Body loadSCFAReplayBody(LittleEndianDataInputStream stream) throws IOException{
+    List<com.faforever.commons.replay.body.token.Token> bodyTokens = com.faforever.commons.replay.body.token.Tokenizer.tokenize(stream);
+    return new Body(com.faforever.commons.replay.body.parse.Parser.parseTokens(bodyTokens));
+  }
+
+  private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, ReplayBinaryFormat.BinarySCFA bytes) throws IOException {
+    try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes.bytes())))) {
+      Header replayHead = loadSCFAReplayHeader(stream);
+      Body replayBody = loadSCFAReplayBody(stream);
+      return new ReplayContainer(metadata, replayHead, replayBody, bytes.bytes());
+    }
   }
 
   public static ReplayContainer loadSCFAReplayFromDisk(Path scfaReplayFile)  throws IOException, IllegalArgumentException  {

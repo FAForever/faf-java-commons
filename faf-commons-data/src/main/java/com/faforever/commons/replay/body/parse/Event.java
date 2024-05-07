@@ -1,6 +1,7 @@
-package com.faforever.commons.replay.body.event;
+package com.faforever.commons.replay.body.parse;
 
 import com.faforever.commons.replay.body.token.Token;
+import com.faforever.commons.replay.shared.LuaTable;
 
 import java.util.List;
 
@@ -129,7 +130,7 @@ public sealed interface Event {
   /**
    * ??
    */
-  record SetCommandCells(int commandId, LuaData parametersLua, float px, float py, float pz) implements Event {
+  record SetCommandCells(int commandId, LuaTable parametersLua, float px, float py, float pz) implements Event {
   }
 
   /**
@@ -153,7 +154,7 @@ public sealed interface Event {
   /**
    * Created by the user global function `SimCallback`
    */
-  record LuaSimCallback(String func, LuaData parametersLua, CommandUnits commandUnits) implements Event {
+  record LuaSimCallback(String func, LuaTable parametersLua, CommandUnits commandUnits) implements Event {
   }
 
   /**
@@ -185,6 +186,6 @@ public sealed interface Event {
    * @param parametersLua
    */
   record CommandData(int commandId, EventCommandType commandType, CommandTarget commandTarget,
-                     CommandFormation commandFormation, String blueprintId, LuaData parametersLua) {
+                     CommandFormation commandFormation, String blueprintId, LuaTable parametersLua) {
   }
 }

@@ -22,9 +22,9 @@ package com.faforever.commons.replay.header;
  * @param faction
  * @param sourceId
  */
-public record PlayerOption(boolean isHuman, String aiPersonality, float ratingMean, float ratingDeviation, String clan,
-                           boolean isCivilian, boolean isReady, boolean isBadMap, int lobbyIndex,
-                           String armyName, String armyColor, String playerColor, String playerName,
-                           int ratedGamesPlayed, String country,
-                           int team, int faction, int sourceId) {
+public record PlayerOptions(boolean isHuman, String aiPersonality, float ratingMean, float ratingDeviation, String clan,
+                            boolean isCivilian, boolean isReady, boolean isBadMap, int lobbyIndex,
+                            String armyName, String armyColor, String playerColor, String playerName,
+                            int ratedGamesPlayed, String country,
+                            int team, int faction, int sourceId) {
 }
