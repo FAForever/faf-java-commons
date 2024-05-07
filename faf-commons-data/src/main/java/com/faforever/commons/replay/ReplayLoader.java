@@ -15,11 +15,13 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -30,20 +32,28 @@ import java.util.Objects;
 
 public class ReplayLoader {
 
+  @Contract(pure = true)
   private static ReplayHeader loadSCFAReplayHeader(LittleEndianDataInputStream stream) throws IOException{
     ReplayHeaderToken headerToken = ReplayHeaderTokenizer.tokenize(stream);
     return ReplayHeaderParser.parseHeader(headerToken);
   }
 
-  private static ReplayBody loadSCFAReplayBody(LittleEndianDataInputStream stream) throws IOException{
+  @Contract(pure = true)
+  private static @NotNull ReplayBody loadSCFAReplayBody(LittleEndianDataInputStream stream) throws IOException{
     List<ReplayBodyToken> bodyTokens = ReplayBodyTokenizer.tokenize(stream);
     return new ReplayBody(ReplayBodyParser.parseTokens(bodyTokens));
   }
 
+  @Contract(pure = true)
   private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, byte[] scfaReplayBytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(scfaReplayBytes)))) {
       ReplayHeader replayHeader = loadSCFAReplayHeader(stream);
       ReplayBody replayBody = loadSCFAReplayBody(stream);
+
+      if(stream.available() > 0) {
+        throw new EOFException();
+      }
+
       return new ReplayContainer(metadata, replayHeader, replayBody, scfaReplayBytes);
     }
   }
@@ -57,6 +67,7 @@ public class ReplayLoader {
     return loadSCFAReplayFromMemory(null, bytes);
   }
 
+  @Contract(pure = true)
   private static ReplayContainer loadFAFReplayFromMemory(byte[] fafReplayBytes)  throws IOException, CompressorException {
     int separator = findSeparatorIndex(fafReplayBytes);
     byte[] metadataBytes = Arrays.copyOfRange(fafReplayBytes, 0, separator);

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static com.faforever.commons.replay.shared.Utils.parseLua;
 
@@ -16,6 +17,9 @@ public class ReplayHeaderParser {
 
   @Contract(pure = true)
   public static @Nullable ReplayHeader parseHeader(ReplayHeaderToken token) throws IOException {
+    if (!Objects.equals(token.replayVersion(), "Replay v1.9")) {
+      throw new IOException();
+    }
 
     GameOptions gameOptions = parseGameOptions(token.gameOptions());
     List<GameMod> gameMods = parseMod(token.mods());

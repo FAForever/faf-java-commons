@@ -139,9 +139,9 @@ public sealed interface ReplayBodyEvent {
   }
 
   /**
-   * ??
+   * Created by debug related console commands such as `SallyShears`
    */
-  record DebugCommand() implements ReplayBodyEvent {
+  record DebugCommand(String command, float px, float py, float pz, byte focusArmy, CommandUnits units) implements ReplayBodyEvent {
   }
 
   /**

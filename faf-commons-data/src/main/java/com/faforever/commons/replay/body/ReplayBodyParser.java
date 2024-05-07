@@ -6,6 +6,7 @@ import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.*;
 
@@ -106,7 +107,7 @@ public class ReplayBodyParser {
   private static ReplayBodyEvent parseToken(ReplayBodyToken token) throws IOException {
 
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(token.tokenContent())))) {
-      return switch (token.tokenId()) {
+      ReplayBodyEvent event = switch (token.tokenId()) {
         case CMDST_ADVANCE -> {
           int ticks = stream.readInt();
           yield new ReplayBodyEvent.Advance(ticks);
@@ -165,7 +166,7 @@ public class ReplayBodyParser {
         }
 
         case CMDST_PROCESS_INFO_PAIR -> {
-          int entityId = stream.read();
+          int entityId = stream.readInt();
           String arg1 = Utils.readString(stream);
           String arg2 = Utils.readString(stream);
           yield new ReplayBodyEvent.ProcessInfoPair(entityId, arg1, arg2);
@@ -229,7 +230,16 @@ public class ReplayBodyParser {
           yield new ReplayBodyEvent.RemoveCommandFromQueue(commandId, unitId);
         }
 
-        case CMDST_DEBUG_COMMAND -> new ReplayBodyEvent.Unprocessed(token, "CMDST_DEBUG_COMMAND");
+        case CMDST_DEBUG_COMMAND -> {
+          String command = Utils.readString(stream);
+          float px = stream.readFloat();
+          float py = stream.readFloat();
+          float pz = stream.readFloat();
+          byte focusArmy = stream.readByte();
+          ReplayBodyEvent.CommandUnits commandUnits = parseCommandUnits(stream);
+
+          yield new ReplayBodyEvent.DebugCommand(command, px, py, pz, focusArmy, commandUnits);
+        }
 
         case CMDST_EXECUTE_LUA_IN_SIM -> {
           String luaCode = Utils.readString(stream);
@@ -256,6 +266,12 @@ public class ReplayBodyParser {
 
         case null -> new ReplayBodyEvent.Unprocessed(token, "Unknown");
       };
+
+      if(stream.available() > 0) {
+        throw new EOFException();
+      }
+
+      return event;
     }
   }
 

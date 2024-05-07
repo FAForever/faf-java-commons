@@ -1,5 +1,6 @@
 package com.faforever.commons.replay;
 
+import com.faforever.commons.replay.body.ReplayBodyEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -76,10 +77,15 @@ class LoadReplayLoaderTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22338092.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+    assertThat("No unprocessed tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
+    assertThat("No error tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+
     ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
+    assertThat("No unprocessed tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
+    assertThat("No error tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
 
     assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
-    assertArrayEquals( scfaReplayContainer.bytes(), fafReplayContainer.bytes());
+    assertArrayEquals( scfaReplayContainer.body().events().toArray(), fafReplayContainer.body().events().toArray());
   }
 
   @Test
@@ -91,11 +97,15 @@ class LoadReplayLoaderTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22373098.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+    assertThat("No unprocessed tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
+    assertThat("No error tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+
     ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
+    assertThat("No unprocessed tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
+    assertThat("No error tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
 
     assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
-    assertEquals(Arrays.hashCode(scfaReplayContainer.bytes()), Arrays.hashCode(fafReplayContainer.bytes()));
-    assertArrayEquals( scfaReplayContainer.bytes(), fafReplayContainer.bytes());
+    assertArrayEquals( scfaReplayContainer.body().events().toArray(), fafReplayContainer.body().events().toArray());
 
   }
 
@@ -108,11 +118,14 @@ class LoadReplayLoaderTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22425616.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+    assertThat("No unprocessed tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
+    assertThat("No error tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+
     ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
+    assertThat("No unprocessed tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
+    assertThat("No error tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
 
     assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
-    assertEquals(Arrays.hashCode(scfaReplayContainer.bytes()), Arrays.hashCode(fafReplayContainer.bytes()));
-    assertArrayEquals( scfaReplayContainer.bytes(), fafReplayContainer.bytes());
-
+    assertArrayEquals( scfaReplayContainer.body().events().toArray(), fafReplayContainer.body().events().toArray());
   }
 }
