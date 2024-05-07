@@ -18,7 +18,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class LoadReplay {
+public class Replay {
 
   private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, ReplayBinaryFormat.BinarySCFA bytes) {
     return new ReplayContainer(metadata, bytes);
