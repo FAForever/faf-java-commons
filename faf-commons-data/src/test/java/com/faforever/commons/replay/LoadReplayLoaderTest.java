@@ -69,6 +69,39 @@ class LoadReplayLoaderTest {
   }
 
   @Test
+  public void parseBinary05() throws CompressorException, IOException {
+    assertDoesNotThrow(
+      () -> {
+        Path fafReplayFile = temporaryFolder.resolve("22451957.fafreplay");
+        Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22451957.fafreplay")), fafReplayFile);
+        ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+      }
+    );
+  }
+
+  @Test
+  public void parseBinary06() throws CompressorException, IOException {
+    assertDoesNotThrow(
+      () -> {
+        Path fafReplayFile = temporaryFolder.resolve("22453414.fafreplay");
+        Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22453414.fafreplay")), fafReplayFile);
+        ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+      }
+    );
+  }
+
+  @Test
+  public void parseBinary07() throws CompressorException, IOException {
+    assertDoesNotThrow(
+      () -> {
+        Path fafReplayFile = temporaryFolder.resolve("22453511.fafreplay");
+        Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22453511.fafreplay")), fafReplayFile);
+        ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+      }
+    );
+  }
+
+  @Test
   public void compareBinary01() throws CompressorException, IOException {
     Path fafReplayFile = temporaryFolder.resolve("22338092.fafreplay");
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22338092.fafreplay")), fafReplayFile);

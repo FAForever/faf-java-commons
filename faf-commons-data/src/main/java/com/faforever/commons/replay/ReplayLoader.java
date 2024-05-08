@@ -54,7 +54,7 @@ public class ReplayLoader {
         throw new EOFException();
       }
 
-      return new ReplayContainer(metadata, replayHeader, replayBody, scfaReplayBytes);
+      return new ReplayContainer(metadata, replayHeader, replayBody);
     }
   }
 

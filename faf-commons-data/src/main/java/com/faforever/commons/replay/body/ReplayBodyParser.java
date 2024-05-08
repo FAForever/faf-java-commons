@@ -14,7 +14,7 @@ public class ReplayBodyParser {
 
   @Contract(pure = true)
   public static List<ReplayBodyEvent> parseTokens(List<ReplayBodyToken> tokens) throws IOException {
-    return tokens.stream().parallel().map((token) -> {
+    return tokens.stream().map((token) -> {
       try {
         return parseToken(token);
       } catch (Exception exception) {
@@ -91,21 +91,17 @@ public class ReplayBodyParser {
 
     String blueprintId = Utils.readString(stream);
     byte[] arg4 = stream.readNBytes(12);
-    byte[] arg5 = new byte[0];
 
     LuaTable parametersLua = Utils.parseLua(stream);
-    if (!(parametersLua instanceof LuaTable.Nil)) {
-      arg5 = stream.readNBytes(1);
-    }
+    boolean addToQueue = stream.readByte() > 0;
 
     return new ReplayBodyEvent.CommandData(
-      commandId, commandType, commandTarget, commandFormation, blueprintId, parametersLua
+      commandId, commandType, commandTarget, commandFormation, blueprintId, parametersLua, addToQueue
     );
   }
 
   @Contract(pure = true)
   private static ReplayBodyEvent parseToken(ReplayBodyToken token) throws IOException {
-
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(token.tokenContent())))) {
       ReplayBodyEvent event = switch (token.tokenId()) {
         case CMDST_ADVANCE -> {

@@ -182,9 +182,9 @@ public sealed interface ReplayBodyEvent {
    * @param commandTarget
    * @param commandFormation
    * @param blueprintId
-   * @param parametersLua
+   * @param taskParameters
    */
   record CommandData(int commandId, ReplayBodyEventCommandType commandType, CommandTarget commandTarget,
-                     CommandFormation commandFormation, String blueprintId, LuaTable parametersLua) {
+                     CommandFormation commandFormation, String blueprintId, LuaTable taskParameters, boolean addToQueue) {
   }
 }
