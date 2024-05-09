@@ -1,4 +1,4 @@
-package com.faforever.commons.replay.semantics;
+package com.faforever.commons.replay.semantics.records;
 
 import lombok.Data;
 

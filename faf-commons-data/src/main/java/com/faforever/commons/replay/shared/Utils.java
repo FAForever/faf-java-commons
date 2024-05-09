@@ -63,9 +63,7 @@ public class Utils {
         return new LuaTable.String(value);
       }
 
-
       case LUA_NIL -> {
-        dataStream.skipBytes(1);
         return new LuaTable.Nil();
       }
 

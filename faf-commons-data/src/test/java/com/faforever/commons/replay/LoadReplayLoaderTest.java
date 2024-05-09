@@ -1,6 +1,6 @@
 package com.faforever.commons.replay;
 
-import com.faforever.commons.replay.body.ReplayBodyEvent;
+import com.faforever.commons.replay.body.Event;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -10,10 +10,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Objects;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,6 +22,14 @@ class LoadReplayLoaderTest {
 
   private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+  private void assertNoUnprocessedTokens(ReplayContainer fafReplayContainer) {
+    assertThat("No unprocessed tokens", fafReplayContainer.trackedEvents().stream().filter(e -> e.event() instanceof Event.Unprocessed).findAny().isEmpty());
+  }
+
+  private void assertNoErrorTokens(ReplayContainer fafReplayContainer) {
+    assertThat("No error tokens", fafReplayContainer.trackedEvents().stream().filter(e -> e.event() instanceof Event.ProcessingError).findAny().isEmpty());
+  }
+
   @Test
   public void parseBinary01() throws CompressorException, IOException {
     assertDoesNotThrow(
@@ -31,6 +37,9 @@ class LoadReplayLoaderTest {
         Path fafReplayFile = temporaryFolder.resolve("TestCommands01.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/TestCommands01.fafreplay")), fafReplayFile);
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+
+        assertNoUnprocessedTokens(fafReplayContainer);
+        assertNoErrorTokens(fafReplayContainer);
       }
     );
   }
@@ -42,6 +51,9 @@ class LoadReplayLoaderTest {
         Path fafReplayFile = temporaryFolder.resolve("TestModeratorEvents.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/TestModeratorEvents.fafreplay")), fafReplayFile);
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+
+        assertNoUnprocessedTokens(fafReplayContainer);
+        assertNoErrorTokens(fafReplayContainer);
       }
     );
   }
@@ -53,6 +65,9 @@ class LoadReplayLoaderTest {
         Path fafReplayFile = temporaryFolder.resolve("zstd_reference.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/zstd_reference.fafreplay")), fafReplayFile);
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+
+        assertNoUnprocessedTokens(fafReplayContainer);
+        assertNoErrorTokens(fafReplayContainer);
       }
     );
   }
@@ -64,6 +79,9 @@ class LoadReplayLoaderTest {
         Path fafReplayFile = temporaryFolder.resolve("test.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/test.fafreplay")), fafReplayFile);
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+
+        assertNoUnprocessedTokens(fafReplayContainer);
+        assertNoErrorTokens(fafReplayContainer);
       }
     );
   }
@@ -75,6 +93,9 @@ class LoadReplayLoaderTest {
         Path fafReplayFile = temporaryFolder.resolve("22451957.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22451957.fafreplay")), fafReplayFile);
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+
+        assertNoUnprocessedTokens(fafReplayContainer);
+        assertNoErrorTokens(fafReplayContainer);
       }
     );
   }
@@ -86,6 +107,9 @@ class LoadReplayLoaderTest {
         Path fafReplayFile = temporaryFolder.resolve("22453414.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22453414.fafreplay")), fafReplayFile);
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+
+        assertNoUnprocessedTokens(fafReplayContainer);
+        assertNoErrorTokens(fafReplayContainer);
       }
     );
   }
@@ -97,6 +121,9 @@ class LoadReplayLoaderTest {
         Path fafReplayFile = temporaryFolder.resolve("22453511.fafreplay");
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22453511.fafreplay")), fafReplayFile);
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
+
+        assertNoUnprocessedTokens(fafReplayContainer);
+        assertNoErrorTokens(fafReplayContainer);
       }
     );
   }
@@ -110,15 +137,15 @@ class LoadReplayLoaderTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22338092.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
-    assertThat("No unprocessed tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
-    assertThat("No error tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+    assertNoUnprocessedTokens(fafReplayContainer);
+    assertNoErrorTokens(fafReplayContainer);
 
     ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
-    assertThat("No unprocessed tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
-    assertThat("No error tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+    assertNoUnprocessedTokens(scfaReplayContainer);
+    assertNoErrorTokens(scfaReplayContainer);
 
-    assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
-    assertArrayEquals( scfaReplayContainer.body().events().toArray(), fafReplayContainer.body().events().toArray());
+    assertEquals(scfaReplayContainer.trackedEvents().size(), fafReplayContainer.trackedEvents().size());
+    assertArrayEquals( scfaReplayContainer.trackedEvents().toArray(), fafReplayContainer.trackedEvents().toArray());
   }
 
   @Test
@@ -130,15 +157,15 @@ class LoadReplayLoaderTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22373098.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
-    assertThat("No unprocessed tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
-    assertThat("No error tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+    assertNoUnprocessedTokens(fafReplayContainer);
+    assertNoErrorTokens(fafReplayContainer);
 
     ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
-    assertThat("No unprocessed tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
-    assertThat("No error tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+    assertNoUnprocessedTokens(scfaReplayContainer);
+    assertNoErrorTokens(scfaReplayContainer);
 
-    assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
-    assertArrayEquals( scfaReplayContainer.body().events().toArray(), fafReplayContainer.body().events().toArray());
+    assertEquals(scfaReplayContainer.trackedEvents().size(), fafReplayContainer.trackedEvents().size());
+    assertArrayEquals( scfaReplayContainer.trackedEvents().toArray(), fafReplayContainer.trackedEvents().toArray());
 
   }
 
@@ -151,14 +178,14 @@ class LoadReplayLoaderTest {
     Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/replay/load/22425616.scfareplay")), scfaReplayFile);
 
     ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
-    assertThat("No unprocessed tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
-    assertThat("No error tokens", fafReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+    assertNoUnprocessedTokens(fafReplayContainer);
+    assertNoErrorTokens(fafReplayContainer);
 
     ReplayContainer scfaReplayContainer = ReplayLoader.loadSCFAReplayFromDisk(scfaReplayFile);
-    assertThat("No unprocessed tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.Unprocessed).findAny().isEmpty());
-    assertThat("No error tokens", scfaReplayContainer.body().events().stream().filter(e -> e instanceof ReplayBodyEvent.ProcessingError).findAny().isEmpty());
+    assertNoUnprocessedTokens(scfaReplayContainer);
+    assertNoErrorTokens(scfaReplayContainer);
 
-    assertEquals(scfaReplayContainer.body().events().size(), fafReplayContainer.body().events().size());
-    assertArrayEquals( scfaReplayContainer.body().events().toArray(), fafReplayContainer.body().events().toArray());
+    assertEquals(scfaReplayContainer.trackedEvents().size(), fafReplayContainer.trackedEvents().size());
+    assertArrayEquals( scfaReplayContainer.trackedEvents().toArray(), fafReplayContainer.trackedEvents().toArray());
   }
 }

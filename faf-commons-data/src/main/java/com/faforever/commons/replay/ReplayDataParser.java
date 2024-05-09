@@ -1,8 +1,8 @@
 package com.faforever.commons.replay;
 
-import com.faforever.commons.replay.body.ReplayBodyEvent;
-import com.faforever.commons.replay.semantics.ChatMessage;
-import com.faforever.commons.replay.semantics.ModeratorEvent;
+import com.faforever.commons.replay.body.Event;
+import com.faforever.commons.replay.semantics.records.ChatMessage;
+import com.faforever.commons.replay.semantics.records.ModeratorEvent;
 import com.faforever.commons.replay.shared.LuaTable;
 import com.faforever.commons.replay.body.ReplayBodyParser;
 import com.faforever.commons.replay.body.ReplayBodyToken;
@@ -72,7 +72,7 @@ public class ReplayDataParser {
   private List<ReplayBodyToken> tokens;
 
   @Getter
-  private List<ReplayBodyEvent> events;
+  private List<Event> events;
 
   public ReplayDataParser(Path path, ObjectMapper objectMapper) throws IOException, CompressorException {
     this.path = path;
@@ -209,7 +209,7 @@ public class ReplayDataParser {
     randomSeed = dataStream.readInt();
   }
 
-  private void interpretEvents(List<ReplayBodyEvent> events) {
+  private void interpretEvents(List<Event> events) {
     Integer player = -1;
     boolean desync = false;
     String previousChecksum = null;
@@ -217,30 +217,30 @@ public class ReplayDataParser {
 
     Map<Integer, Integer> lastTicks = new HashMap<>();
 
-    for (ReplayBodyEvent event : events) {
+    for (Event event : events) {
 
       switch (event) {
-        case ReplayBodyEvent.Unprocessed(ReplayBodyToken token, String reason) -> {
+        case Event.Unprocessed(ReplayBodyToken token, String reason) -> {
 
         }
 
-        case ReplayBodyEvent.ProcessingError(ReplayBodyToken token, Exception exception) -> {
+        case Event.ProcessingError(ReplayBodyToken token, Exception exception) -> {
 
         }
 
-        case ReplayBodyEvent.Advance(int ticksToAdvance) -> {
+        case Event.Advance(int ticksToAdvance) -> {
           ticks += ticksToAdvance;
         }
 
-        case ReplayBodyEvent.SetCommandSource(int playerIndex) -> {
+        case Event.SetCommandSource(int playerIndex) -> {
           player = playerIndex;
         }
 
-        case ReplayBodyEvent.CommandSourceTerminated() -> {
+        case Event.CommandSourceTerminated() -> {
           lastTicks.put(player, ticks);
         }
 
-        case ReplayBodyEvent.VerifyChecksum(String hash, int tick) -> {
+        case Event.VerifyChecksum(String hash, int tick) -> {
           desync = tick == previousTick && !Objects.equals(previousChecksum, hash);
           previousChecksum = hash;
           previousTick = ticks;
@@ -251,103 +251,103 @@ public class ReplayDataParser {
           }
         }
 
-        case ReplayBodyEvent.RequestPause() -> {
+        case Event.RequestPause() -> {
 
         }
 
-        case ReplayBodyEvent.RequestResume() -> {
+        case Event.RequestResume() -> {
 
         }
 
-        case ReplayBodyEvent.SingleStep() -> {
+        case Event.SingleStep() -> {
 
         }
 
-        case ReplayBodyEvent.CreateUnit(int playerIndex, String blueprintId, float px, float pz, float heading) -> {
+        case Event.CreateUnit(int playerIndex, String blueprintId, float px, float pz, float heading) -> {
 
         }
 
-        case ReplayBodyEvent.CreateProp(String blueprintId, float px, float pz, float heading) -> {
+        case Event.CreateProp(String blueprintId, float px, float pz, float heading) -> {
 
         }
 
-        case ReplayBodyEvent.DestroyEntity(int entityId) -> {
+        case Event.DestroyEntity(int entityId) -> {
 
         }
 
-        case ReplayBodyEvent.WarpEntity(int entityId, float px, float py, float pz) -> {
+        case Event.WarpEntity(int entityId, float px, float py, float pz) -> {
 
         }
 
-        case ReplayBodyEvent.ProcessInfoPair(int entityId, String arg1, String arg2) -> {
+        case Event.ProcessInfoPair(int entityId, String arg1, String arg2) -> {
 
         }
 
-        case ReplayBodyEvent.IssueCommand(
-          ReplayBodyEvent.CommandUnits commandUnits, ReplayBodyEvent.CommandData commandData
+        case Event.IssueCommand(
+          Event.CommandUnits commandUnits, Event.CommandData commandData
         ) -> {
           commandsPerMinuteByPlayer.computeIfAbsent(player, p -> new HashMap<>()).computeIfAbsent(ticks, t -> new AtomicInteger()).incrementAndGet();
         }
 
-        case ReplayBodyEvent.IssueFactoryCommand(
-          ReplayBodyEvent.CommandUnits commandUnits, ReplayBodyEvent.CommandData commandData
+        case Event.IssueFactoryCommand(
+          Event.CommandUnits commandUnits, Event.CommandData commandData
         ) -> {
           commandsPerMinuteByPlayer.computeIfAbsent(player, p -> new HashMap<>()).computeIfAbsent(ticks, t -> new AtomicInteger()).incrementAndGet();
         }
 
-        case ReplayBodyEvent.IncreaseCommandCount(int commandId, int delta) -> {
+        case Event.IncreaseCommandCount(int commandId, int delta) -> {
 
         }
 
-        case ReplayBodyEvent.DecreaseCommandCount(int commandId, int delta) -> {
+        case Event.DecreaseCommandCount(int commandId, int delta) -> {
 
         }
 
-        case ReplayBodyEvent.SetCommandTarget(int commandId, ReplayBodyEvent.CommandTarget commandTarget) -> {
+        case Event.SetCommandTarget(int commandId, Event.CommandTarget commandTarget) -> {
 
         }
 
-        case ReplayBodyEvent.SetCommandType(int commandId, int targetId) -> {
+        case Event.SetCommandType(int commandId, int targetId) -> {
 
         }
 
-        case ReplayBodyEvent.SetCommandCells(int commandId, Object parametersLua, float px, float py, float pz) -> {
+        case Event.SetCommandCells(int commandId, Object parametersLua, float px, float py, float pz) -> {
 
         }
 
-        case ReplayBodyEvent.RemoveCommandFromQueue(int commandId, int unitId) -> {
+        case Event.RemoveCommandFromQueue(int commandId, int unitId) -> {
 
         }
 
-        case ReplayBodyEvent.DebugCommand(
-          String command, float px, float py, float pz, byte focusArmy, ReplayBodyEvent.CommandUnits units
+        case Event.DebugCommand(
+          String command, float px, float py, float pz, byte focusArmy, Event.CommandUnits units
         ) -> {
 
         }
 
-        case ReplayBodyEvent.ExecuteLuaInSim(String luaCode) -> {
+        case Event.ExecuteLuaInSim(String luaCode) -> {
 
         }
 
-        case ReplayBodyEvent.LuaSimCallback(
-          String func, LuaTable.Table parametersLua, ReplayBodyEvent.CommandUnits commandUnits
+        case Event.LuaSimCallback(
+          String func, LuaTable.Table parametersLua, Event.CommandUnits commandUnits
         ) when func.equals("GiveResourcesToPlayer") -> {
           parseGiveResourcesToPlayer(parametersLua);
         }
 
-        case ReplayBodyEvent.LuaSimCallback(
-          String func, LuaTable.Table parametersLua, ReplayBodyEvent.CommandUnits commandUnits
+        case Event.LuaSimCallback(
+          String func, LuaTable.Table parametersLua, Event.CommandUnits commandUnits
         ) when func.equals("ModeratorEvent") -> {
           parseModeratorEvent(parametersLua, player);
         }
 
-        case ReplayBodyEvent.LuaSimCallback(
-          String func, LuaTable parametersLua, ReplayBodyEvent.CommandUnits commandUnits
+        case Event.LuaSimCallback(
+          String func, LuaTable parametersLua, Event.CommandUnits commandUnits
         ) -> {
 
         }
 
-        case ReplayBodyEvent.EndGame() -> {
+        case Event.EndGame() -> {
 
         }
 

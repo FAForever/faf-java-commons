@@ -1,7 +1,7 @@
 package com.faforever.commons.replay;
 
-import com.faforever.commons.replay.semantics.ChatMessage;
-import com.faforever.commons.replay.semantics.ModeratorEvent;
+import com.faforever.commons.replay.semantics.records.ChatMessage;
+import com.faforever.commons.replay.semantics.records.ModeratorEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;

@@ -3,7 +3,7 @@ package com.faforever.commons.replay.body;
 import lombok.Getter;
 
 @Getter
-public enum ReplayBodyEventCommandType {
+public enum EventCommandType {
   // Order is crucial
   NONE("NONE"),
   STOP("Stop"),
@@ -48,7 +48,7 @@ public enum ReplayBodyEventCommandType {
 
   private final String string;
 
-  ReplayBodyEventCommandType(String string) {
+  EventCommandType(String string) {
     this.string = string;
   }
 }
