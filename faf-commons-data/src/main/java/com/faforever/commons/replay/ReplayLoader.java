@@ -4,10 +4,7 @@ import com.faforever.commons.replay.body.Event;
 import com.faforever.commons.replay.body.ReplayBodyParser;
 import com.faforever.commons.replay.body.ReplayBodyToken;
 import com.faforever.commons.replay.body.ReplayBodyTokenizer;
-import com.faforever.commons.replay.header.ReplayHeader;
-import com.faforever.commons.replay.header.ReplayHeaderParser;
-import com.faforever.commons.replay.header.ReplayHeaderToken;
-import com.faforever.commons.replay.header.ReplayHeaderTokenizer;
+import com.faforever.commons.replay.header.*;
 import com.faforever.commons.replay.semantics.Semantics;
 import com.faforever.commons.replay.semantics.records.TrackedEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -41,17 +38,17 @@ public class ReplayLoader {
   }
 
   @Contract(pure = true)
-  private static @NotNull List<TrackedEvent> loadSCFAReplayBody(LittleEndianDataInputStream stream) throws IOException{
+  private static @NotNull List<TrackedEvent> loadSCFAReplayBody(List<Source> sources, LittleEndianDataInputStream stream) throws IOException{
     List<ReplayBodyToken> bodyTokens = ReplayBodyTokenizer.tokenize(stream);
     List<Event> bodyEvents = ReplayBodyParser.parseTokens(bodyTokens);
-    return Semantics.registerEvents(bodyEvents);
+    return Semantics.registerEvents(sources, bodyEvents);
   }
 
   @Contract(pure = true)
   private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, byte[] scfaReplayBytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(scfaReplayBytes)))) {
       ReplayHeader replayHeader = loadSCFAReplayHeader(stream);
-      List<TrackedEvent> replayBody = loadSCFAReplayBody(stream);
+      List<TrackedEvent> replayBody = loadSCFAReplayBody(replayHeader.sources(), stream);
 
       if(stream.available() > 0) {
         throw new EOFException();

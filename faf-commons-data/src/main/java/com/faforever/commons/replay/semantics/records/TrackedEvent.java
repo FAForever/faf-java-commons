@@ -1,6 +1,7 @@
 package com.faforever.commons.replay.semantics.records;
 
 import com.faforever.commons.replay.body.Event;
+import com.faforever.commons.replay.header.Source;
 
-public record TrackedEvent(int tick, int authorisedByClient, Event event) {
+public record TrackedEvent(int tick, Source source, Event event) {
 }
