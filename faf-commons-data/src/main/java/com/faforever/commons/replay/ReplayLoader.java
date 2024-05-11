@@ -5,8 +5,6 @@ import com.faforever.commons.replay.body.ReplayBodyParser;
 import com.faforever.commons.replay.body.ReplayBodyToken;
 import com.faforever.commons.replay.body.ReplayBodyTokenizer;
 import com.faforever.commons.replay.header.*;
-import com.faforever.commons.replay.semantics.Semantics;
-import com.faforever.commons.replay.semantics.records.TrackedEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.LittleEndianDataInputStream;
@@ -18,6 +16,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -32,25 +31,25 @@ import java.util.Objects;
 public class ReplayLoader {
 
   @Contract(pure = true)
-  private static ReplayHeader loadSCFAReplayHeader(LittleEndianDataInputStream stream) throws IOException{
+  private static ReplayHeader loadSCFAReplayHeader(LittleEndianDataInputStream stream) throws IOException {
     ReplayHeaderToken headerToken = ReplayHeaderTokenizer.tokenize(stream);
     return ReplayHeaderParser.parseHeader(headerToken);
   }
 
   @Contract(pure = true)
-  private static @NotNull List<TrackedEvent> loadSCFAReplayBody(List<Source> sources, LittleEndianDataInputStream stream) throws IOException{
+  private static @NotNull List<RegisteredEvent> loadSCFAReplayBody(List<Source> sources, LittleEndianDataInputStream stream) throws IOException {
     List<ReplayBodyToken> bodyTokens = ReplayBodyTokenizer.tokenize(stream);
     List<Event> bodyEvents = ReplayBodyParser.parseTokens(bodyTokens);
-    return Semantics.registerEvents(sources, bodyEvents);
+    return ReplaySemantics.registerEvents(sources, bodyEvents);
   }
 
   @Contract(pure = true)
   private static ReplayContainer loadSCFAReplayFromMemory(ReplayMetadata metadata, byte[] scfaReplayBytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(scfaReplayBytes)))) {
       ReplayHeader replayHeader = loadSCFAReplayHeader(stream);
-      List<TrackedEvent> replayBody = loadSCFAReplayBody(replayHeader.sources(), stream);
+      List<RegisteredEvent> replayBody = loadSCFAReplayBody(replayHeader.sources(), stream);
 
-      if(stream.available() > 0) {
+      if (stream.available() > 0) {
         throw new EOFException();
       }
 
@@ -58,9 +57,9 @@ public class ReplayLoader {
     }
   }
 
-  public static ReplayContainer loadSCFAReplayFromDisk(Path scfaReplayFile)  throws IOException, IllegalArgumentException  {
+  public static ReplayContainer loadSCFAReplayFromDisk(Path scfaReplayFile) throws IOException, IllegalArgumentException {
     if (!scfaReplayFile.toString().toLowerCase().endsWith("scfareplay")) {
-      throw new IllegalArgumentException ("Unknown file format: " + scfaReplayFile.getFileName());
+      throw new IllegalArgumentException("Unknown file format: " + scfaReplayFile.getFileName());
     }
 
     byte[] bytes = Files.readAllBytes(scfaReplayFile);
@@ -68,7 +67,7 @@ public class ReplayLoader {
   }
 
   @Contract(pure = true)
-  private static ReplayContainer loadFAFReplayFromMemory(byte[] fafReplayBytes)  throws IOException, CompressorException {
+  private static ReplayContainer loadFAFReplayFromMemory(byte[] fafReplayBytes) throws IOException, CompressorException {
     int separator = findSeparatorIndex(fafReplayBytes);
     byte[] metadataBytes = Arrays.copyOfRange(fafReplayBytes, 0, separator);
     String metadataString = new String(metadataBytes, StandardCharsets.UTF_8);
@@ -82,9 +81,9 @@ public class ReplayLoader {
     return loadSCFAReplayFromMemory(replayMetadata, scfaReplayBytes);
   }
 
-  public static ReplayContainer loadFAFReplayFromDisk(Path fafReplayFile) throws IOException, CompressorException, IllegalArgumentException  {
+  public static ReplayContainer loadFAFReplayFromDisk(Path fafReplayFile) throws IOException, CompressorException, IllegalArgumentException {
     if (!fafReplayFile.toString().toLowerCase().endsWith("fafreplay")) {
-      throw new IllegalArgumentException ("Unknown file format: " + fafReplayFile.getFileName());
+      throw new IllegalArgumentException("Unknown file format: " + fafReplayFile.getFileName());
     }
 
     byte[] fafReplayBytes = Files.readAllBytes(fafReplayFile);

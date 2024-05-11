@@ -1,9 +1,7 @@
 package com.faforever.commons.replay;
 
 import com.faforever.commons.replay.body.Event;
-import com.faforever.commons.replay.semantics.records.ChatMessage;
-import com.faforever.commons.replay.semantics.records.ModeratorEvent;
-import com.faforever.commons.replay.shared.LuaTable;
+import com.faforever.commons.replay.shared.LuaData;
 import com.faforever.commons.replay.body.ReplayBodyParser;
 import com.faforever.commons.replay.body.ReplayBodyToken;
 import com.faforever.commons.replay.body.ReplayBodyTokenizer;
@@ -330,19 +328,19 @@ public class ReplayDataParser {
         }
 
         case Event.LuaSimCallback(
-          String func, LuaTable.Table parametersLua, Event.CommandUnits commandUnits
+          String func, LuaData.Table parametersLua, Event.CommandUnits commandUnits
         ) when func.equals("GiveResourcesToPlayer") -> {
           parseGiveResourcesToPlayer(parametersLua);
         }
 
         case Event.LuaSimCallback(
-          String func, LuaTable.Table parametersLua, Event.CommandUnits commandUnits
+          String func, LuaData.Table parametersLua, Event.CommandUnits commandUnits
         ) when func.equals("ModeratorEvent") -> {
           parseModeratorEvent(parametersLua, player);
         }
 
         case Event.LuaSimCallback(
-          String func, LuaTable parametersLua, Event.CommandUnits commandUnits
+          String func, LuaData parametersLua, Event.CommandUnits commandUnits
         ) -> {
 
         }
@@ -355,11 +353,11 @@ public class ReplayDataParser {
     }
   }
 
-  private void parseGiveResourcesToPlayer(LuaTable.Table lua) {
+  private void parseGiveResourcesToPlayer(LuaData.Table lua) {
     if (lua.value().containsKey("Msg") && lua.value().containsKey("From") && lua.value().containsKey("Sender")) {
 
       // TODO: use the command source (player value) instead of the values from the callback. The values from the callback can be manipulated
-      if (!(lua.value().get("From") instanceof LuaTable.Number(float luaFromArmy))) {
+      if (!(lua.value().get("From") instanceof LuaData.Number(float luaFromArmy))) {
         return;
       }
 
@@ -368,20 +366,20 @@ public class ReplayDataParser {
         return;
       }
 
-      if (!(lua.value().get("Msg") instanceof LuaTable.Table(Map<String, LuaTable> luaMsg))) {
+      if (!(lua.value().get("Msg") instanceof LuaData.Table(Map<String, LuaData> luaMsg))) {
         return;
       }
 
-      if (!(lua.value().get("Sender") instanceof LuaTable.String(String luaSender))) {
+      if (!(lua.value().get("Sender") instanceof LuaData.String(String luaSender))) {
         return;
       }
 
       // This can either be a player name or a Map of something, in which case it's actually giving resources
-      if (!(luaMsg.get("to") instanceof LuaTable.String(String luaMsgReceiver))) {
+      if (!(luaMsg.get("to") instanceof LuaData.String(String luaMsgReceiver))) {
         return;
       }
 
-      if (!(luaMsg.get("text") instanceof LuaTable.String(String luaMsgText))) {
+      if (!(luaMsg.get("text") instanceof LuaData.String(String luaMsgText))) {
         return;
       }
 
@@ -393,18 +391,18 @@ public class ReplayDataParser {
   }
 
 
-  void parseModeratorEvent(LuaTable.Table lua, Integer player) {
+  void parseModeratorEvent(LuaData.Table lua, Integer player) {
     String messageContent = null;
     String playerNameFromArmy = null;
     String playerNameFromCommandSource = null;
     Integer activeCommandSource = null;
     Integer fromArmy = null;
 
-    if (lua.value().get("Message") instanceof LuaTable.String(String luaMessage)) {
+    if (lua.value().get("Message") instanceof LuaData.String(String luaMessage)) {
       messageContent = luaMessage;
     }
 
-    if (lua.value().get("From") instanceof LuaTable.Number(float luaFrom)) {
+    if (lua.value().get("From") instanceof LuaData.Number(float luaFrom)) {
       fromArmy = (int) luaFrom - 1;
 
 

@@ -1,6 +1,6 @@
 package com.faforever.commons.replay.header;
 
-import com.faforever.commons.replay.shared.LuaTable;
+import com.faforever.commons.replay.shared.LuaData;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +44,7 @@ public class ReplayHeaderParser {
   @Contract(pure = true)
   private static @Nullable List<GameMod> parseMod(byte[] bytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
-      LuaTable mod = parseLua(stream);
+      LuaData mod = parseLua(stream);
 
 
 
@@ -57,7 +57,7 @@ public class ReplayHeaderParser {
   @Contract(pure = true)
   private static @Nullable GameOptions parseGameOptions(byte[] bytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
-      LuaTable gameOptions = parseLua(stream);
+      LuaData gameOptions = parseLua(stream);
 
 
 
@@ -69,7 +69,7 @@ public class ReplayHeaderParser {
   @Contract(pure = true)
   private static @Nullable PlayerOptions parsePlayerOptions(byte[] bytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
-      LuaTable playerOptions = parseLua(stream);
+      LuaData playerOptions = parseLua(stream);
 
 
 

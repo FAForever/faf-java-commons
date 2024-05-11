@@ -42,7 +42,7 @@ public class Utils {
    * @throws IOException
    */
   @Contract(pure = true)
-  public static LuaTable parseLua(LittleEndianDataInputStream dataStream) throws IOException {
+  public static LuaData parseLua(LittleEndianDataInputStream dataStream) throws IOException {
     int type = dataStream.readUnsignedByte();
 
     final int LUA_NUMBER = 0;
@@ -55,32 +55,32 @@ public class Utils {
     switch (type) {
       case LUA_NUMBER -> {
         float value = dataStream.readFloat();
-        return new LuaTable.Number(value);
+        return new LuaData.Number(value);
       }
 
       case LUA_STRING -> {
         String value = readString(dataStream);
-        return new LuaTable.String(value);
+        return new LuaData.String(value);
       }
 
       case LUA_NIL -> {
-        return new LuaTable.Nil();
+        return new LuaData.Nil();
       }
 
       case LUA_BOOL -> {
         boolean value = dataStream.readUnsignedByte() == 0;
-        return new LuaTable.Bool(value);
+        return new LuaData.Bool(value);
       }
 
       case LUA_TABLE_START -> {
-        Map<String, LuaTable> value = new HashMap<>();
+        Map<String, LuaData> value = new HashMap<>();
         while (peek(dataStream) != LUA_TABLE_END) {
-          LuaTable key = parseLua(dataStream);
+          LuaData key = parseLua(dataStream);
 
           switch (key) {
-            case LuaTable.String(String str) -> value.put(str, parseLua(dataStream));
+            case LuaData.String(String str) -> value.put(str, parseLua(dataStream));
 
-            case LuaTable.Number(float num) -> value.put(String.valueOf(num), parseLua(dataStream));
+            case LuaData.Number(float num) -> value.put(String.valueOf(num), parseLua(dataStream));
 
             default -> throw new IllegalStateException("Unexpected data type: " + type);
           }
@@ -89,7 +89,7 @@ public class Utils {
         }
         dataStream.skipBytes(1);
 
-        return new LuaTable.Table(value);
+        return new LuaData.Table(value);
       }
       default -> throw new IllegalStateException("Unexpected data type: " + type);
     }

@@ -1,7 +1,5 @@
 package com.faforever.commons.replay;
 
-import com.faforever.commons.replay.semantics.records.ChatMessage;
-import com.faforever.commons.replay.semantics.records.ModeratorEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
@@ -25,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ReplayLoaderDataParserTest {
+class ReplayLoaderTableParserTest {
 
   @TempDir
   public Path temporaryFolder;

@@ -1,9 +1,6 @@
 package com.faforever.commons.replay;
 
 import com.faforever.commons.replay.body.Event;
-import com.faforever.commons.replay.semantics.Semantics;
-import com.faforever.commons.replay.semantics.records.ChatMessage;
-import com.faforever.commons.replay.semantics.records.TrackedEvent;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -27,11 +24,11 @@ class LoadReplayLoaderTest {
   private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   private void assertNoUnprocessedTokens(ReplayContainer fafReplayContainer) {
-    assertThat("No unprocessed tokens", fafReplayContainer.trackedEvents().stream().filter(e -> e.event() instanceof Event.Unprocessed).findAny().isEmpty());
+    assertThat("No unprocessed tokens", fafReplayContainer.registeredEvents().stream().filter(e -> e.event() instanceof Event.Unprocessed).findAny().isEmpty());
   }
 
   private void assertNoErrorTokens(ReplayContainer fafReplayContainer) {
-    assertThat("No error tokens", fafReplayContainer.trackedEvents().stream().filter(e -> e.event() instanceof Event.ProcessingError).findAny().isEmpty());
+    assertThat("No error tokens", fafReplayContainer.registeredEvents().stream().filter(e -> e.event() instanceof Event.ProcessingError).findAny().isEmpty());
   }
 
   @Test
@@ -45,7 +42,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = Semantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.trackedEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(106, chatMessages.size());
       }
     );
@@ -62,7 +59,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = Semantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.trackedEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(2, chatMessages.size());
       }
     );
@@ -79,7 +76,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = Semantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.trackedEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(1, chatMessages.size());
       }
     );
@@ -96,7 +93,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = Semantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.trackedEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(7, chatMessages.size());
       }
     );
@@ -113,7 +110,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = Semantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.trackedEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );
@@ -130,7 +127,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = Semantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.trackedEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );
@@ -147,7 +144,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = Semantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.trackedEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(3, chatMessages.size());
       }
     );
@@ -169,8 +166,8 @@ class LoadReplayLoaderTest {
     assertNoUnprocessedTokens(scfaReplayContainer);
     assertNoErrorTokens(scfaReplayContainer);
 
-    assertEquals(scfaReplayContainer.trackedEvents().size(), fafReplayContainer.trackedEvents().size());
-    assertArrayEquals( scfaReplayContainer.trackedEvents().toArray(), fafReplayContainer.trackedEvents().toArray());
+    assertEquals(scfaReplayContainer.registeredEvents().size(), fafReplayContainer.registeredEvents().size());
+    assertArrayEquals( scfaReplayContainer.registeredEvents().toArray(), fafReplayContainer.registeredEvents().toArray());
   }
 
   @Test
@@ -189,8 +186,8 @@ class LoadReplayLoaderTest {
     assertNoUnprocessedTokens(scfaReplayContainer);
     assertNoErrorTokens(scfaReplayContainer);
 
-    assertEquals(scfaReplayContainer.trackedEvents().size(), fafReplayContainer.trackedEvents().size());
-    assertArrayEquals( scfaReplayContainer.trackedEvents().toArray(), fafReplayContainer.trackedEvents().toArray());
+    assertEquals(scfaReplayContainer.registeredEvents().size(), fafReplayContainer.registeredEvents().size());
+    assertArrayEquals( scfaReplayContainer.registeredEvents().toArray(), fafReplayContainer.registeredEvents().toArray());
 
   }
 
@@ -210,7 +207,7 @@ class LoadReplayLoaderTest {
     assertNoUnprocessedTokens(scfaReplayContainer);
     assertNoErrorTokens(scfaReplayContainer);
 
-    assertEquals(scfaReplayContainer.trackedEvents().size(), fafReplayContainer.trackedEvents().size());
-    assertArrayEquals( scfaReplayContainer.trackedEvents().toArray(), fafReplayContainer.trackedEvents().toArray());
+    assertEquals(scfaReplayContainer.registeredEvents().size(), fafReplayContainer.registeredEvents().size());
+    assertArrayEquals( scfaReplayContainer.registeredEvents().toArray(), fafReplayContainer.registeredEvents().toArray());
   }
 }

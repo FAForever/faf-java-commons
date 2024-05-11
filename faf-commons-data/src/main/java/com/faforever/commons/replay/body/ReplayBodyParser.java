@@ -1,6 +1,6 @@
 package com.faforever.commons.replay.body;
 
-import com.faforever.commons.replay.shared.LuaTable;
+import com.faforever.commons.replay.shared.LuaData;
 import com.faforever.commons.replay.shared.Utils;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
@@ -92,7 +92,7 @@ public class ReplayBodyParser {
     String blueprintId = Utils.readString(stream);
     byte[] arg4 = stream.readNBytes(12);
 
-    LuaTable parametersLua = Utils.parseLua(stream);
+    LuaData parametersLua = Utils.parseLua(stream);
     boolean addToQueue = stream.readByte() > 0;
 
     return new Event.CommandData(
@@ -208,8 +208,8 @@ public class ReplayBodyParser {
 
         case CMDST_SET_COMMAND_CELLS -> {
           int commandId = stream.readInt();
-          LuaTable parametersLua = Utils.parseLua(stream);
-          if (!(parametersLua instanceof LuaTable.Nil)) {
+          LuaData parametersLua = Utils.parseLua(stream);
+          if (!(parametersLua instanceof LuaData.Nil)) {
             stream.readNBytes(1);
           }
 
@@ -244,11 +244,11 @@ public class ReplayBodyParser {
 
         case CMDST_LUA_SIM_CALLBACK -> {
           String func = Utils.readString(stream);
-          LuaTable args = Utils.parseLua(stream);
+          LuaData args = Utils.parseLua(stream);
           Event.CommandUnits commandUnits = null;
 
           // suspicion that this is just flat out wrong! Whether there's a selection in the data is not related to whether there are Lua arguments
-          if (!(args instanceof LuaTable.Nil)) {
+          if (!(args instanceof LuaData.Nil)) {
             commandUnits = parseCommandUnits(stream);
           } else {
             // the '4' we read here is the size, I suspect the 3 bytes are maybe to align the data somehow? No idea
