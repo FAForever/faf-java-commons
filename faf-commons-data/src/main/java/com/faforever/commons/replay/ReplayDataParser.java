@@ -177,7 +177,11 @@ public class ReplayDataParser {
     mods = (Map<String, Map<String, ?>>) parseLua(dataStream);
 
     int sizeGameOptionsInBytes = dataStream.readInt();
-    this.gameOptions = ((Map<String, Object>) parseLua(dataStream)).entrySet().stream().filter(entry -> "Options".equals(entry.getKey())).flatMap(entry -> ((Map<String, Object>) entry.getValue()).entrySet().stream()).map(entry -> new GameOption(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    this.gameOptions = ((Map<String, Object>) parseLua(dataStream)).entrySet().stream()
+      .filter(entry -> "Options".equals(entry.getKey()))
+      .flatMap(entry -> ((Map<String, Object>) entry.getValue()).entrySet().stream())
+      .map(entry -> new GameOption(entry.getKey(), entry.getValue()))
+      .collect(Collectors.toList());
 
     int numberOfSources = dataStream.readUnsignedByte();
 
@@ -284,13 +288,19 @@ public class ReplayDataParser {
         case Event.IssueCommand(
           Event.CommandUnits commandUnits, Event.CommandData commandData
         ) -> {
-          commandsPerMinuteByPlayer.computeIfAbsent(player, p -> new HashMap<>()).computeIfAbsent(ticks, t -> new AtomicInteger()).incrementAndGet();
+          commandsPerMinuteByPlayer
+            .computeIfAbsent(player, p -> new HashMap<>())
+            .computeIfAbsent(ticks, t -> new AtomicInteger())
+            .incrementAndGet();
         }
 
         case Event.IssueFactoryCommand(
           Event.CommandUnits commandUnits, Event.CommandData commandData
         ) -> {
-          commandsPerMinuteByPlayer.computeIfAbsent(player, p -> new HashMap<>()).computeIfAbsent(ticks, t -> new AtomicInteger()).incrementAndGet();
+          commandsPerMinuteByPlayer
+            .computeIfAbsent(player, p -> new HashMap<>())
+            .computeIfAbsent(ticks, t -> new AtomicInteger())
+            .incrementAndGet();
         }
 
         case Event.IncreaseCommandCount(int commandId, int delta) -> {
