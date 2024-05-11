@@ -1,5 +1,7 @@
 package com.faforever.commons.replay.header;
 
+import java.util.Arrays;
+
 /**
  * Populated by the game options field of the table that is passed to `CLobby:LaunchGame`
  * @param autoTeams
@@ -19,56 +21,105 @@ public record GameOptions(AutoTeams autoTeams, TeamLock teamLock, TeamSpawn team
                           int unitCap, boolean unRated, Victory victory) {
 
   public enum AutoTeams {
-    none("None"),
-    manual("Manual"),
-    tvsb("Top versus bottom"),
-    lvsr("Left versus right"),
-    pvsi("Even versus uneven");
+    NONE("none", "None"),
+    MANUAL("manual", "Manual"),
+    TOP_VS_BOTTOM("tvsb", "Top versus bottom"),
+    LEFT_VS_RIGHT("lvsr", "Left versus right"),
+    EVEN_VS_UNEVEN("pvsi", "Even versus uneven");
 
-    private final String string;
+    public final String readable;
 
-    AutoTeams(String string) {
-      this.string = string;
+    private final String key;
+
+    AutoTeams(String key, String readable) {
+      this.readable = readable;
+      this.key = key;
+    }
+
+    public static AutoTeams findByKey(String key) {
+      for (AutoTeams autoTeam : values()) {
+        if (autoTeam.key.equals(key)) {
+          return autoTeam;
+        }
+      }
+      throw new IllegalArgumentException("Unknown key: " + key);
     }
   }
 
   public enum TeamLock {
-    locked("Locked"), unlocked("Unlocked");
+    LOCKED("locked", "Locked"), UNLOCKED("unlocked", "Unlocked");
 
-    private final String string;
+    public final String readable;
 
-    TeamLock(String string) {
-      this.string = string;
+    private final String key;
+
+    TeamLock(String key, String readable) {
+      this.key = key;
+      this.readable = readable;
+    }
+
+    public static TeamLock findByKey(String key) {
+      for (TeamLock teamLock : values()) {
+        if (teamLock.key.equals(key)) {
+          return teamLock;
+        }
+      }
+      throw new IllegalArgumentException("Unknown key: " + key);
     }
   }
 
+
   public enum TeamSpawn {
-    fixed("Fixed"),
-    random("Random"),
-    balanced("Balanced"),
-    balanced_flex("Flexible balanced"),
-    random_reveal("Random and revealed"),
-    balanced_reveal("Balanced and revealed"),
-    balanced_reveal_mirrored("Mirror balanced and revealed"),
-    balanced_flex_reveal("Flexible balanced and revealed");
+    fixed("fixed", "Fixed"),
+    random("random", "Random"),
+    balanced("balanced", "Balanced"),
+    balanced_flex("balanced_flex", "Flexible balanced"),
+    random_reveal("random_reveal", "Random and revealed"),
+    balanced_reveal("balanced_reveal", "Balanced and revealed"),
+    balanced_reveal_mirrored("balanced_reveal_mirrored", "Mirror balanced and revealed"),
+    balanced_flex_reveal("balanced_flex_reveal", "Flexible balanced and revealed");
 
-    private final String string;
+    public final String readable;
 
-    TeamSpawn(String string) {
-      this.string = string;
+    private final String key;
+
+    TeamSpawn(String key, String readable) {
+      this.key = key;
+      this.readable = readable;
+    }
+
+    public static TeamSpawn findByKey(String key) {
+      for (TeamSpawn teamSpawn : values()) {
+        if (teamSpawn.key.equals(key)) {
+          return teamSpawn;
+        }
+      }
+      throw new IllegalArgumentException("Unknown key: " + key);
     }
   }
 
   public enum Victory {
-    demoralization("Assasination"),
-    domination("Supremacy"),
-    eradication("Annihilation"),
-    sandbox("Sandbox");
+    DEMORALIZATION("demoralization", "Assasination"),
+    DOMINATION("domination", "Supremacy"),
+    ERADICATION("eradication", "Annihilation"),
+    SANDBOX("sandbox", "Sandbox");
 
-    private final String string;
+    public final String readable;
 
-    Victory(String string) {
-      this.string = string;
+    private final String key;
+
+    Victory(String key, String readable) {
+      this.key = key;
+      this.readable = readable;
+    }
+
+    public static Victory findByKey(String key) {
+      for (Victory victory : values()) {
+        if (victory.key.equals(key)) {
+          return victory;
+        }
+      }
+      throw new IllegalArgumentException("Unknown key: " + key);
     }
   }
 
