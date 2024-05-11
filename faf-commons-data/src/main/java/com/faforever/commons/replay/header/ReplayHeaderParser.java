@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static com.faforever.commons.replay.shared.Utils.parseLua;
+import static com.faforever.commons.replay.shared.LoadUtils.parseLua;
 
 public class ReplayHeaderParser {
 

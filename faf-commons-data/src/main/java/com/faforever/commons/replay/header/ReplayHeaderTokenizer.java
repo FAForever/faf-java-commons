@@ -1,6 +1,6 @@
 package com.faforever.commons.replay.header;
 
-import com.faforever.commons.replay.shared.Utils;
+import com.faforever.commons.replay.shared.LoadUtils;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
 
@@ -13,13 +13,13 @@ public class ReplayHeaderTokenizer {
   @Contract(pure = true)
   public static ReplayHeaderToken tokenize(LittleEndianDataInputStream dataStream) throws IOException {
 
-    String gameVersion = Utils.readString(dataStream);
-    String arg1 = Utils.readString(dataStream); // Always \r\n
+    String gameVersion = LoadUtils.readString(dataStream);
+    String arg1 = LoadUtils.readString(dataStream); // Always \r\n
 
-    String[] replayAndScenario = Utils.readString(dataStream).split("\\r\\n");
+    String[] replayAndScenario = LoadUtils.readString(dataStream).split("\\r\\n");
     String replayVersion = replayAndScenario[0];
     String pathToScenario = replayAndScenario[1];
-    String arg2 = Utils.readString(dataStream); // always \r\n and some unknown character
+    String arg2 = LoadUtils.readString(dataStream); // always \r\n and some unknown character
 
     int sizeModsInBytes = dataStream.readInt();
     byte[] mods = dataStream.readNBytes(sizeModsInBytes);
@@ -30,7 +30,7 @@ public class ReplayHeaderTokenizer {
     int numberOfClients = dataStream.readUnsignedByte();
     List<Source> clients = new ArrayList<>(numberOfClients);
     for (int i = 0; i < numberOfClients; i++) {
-      String playerName = Utils.readString(dataStream);
+      String playerName = LoadUtils.readString(dataStream);
       int playerId = dataStream.readInt();
       Source source = new Source(i, playerId, playerName);
       clients.add(source);

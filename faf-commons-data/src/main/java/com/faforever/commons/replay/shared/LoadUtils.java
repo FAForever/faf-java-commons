@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Utils {
+public class LoadUtils {
 
   @Contract(pure = true)
   private static int peek(LittleEndianDataInputStream dataStream) throws IOException {

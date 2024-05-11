@@ -1,7 +1,7 @@
 package com.faforever.commons.replay.body;
 
 import com.faforever.commons.replay.shared.LuaData;
-import com.faforever.commons.replay.shared.Utils;
+import com.faforever.commons.replay.shared.LoadUtils;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
 
@@ -89,10 +89,10 @@ public class ReplayBodyParser {
 
     Event.CommandFormation commandFormation = parseCommandFormation(stream);
 
-    String blueprintId = Utils.readString(stream);
+    String blueprintId = LoadUtils.readString(stream);
     byte[] arg4 = stream.readNBytes(12);
 
-    LuaData parametersLua = Utils.parseLua(stream);
+    LuaData parametersLua = LoadUtils.parseLua(stream);
     boolean addToQueue = stream.readByte() > 0;
 
     return new Event.CommandData(
@@ -131,7 +131,7 @@ public class ReplayBodyParser {
 
         case CMDST_CREATE_UNIT -> {
           int playerIndex = stream.readByte();
-          String blueprintId = Utils.readString(stream);
+          String blueprintId = LoadUtils.readString(stream);
           float px = stream.readFloat();
           float pz = stream.readFloat();
           float heading = stream.readFloat();
@@ -140,7 +140,7 @@ public class ReplayBodyParser {
         }
 
         case CMDST_CREATE_PROP -> {
-          String blueprintId = Utils.readString(stream);
+          String blueprintId = LoadUtils.readString(stream);
           float px = stream.readFloat();
           float pz = stream.readFloat();
           float heading = stream.readFloat();
@@ -163,8 +163,8 @@ public class ReplayBodyParser {
 
         case CMDST_PROCESS_INFO_PAIR -> {
           int entityId = stream.readInt();
-          String arg1 = Utils.readString(stream);
-          String arg2 = Utils.readString(stream);
+          String arg1 = LoadUtils.readString(stream);
+          String arg2 = LoadUtils.readString(stream);
           yield new Event.ProcessInfoPair(entityId, arg1, arg2);
         }
 
@@ -208,7 +208,7 @@ public class ReplayBodyParser {
 
         case CMDST_SET_COMMAND_CELLS -> {
           int commandId = stream.readInt();
-          LuaData parametersLua = Utils.parseLua(stream);
+          LuaData parametersLua = LoadUtils.parseLua(stream);
           if (!(parametersLua instanceof LuaData.Nil)) {
             stream.readNBytes(1);
           }
@@ -227,7 +227,7 @@ public class ReplayBodyParser {
         }
 
         case CMDST_DEBUG_COMMAND -> {
-          String command = Utils.readString(stream);
+          String command = LoadUtils.readString(stream);
           float px = stream.readFloat();
           float py = stream.readFloat();
           float pz = stream.readFloat();
@@ -238,13 +238,13 @@ public class ReplayBodyParser {
         }
 
         case CMDST_EXECUTE_LUA_IN_SIM -> {
-          String luaCode = Utils.readString(stream);
+          String luaCode = LoadUtils.readString(stream);
           yield new Event.ExecuteLuaInSim(luaCode);
         }
 
         case CMDST_LUA_SIM_CALLBACK -> {
-          String func = Utils.readString(stream);
-          LuaData args = Utils.parseLua(stream);
+          String func = LoadUtils.readString(stream);
+          LuaData args = LoadUtils.parseLua(stream);
           Event.CommandUnits commandUnits = null;
 
           // suspicion that this is just flat out wrong! Whether there's a selection in the data is not related to whether there are Lua arguments
