@@ -264,7 +264,7 @@ public class ReplayBodyParser {
       };
 
       if(stream.available() > 0) {
-        throw new EOFException();
+        throw new IllegalStateException("Expected end of stream");
       }
 
       return event;
