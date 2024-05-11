@@ -46,10 +46,6 @@ public class ReplayHeaderParser {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
       LuaData mod = parseLua(stream);
 
-
-
-
-
       return null;
     }
   }
@@ -59,9 +55,6 @@ public class ReplayHeaderParser {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
       LuaData gameOptions = parseLua(stream);
 
-
-
-
       return null;
     }
   }
@@ -70,9 +63,6 @@ public class ReplayHeaderParser {
   private static @Nullable PlayerOptions parsePlayerOptions(byte[] bytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
       LuaData playerOptions = parseLua(stream);
-
-
-
 
       return null;
     }
