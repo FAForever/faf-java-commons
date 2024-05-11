@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReplaySemantics {
 
@@ -22,21 +23,21 @@ public class ReplaySemantics {
    * @return
    */
   public static List<RegisteredEvent> registerEvents(List<Source> sources, List<Event> events) {
-    final int[] tick = {-1};
-    final int[] clientId = {-1};
+    final AtomicInteger tick = new AtomicInteger(0);
+    final AtomicInteger clientId = new AtomicInteger(-1);
 
     return events.stream().map((event) -> switch (event) {
       case Event.Advance e -> {
-        tick[0] = tick[0] + e.ticksToAdvance();
+        tick.addAndGet(e.ticksToAdvance());
         yield null;
       }
 
       case Event.SetCommandSource e -> {
-        clientId[0] = e.playerIndex();
+        clientId.set(e.playerIndex());
         yield null;
       }
 
-      default -> new RegisteredEvent(tick[0], sources.get(clientId[0]), event);
+      default -> new RegisteredEvent(tick.intValue(), sources.get(clientId.intValue()), event);
     }).filter(Objects::nonNull).toList();
   }
 
