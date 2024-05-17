@@ -70,14 +70,14 @@ public record GameOptions(AutoTeams autoTeams, TeamLock teamLock, TeamSpawn team
 
 
   public enum TeamSpawn {
-    fixed("fixed", "Fixed"),
-    random("random", "Random"),
-    balanced("balanced", "Balanced"),
-    balanced_flex("balanced_flex", "Flexible balanced"),
-    random_reveal("random_reveal", "Random and revealed"),
-    balanced_reveal("balanced_reveal", "Balanced and revealed"),
-    balanced_reveal_mirrored("balanced_reveal_mirrored", "Mirror balanced and revealed"),
-    balanced_flex_reveal("balanced_flex_reveal", "Flexible balanced and revealed");
+    FIXED("fixed", "Fixed"),
+    RANDOM("random", "Random"),
+    BALANCED("balanced", "Balanced"),
+    BALANCED_FLEX("balanced_flex", "Flexible balanced"),
+    RANDOM_REVEAL("random_reveal", "Random and revealed"),
+    BALANCED_REVEAL("balanced_reveal", "Balanced and revealed"),
+    BALANCED_REVEAL_MIRRORED("balanced_reveal_mirrored", "Mirror balanced and revealed"),
+    BALANCED_FLEX_REVEAL("balanced_flex_reveal", "Flexible balanced and revealed");
 
     public final String readable;
 
