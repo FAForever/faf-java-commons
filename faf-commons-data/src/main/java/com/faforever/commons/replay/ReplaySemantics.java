@@ -24,20 +24,20 @@ public class ReplaySemantics {
    */
   public static List<RegisteredEvent> registerEvents(List<Source> sources, List<Event> events) {
     final AtomicInteger tick = new AtomicInteger(0);
-    final AtomicInteger clientId = new AtomicInteger(-1);
+    final AtomicInteger commandSourceId = new AtomicInteger(-1);
 
     return events.stream().map((event) -> switch (event) {
-      case Event.Advance e -> {
-        tick.addAndGet(e.ticksToAdvance());
+      case Event.Advance(int ticksToAdvance) -> {
+        tick.addAndGet(ticksToAdvance);
         yield null;
       }
 
-      case Event.SetCommandSource e -> {
-        clientId.set(e.playerIndex());
+      case Event.SetCommandSource (int playerIndex) -> {
+        commandSourceId.set(playerIndex);
         yield null;
       }
 
-      default -> new RegisteredEvent(tick.intValue(), sources.get(clientId.intValue()), event);
+      default -> new RegisteredEvent(tick.intValue(), sources.get(commandSourceId.intValue()), event);
     }).filter(Objects::nonNull).toList();
   }
 
