@@ -1,44 +1,68 @@
 package com.faforever.commons.replay.header;
 
+import com.faforever.commons.replay.shared.LoadUtils;
 import com.faforever.commons.replay.shared.LuaData;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static com.faforever.commons.replay.shared.LoadUtils.parseLua;
 
 public class ReplayHeaderParser {
 
   @Contract(pure = true)
-  public static @Nullable ReplayHeader parseHeader(ReplayHeaderToken token) throws IOException {
-    if (!Objects.equals(token.replayVersion(), "Replay v1.9")) {
-      throw new IOException();
+  public static ReplayHeader parse(LittleEndianDataInputStream dataStream) throws IOException {
+
+    String gameVersion = LoadUtils.readString(dataStream);
+    String arg1 = LoadUtils.readString(dataStream); // Always \r\n
+
+    String[] replayAndScenario = LoadUtils.readString(dataStream).split("\\r\\n");
+    String replayVersion = replayAndScenario[0];
+    String pathToScenario = replayAndScenario[1];
+    String arg2 = LoadUtils.readString(dataStream); // always \r\n and some unknown character
+
+    int sizeModsInBytes = dataStream.readInt();
+    byte[] modBytes = dataStream.readNBytes(sizeModsInBytes);
+    List<GameMod> mods = parseMod(modBytes);
+
+    int sizeGameOptionsInBytes = dataStream.readInt();
+    byte[] gameOptionBytes = dataStream.readNBytes(sizeGameOptionsInBytes);
+    GameOptions gameOptions = parseGameOptions((gameOptionBytes));
+
+    int numberOfClients = dataStream.readUnsignedByte();
+    List<Source> sources = new ArrayList<>(numberOfClients);
+    for (int i = 0; i < numberOfClients; i++) {
+      String playerName = LoadUtils.readString(dataStream);
+      int playerId = dataStream.readInt();
+      Source source = new Source(i, playerId, playerName);
+      sources.add(source);
     }
 
-    GameOptions gameOptions = parseGameOptions(token.gameOptions());
-    List<GameMod> gameMods = parseMod(token.mods());
-    List<PlayerOptions> playerOptions = token.playerOptions().stream().map((bytes) -> {
-      try {
-        return parsePlayerOptions(bytes);
-      } catch (Exception e) {
+    boolean cheatsEnabled = dataStream.readUnsignedByte() > 0;
 
-        return null;
+    int numberOfArmies = dataStream.readUnsignedByte();
+    List<PlayerOptions> allPlayerOptions = new ArrayList<>(numberOfClients);
+    for (int i = 0; i < numberOfArmies; i++) {
+      int sizePlayerOptionsInBytes = dataStream.readInt();
+      byte[] playerOptionsBytes = dataStream.readNBytes(sizePlayerOptionsInBytes );
+      PlayerOptions playerOptions = parsePlayerOptions(playerOptionsBytes);
+
+      int playerSource = dataStream.readUnsignedByte();
+      allPlayerOptions.add(playerOptions);
+
+      if (playerSource != 255) {
+        byte[] arg3 = dataStream.readNBytes(1);
       }
-    }).toList();
+    }
 
-    return new ReplayHeader(
-      token.gameVersion(), token.replayVersion(), token.pathToScenario(), token.cheatsEnabled(), token.seed(),
-      token.sources(),
-      gameMods,
-      gameOptions,
-      playerOptions
-    );
+    int seed = dataStream.readInt();
+
+    return new ReplayHeader(gameVersion, replayVersion, pathToScenario, cheatsEnabled, seed, sources, mods, gameOptions, allPlayerOptions);
   }
 
   @Contract(pure = true)

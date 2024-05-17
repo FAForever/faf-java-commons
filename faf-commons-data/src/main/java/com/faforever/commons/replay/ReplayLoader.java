@@ -32,8 +32,7 @@ public class ReplayLoader {
 
   @Contract(pure = true)
   private static ReplayHeader loadSCFAReplayHeader(LittleEndianDataInputStream stream) throws IOException {
-    ReplayHeaderToken headerToken = ReplayHeaderTokenizer.tokenize(stream);
-    return ReplayHeaderParser.parseHeader(headerToken);
+    return ReplayHeaderParser.parse(stream);
   }
 
   @Contract(pure = true)
