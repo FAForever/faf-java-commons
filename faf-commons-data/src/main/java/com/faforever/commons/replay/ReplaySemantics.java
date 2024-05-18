@@ -18,9 +18,9 @@ public class ReplaySemantics {
 
   /**
    * Registers the events by attaching a tick and a source to them.
-   * @param sources
-   * @param events
-   * @return
+   * @param sources All input sources of the replay
+   * @param events  All events of the replay
+   * @return All events with the tick and input source attached
    */
   public static List<RegisteredEvent> registerEvents(List<Source> sources, List<Event> events) {
     final AtomicInteger tick = new AtomicInteger(0);
@@ -58,49 +58,46 @@ public class ReplaySemantics {
       ) when func.equals("GiveResourcesToPlayer") -> {
         // TODO: this field has no meaning and can be manipulated, instead use the authorised command source.
         //  Requires refactoring in the game!
-        if (!(callbackTable.value().get("From") instanceof LuaData.Number from)) {
+        if (!(callbackTable.value().get("From") instanceof LuaData.Number (float from))) {
           yield null;
         }
 
         // focus army starts is 1-based instead of 0-based, to align it we subtract 1
-        if (from.value() - 1 <= -2) {
+        if (from - 1 <= -2) {
           yield null;
         }
 
         // TODO: this field has no meaning and can be manipulated, instead use the authorised command source.
         //  Requires refactoring in the game!
-        if (!(callbackTable.value().get("Sender") instanceof LuaData.String sender)) {
+        if (!(callbackTable.value().get("Sender") instanceof LuaData.String (String sender))) {
           yield null;
         }
 
         // TODO: apparently all players create a sim callback that contains the chat message. This hack is how we skip it,
         //   Requires refactoring in the game!
-        if (!Objects.equals(sender.value(), registeredEvent.source().name())) {
+        if (!Objects.equals(sender, registeredEvent.source().name())) {
           yield null;
         }
 
-        if (!(callbackTable.value().get("Msg") instanceof LuaData.Table msgTable)) {
+        if (!(callbackTable.value().get("Msg") instanceof LuaData.Table (Map<java.lang.String, LuaData> msgTable))) {
           yield null;
         }
 
         // TODO: this is 1 out of the 2 legitimate fields
-        if (!(msgTable.value().get("to") instanceof LuaData.String msgTo)) {
+        if (!(msgTable.get("to") instanceof LuaData.String msgTo)) {
           yield null;
         }
 
         // TODO: this is 2 out of the 2 legitimate fields
-        if (!(msgTable.value().get("text") instanceof LuaData.String msgText)) {
+        if (!(msgTable.get("text") instanceof LuaData.String msgText)) {
           yield null;
         }
 
         yield new ChatMessage(tickToDuration(registeredEvent.tick()), registeredEvent.source().name(), msgTo.value(), msgText.value());
-
-
       }
       default -> null;
     }).filter(Objects::nonNull).toList();
   }
-
 
   /**
    * Retrieves all events that are moderator related
