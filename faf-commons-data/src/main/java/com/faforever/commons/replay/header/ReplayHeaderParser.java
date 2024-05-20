@@ -71,9 +71,29 @@ public class ReplayHeaderParser {
   @Contract(pure = true)
   private static @Nullable List<GameMod> parseMod(byte[] bytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
-      LuaData mod = parseLua(stream);
+      LuaData modInfo = parseLua(stream);
 
-      // TODO: needs implementation
+      if (modInfo instanceof LuaData.Table table) {
+        return table.value().values().stream().map(
+          e -> {
+            if (e instanceof LuaData.Table luaModInfo) {
+              return new GameMod(
+                luaModInfo.getString("location"),
+                luaModInfo.getString("icon"),
+                luaModInfo.getString("copyright"),
+                luaModInfo.getString("name"),
+                luaModInfo.getString("description"),
+                luaModInfo.getString("author"),
+                luaModInfo.getString("uid"),
+                luaModInfo.getInteger("version"),
+                luaModInfo.getString("url")
+              );
+            }
+
+            return null;
+          }
+        ).toList();
+      }
 
       return null;
     }
