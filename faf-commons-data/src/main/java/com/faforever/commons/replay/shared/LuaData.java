@@ -4,9 +4,9 @@ import java.util.Map;
 
 public sealed interface LuaData {
   record Nil() implements LuaData {}
-  record Number(float number) implements LuaData {}
-  record String(java.lang.String string) implements LuaData {}
-  record Bool(boolean bool) implements LuaData {}
+  record Number(float value) implements LuaData {}
+  record String(java.lang.String value) implements LuaData {}
+  record Bool(boolean value) implements LuaData {}
 
   record Table(Map<java.lang.String, LuaData> value) implements LuaData {
 

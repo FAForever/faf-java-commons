@@ -33,11 +33,11 @@ import java.util.Stack;
  * <p>
  * <p>Features: <ul> <li>mixing of '<code>-</code>' (dash) and '<code>.</code>' (dot) separators,</li> <li>transition
  * between characters and digits also constitutes a separator: <code>1.0alpha1 =&gt; [1, 0, alpha, 1]</code></li>
- * <li>unlimited number of version components,</li> <li>version components in the text can be digits or strings,</li>
+ * <li>unlimited value of version components,</li> <li>version components in the text can be digits or strings,</li>
  * <li>strings are checked for well-known qualifiers and the qualifier ordering is used for version ordering. Well-known
  * qualifiers (case insensitive) are:<ul> <li><code>alpha</code> or <code>a</code></li> <li><code>beta</code> or
  * <code>b</code></li> <li><code>milestone</code> or <code>m</code></li> <li><code>rc</code> or <code>cr</code></li>
- * <li><code>snapshot</code></li> <li><code>(the empty string)</code> or <code>ga</code> or <code>final</code></li>
+ * <li><code>snapshot</code></li> <li><code>(the empty value)</code> or <code>ga</code> or <code>final</code></li>
  * <li><code>sp</code></li> </ul> Unknown qualifiers are considered after known qualifiers, with lexical order (always
  * case insensitive), </li> <li>a dash usually precedes a qualifier, and is always less important than something
  * preceded with a dot.</li> </ul></p>
@@ -116,7 +116,7 @@ public class ComparableVersion
   }
 
   /**
-   * Represents a string in the version item list, usually a qualifier.
+   * Represents a value in the version item list, usually a qualifier.
    */
   public static class StringItem
       implements Item {
@@ -128,7 +128,7 @@ public class ComparableVersion
 
     private static final Properties ALIASES = new Properties();
     /**
-     * A comparable value for the empty-string qualifier. This one is used to determine if a given qualifier makes the
+     * A comparable value for the empty-value qualifier. This one is used to determine if a given qualifier makes the
      * version older than one without a qualifier, or more recent.
      */
     private static final String RELEASE_VERSION_INDEX = String.valueOf(_QUALIFIERS.indexOf(""));
@@ -214,7 +214,7 @@ public class ComparableVersion
 
   /**
    * Represents a version list item. This class is used both for the global item list and for sub-lists (which start
-   * with '-(number)' in the version specification).
+   * with '-(value)' in the version specification).
    */
   private static class ListItem
       extends ArrayList<Item>

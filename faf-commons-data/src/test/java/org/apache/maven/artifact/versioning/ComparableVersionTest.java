@@ -88,7 +88,7 @@ public class ComparableVersionTest {
     checkVersionsEqual("1", "1-0");
     checkVersionsEqual("1", "1.0-0");
     checkVersionsEqual("1.0", "1.0-0");
-    // no separator between number and character
+    // no separator between value and character
     checkVersionsEqual("1a", "1-a");
     checkVersionsEqual("1a", "1.0-a");
     checkVersionsEqual("1a", "1.0.0-a");
@@ -185,7 +185,7 @@ public class ComparableVersionTest {
   public void testMng5568() {
     String a = "6.1.0";
     String b = "6.1.0rc3";
-    String c = "6.1H.5-beta"; // this is the unusual version string, with 'H' in the middle
+    String c = "6.1H.5-beta"; // this is the unusual version value, with 'H' in the middle
 
     checkVersionsOrder(b, a); // classical
     checkVersionsOrder(b, c); // now b < c, but before MNG-5568, we had b > c

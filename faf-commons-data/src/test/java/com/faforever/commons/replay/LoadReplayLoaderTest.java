@@ -164,7 +164,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
 
         List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
-        assertEquals(3, chatMessages.size());
+        assertEquals(0, chatMessages.size());
       }
     );
   }

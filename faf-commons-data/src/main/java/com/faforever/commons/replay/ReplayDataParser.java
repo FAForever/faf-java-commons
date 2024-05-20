@@ -99,7 +99,7 @@ public class ReplayDataParser {
       case LUA_NIL:
         dataStream.skipBytes(1);
         return null;
-      case LUA_BOOL: // bool
+      case LUA_BOOL: // value
         return dataStream.readUnsignedByte() == 0;
       case LUA_TABLE_START: // lua
         Map<String, Object> result = new HashMap<>();

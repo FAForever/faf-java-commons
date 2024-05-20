@@ -61,7 +61,7 @@ public enum Faction {
   }
 
   /**
-   * Returns the string value of the faction, as used in the game and the server.
+   * Returns the value value of the faction, as used in the game and the server.
    */
   public String getString() {
     return string;

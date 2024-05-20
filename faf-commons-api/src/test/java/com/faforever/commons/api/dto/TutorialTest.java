@@ -20,13 +20,13 @@ class TutorialTest {
     TutorialCategory category = new TutorialCategory();
     tutorial.setCategory(category);
     category.setTutorials(Arrays.asList(tutorial, secondTutorial));
-    assertThat("correct to string", tutorial.toString(), is(notNullValue()));
+    assertThat("correct to value", tutorial.toString(), is(notNullValue()));
   }
 
   @Test
   void testTutorialCategoryToString() {
     TutorialCategory tutorialCategory = getTutorialCategory();
-    assertThat("correct to string", tutorialCategory.toString(),
+    assertThat("correct to value", tutorialCategory.toString(),
       is(String.format("TutorialCategory(id=%s, categoryKey=%s, category=%s)", tutorialCategory.getId(),
         tutorialCategory.getCategoryKey(), tutorialCategory.getCategory())));
   }
