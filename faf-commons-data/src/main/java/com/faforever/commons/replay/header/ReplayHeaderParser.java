@@ -2,14 +2,17 @@ package com.faforever.commons.replay.header;
 
 import com.faforever.commons.replay.shared.LoadUtils;
 import com.faforever.commons.replay.shared.LuaData;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.faforever.commons.replay.shared.LoadUtils.parseLua;
 
@@ -56,7 +59,7 @@ public class ReplayHeaderParser {
       allPlayerOptions.add(playerOptions);
 
       if (playerSource != 255) {
-        byte[] arg3 = dataStream.readNBytes(1);
+        byte[] arg3 = dataStream.readNBytes(1); // always -1
       }
     }
 
@@ -92,7 +95,25 @@ public class ReplayHeaderParser {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
       LuaData playerOptions = parseLua(stream);
 
-      // TODO: needs implementation
+      if (playerOptions instanceof LuaData.Table table) {
+        return new PlayerOptions(
+          table.getBool("Human"),
+          table.getString("AIPersonality"),
+          table.getFloat("MEAN"),
+          table.getFloat("DEV"),
+          table.getString("PlayerClan"),
+          table.getBool("Civilian"),
+          table.getInteger("StartSpot"),
+          table.getString("ArmyName"),
+          table.getInteger("ArmyColor"),
+          table.getInteger("PlayerColor"),
+          table.getString("PlayerName"),
+          table.getInteger("NG"),
+          table.getString("Country"),
+          table.getInteger("Team"),
+          table.getInteger("Faction")
+        );
+      }
 
       return null;
     }

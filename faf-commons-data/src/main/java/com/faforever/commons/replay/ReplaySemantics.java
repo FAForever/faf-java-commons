@@ -93,7 +93,7 @@ public class ReplaySemantics {
           yield null;
         }
 
-        yield new ChatMessage(tickToDuration(registeredEvent.tick()), registeredEvent.source().name(), msgTo.value(), msgText.value());
+        yield new ChatMessage(tickToDuration(registeredEvent.tick()), registeredEvent.source().name(), msgTo.string(), msgText.string());
       }
       default -> null;
     }).filter(Objects::nonNull).toList();
@@ -126,7 +126,7 @@ public class ReplaySemantics {
         if ((callbackTable.value().get("From") instanceof LuaData.Number from)) {
 
           // focus army starts is 1-based instead of 0-based, to align it we subtract 1
-          fromArmy = (int) from.value() - 1;
+          fromArmy = (int) from.number() - 1;
 
           if (fromArmy != -2) {
             Source source = sources.get(fromArmy);
@@ -138,7 +138,7 @@ public class ReplaySemantics {
         }
 
         if ((callbackTable.value().get("Message") instanceof LuaData.String content)) {
-          messageContent = content.value();
+          messageContent = content.string();
         }
 
         yield new ModeratorEvent(tickToDuration(registeredEvent.tick()), activeCommandSource, fromArmy, messageContent, playerNameFromArmy, playerNameFromCommandSource);
