@@ -41,5 +41,13 @@ public sealed interface LuaData {
 
       return null;
     }
+
+    public LuaData.Table getTable(java.lang.String key) {
+      if (value.get(key) instanceof LuaData.Table table) {
+        return  table;
+      }
+
+      return null;
+    }
   }
 }

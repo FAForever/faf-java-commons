@@ -2,17 +2,13 @@ package com.faforever.commons.replay.header;
 
 import com.faforever.commons.replay.shared.LoadUtils;
 import com.faforever.commons.replay.shared.LuaData;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.google.common.io.LittleEndianDataInputStream;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-import org.luaj.vm2.LuaTable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.faforever.commons.replay.shared.LoadUtils.parseLua;
 
@@ -35,7 +31,7 @@ public class ReplayHeaderParser {
 
     int sizeGameOptionsInBytes = dataStream.readInt();
     byte[] gameOptionBytes = dataStream.readNBytes(sizeGameOptionsInBytes);
-    GameOptions gameOptions = parseGameOptions((gameOptionBytes));
+    GameScenario gameScenario = parseGameScenario((gameOptionBytes));
 
     int numberOfClients = dataStream.readUnsignedByte();
     List<Source> sources = new ArrayList<>(numberOfClients);
@@ -65,7 +61,7 @@ public class ReplayHeaderParser {
 
     int seed = dataStream.readInt();
 
-    return new ReplayHeader(gameVersion, replayVersion, pathToScenario, cheatsEnabled, seed, sources, mods, gameOptions, allPlayerOptions);
+    return new ReplayHeader(gameVersion, replayVersion, pathToScenario, cheatsEnabled, seed, sources, mods, gameScenario, allPlayerOptions);
   }
 
   @Contract(pure = true)
@@ -100,11 +96,46 @@ public class ReplayHeaderParser {
   }
 
   @Contract(pure = true)
-  private static @Nullable GameOptions parseGameOptions(byte[] bytes) throws IOException {
+  private static @Nullable GameScenario parseGameScenario(byte[] bytes) throws IOException {
     try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream((new ByteArrayInputStream(bytes)))) {
-      LuaData gameOptions = parseLua(stream);
+      LuaData gameScenario = parseLua(stream);
 
-      // TODO: needs implementation
+      if (gameScenario instanceof LuaData.Table table) {
+
+        // retrieve and manage the game options
+        GameOptions primaryOptions = null;
+        HashMap<String, String> secondaryOptions = new HashMap<String, String>();
+        if (table.value().get("Options") instanceof LuaData.Table optionsTable) {
+
+        }
+
+        Integer sizeX = null;
+        Integer sizeZ = null;
+        if (table.getTable("size") instanceof LuaData.Table sizeTable) {
+          sizeX = sizeTable.getInteger("1.0");
+          sizeZ = sizeTable.getInteger("2.0");
+        }
+
+        Integer massReclaimValue = null;
+        Integer energyReclaimValue = null;
+        if (table.value().get("reclaim") instanceof LuaData.Table reclaimTable) {
+          massReclaimValue = reclaimTable.getInteger("1.0");
+          energyReclaimValue = reclaimTable.getInteger("2.0");
+        }
+
+        return new GameScenario(
+          table.getString("map"),
+          table.getInteger("map_version"),
+          table.getString("description"),
+          table.getString("script"),
+          table.getString("save"),
+          table.getString("name"),
+          sizeX, sizeZ,
+          massReclaimValue, energyReclaimValue,
+          primaryOptions, secondaryOptions
+        );
+
+      }
 
       return null;
     }
