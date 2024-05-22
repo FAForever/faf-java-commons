@@ -104,9 +104,36 @@ public class ReplayHeaderParser {
 
         // retrieve and manage the game options
         GameOptions primaryOptions = null;
-        HashMap<String, String> secondaryOptions = new HashMap<String, String>();
+        Map<String, String> secondaryOptions = null;
         if (table.value().get("Options") instanceof LuaData.Table optionsTable) {
 
+          primaryOptions = new GameOptions(
+            GameOptions.AutoTeams.findByKey(optionsTable.getString("AutoTeams")),
+            GameOptions.TeamLock.findByKey(optionsTable.getString("TeamLock")),
+            GameOptions.TeamSpawn.findByKey(optionsTable.getString("TeamSpawn")),
+            optionsTable.getBool("AllowObservers"),
+            optionsTable.getBool("CheatsEnabled"),
+            optionsTable.getBool("PrebuiltUnits"),
+            optionsTable.getBool("RevealCivilians"),
+            optionsTable.getBool("Score"),
+            optionsTable.getInteger("UnitCap"),
+            optionsTable.getString("Unranked"),
+            GameOptions.Victory.findByKey(optionsTable.getString("Victory"))
+          );
+
+          optionsTable.removeKey("AutoTeams");
+          optionsTable.removeKey("TeamLock");
+          optionsTable.removeKey("TeamSpawn");
+          optionsTable.removeKey("AllowObservers");
+          optionsTable.removeKey("CheatsEnabled");
+          optionsTable.removeKey("PrebuiltUnits");
+          optionsTable.removeKey("RevealCivilians");
+          optionsTable.removeKey("Score");
+          optionsTable.removeKey("UnitCap");
+          optionsTable.removeKey("Unranked");
+          optionsTable.removeKey("Victory");
+
+          secondaryOptions = optionsTable.toMap();
         }
 
         Integer sizeX = null;

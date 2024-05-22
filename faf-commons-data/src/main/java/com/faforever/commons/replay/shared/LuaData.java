@@ -1,5 +1,6 @@
 package com.faforever.commons.replay.shared;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public sealed interface LuaData {
@@ -9,6 +10,10 @@ public sealed interface LuaData {
   record Bool(boolean value) implements LuaData {}
 
   record Table(Map<java.lang.String, LuaData> value) implements LuaData {
+
+    public void removeKey(java.lang.String key) {
+      value.remove(key);
+    }
 
     public Boolean getBool(java.lang.String key) {
       if (value.get(key) instanceof LuaData.Bool (boolean bool)) {
@@ -48,6 +53,34 @@ public sealed interface LuaData {
       }
 
       return null;
+    }
+
+    public Map<java.lang.String, java.lang.String> toMap() {
+      HashMap<java.lang.String, java.lang.String> map = new HashMap<java.lang.String, java.lang.String>();
+
+      value.forEach(
+        (k, v) -> {
+          switch (v) {
+            case LuaData.Nil e -> {
+              map.put(k, "nil");
+            }
+            case Bool bool -> {
+              map.put(k, java.lang.String.valueOf(bool.value()));
+            }
+            case Number number -> {
+              map.put(k, java.lang.String.valueOf(number.value()));
+            }
+            case String string -> {
+              map.put(k, java.lang.String.valueOf(string.value()));
+            }
+            case Table table -> {
+              map.put(k, java.lang.String.valueOf("table"));
+            }
+          }
+        }
+      );
+
+      return map;
     }
   }
 }
