@@ -103,11 +103,11 @@ public class ReplayHeaderParser {
       if (gameScenario instanceof LuaData.Table table) {
 
         // retrieve and manage the game options
-        GameOptions primaryOptions = null;
-        Map<String, String> secondaryOptions = null;
+        GameOptions gameOptions = null;
+        Map<String, String> modOptions = null;
         if (table.value().get("Options") instanceof LuaData.Table optionsTable) {
 
-          primaryOptions = new GameOptions(
+          gameOptions = new GameOptions(
             GameOptions.AutoTeams.findByKey(optionsTable.getString("AutoTeams")),
             GameOptions.TeamLock.findByKey(optionsTable.getString("TeamLock")),
             GameOptions.TeamSpawn.findByKey(optionsTable.getString("TeamSpawn")),
@@ -133,7 +133,7 @@ public class ReplayHeaderParser {
           optionsTable.removeKey("Unranked");
           optionsTable.removeKey("Victory");
 
-          secondaryOptions = optionsTable.toMap();
+          modOptions = optionsTable.toMap();
         }
 
         Integer sizeX = null;
@@ -159,7 +159,7 @@ public class ReplayHeaderParser {
           table.getString("name"),
           sizeX, sizeZ,
           massReclaimValue, energyReclaimValue,
-          primaryOptions, secondaryOptions
+          gameOptions, modOptions
         );
 
       }
