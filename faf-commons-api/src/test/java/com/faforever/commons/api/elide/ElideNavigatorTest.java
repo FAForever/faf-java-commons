@@ -57,7 +57,7 @@ class ElideNavigatorTest {
                              .pageSize(10)
                              .pageNumber(3)
                              .setFilter(qBuilder().intNum("mapVersion.id").gt(10).or().string("hello").eq("nana"))
-                             .build(), is("/data/ladder1v1Map?include=mapVersion,mapVersion.map&filter=mapVersion.id=gt=\"10\",hello==\"nana\"&page[size]=10&page[value]=3"));
+                             .build(), is("/data/ladder1v1Map?include=mapVersion,mapVersion.map&filter=mapVersion.id=gt=\"10\",hello==\"nana\"&page[size]=10&page[number]=3"));
   }
 
   @Test
@@ -95,7 +95,7 @@ class ElideNavigatorTest {
                              .pageSize(1)
                              .pageNumber(1)
                              .pageTotals(true)
-                             .build(), is("/data/mapPoolAssignment?page[size]=1&page[value]=1&page[totals]"));
+                             .build(), is("/data/mapPoolAssignment?page[size]=1&page[number]=1&page[totals]"));
   }
 
   @Test

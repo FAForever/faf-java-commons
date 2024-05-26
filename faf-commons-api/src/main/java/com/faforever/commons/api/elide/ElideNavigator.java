@@ -150,7 +150,7 @@ public class ElideNavigator<T extends ElideEntity> implements ElideNavigatorSele
 
   @Override
   public ElideNavigatorOnCollection<T> pageNumber(int number) {
-    log.trace("page value set: {}", number);
+    log.trace("page number set: {}", number);
     pageNumber = Optional.of(number);
     return this;
   }
@@ -179,7 +179,7 @@ public class ElideNavigator<T extends ElideEntity> implements ElideNavigatorSele
     }
 
     pageSize.ifPresent(i -> queryArgs.add(String.format("page[size]=%s", i)));
-    pageNumber.ifPresent(i -> queryArgs.add(String.format("page[value]=%s", i)));
+    pageNumber.ifPresent(i -> queryArgs.add(String.format("page[number]=%s", i)));
     pageTotals.ifPresent(show -> {
       if (show) {
         queryArgs.add("page[totals]");
