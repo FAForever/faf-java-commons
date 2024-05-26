@@ -214,7 +214,7 @@ public class ComparableVersion
 
   /**
    * Represents a version list item. This class is used both for the global item list and for sub-lists (which start
-   * with '-(string)' in the version specification).
+   * with '-(number)' in the version specification).
    */
   private static class ListItem
       extends ArrayList<Item>
