@@ -55,7 +55,7 @@ public sealed interface LuaData {
       return null;
     }
 
-    public Map<java.lang.String, java.lang.String> toMap() {
+    public Map<java.lang.String, java.lang.String> toKeyStringValuePairs() {
       HashMap<java.lang.String, java.lang.String> map = new HashMap<java.lang.String, java.lang.String>();
 
       value.forEach(

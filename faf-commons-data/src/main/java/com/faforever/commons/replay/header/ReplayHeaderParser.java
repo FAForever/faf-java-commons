@@ -133,7 +133,7 @@ public class ReplayHeaderParser {
           optionsTable.removeKey("Unranked");
           optionsTable.removeKey("Victory");
 
-          modOptions = optionsTable.toMap();
+          modOptions = optionsTable.toKeyStringValuePairs();
         }
 
         Integer sizeX = null;
