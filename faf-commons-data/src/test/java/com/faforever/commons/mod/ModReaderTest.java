@@ -29,19 +29,15 @@ class ModReaderTest {
   }
 
   @Test
-  public void testModReadInfo() {
-    assertDoesNotThrow(
-      () -> {
-        Path modPath = temporaryFolder.resolve("mod-with-url");
-        Path modInfoPath = temporaryFolder.resolve("mod-with-url/mod_info.lua");
-        Files.createDirectory(modPath);
-        Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/mod/mod-with-url.lua")), modInfoPath);
+  public void testModReadInfo() throws IOException {
+    Path modPath = temporaryFolder.resolve("mod-with-url");
+    Path modInfoPath = temporaryFolder.resolve("mod-with-url/mod_info.lua");
+    Files.createDirectory(modPath);
+    Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/mod/mod-with-url.lua")), modInfoPath);
 
-        Mod mod = instance.readDirectory(modPath);
+    Mod mod = instance.readDirectory(modPath);
 
-        assertEquals("https://github.com/JeroenDeDauw/NoAirCrashDamage", mod.getUrl());
-      }
-    );
+    assertEquals("https://github.com/JeroenDeDauw/NoAirCrashDamage", mod.getUrl());
   }
 
   @Test
