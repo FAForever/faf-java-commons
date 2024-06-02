@@ -34,6 +34,7 @@ class ModReaderTest {
       () -> {
         Path modPath = temporaryFolder.resolve("mod-with-url");
         Path modInfoPath = temporaryFolder.resolve("mod-with-url/mod_info.lua");
+        Files.createDirectory(modPath);
         Files.copy(Objects.requireNonNull(getClass().getResourceAsStream("/mod/mod-with-url.lua")), modInfoPath);
 
         Mod mod = instance.readDirectory(modPath);
