@@ -78,6 +78,12 @@ public class ModReader {
       mod.setUiOnly(luaValue.get("ui_only").toboolean());
       mod.setIcon(extractIconPath(luaValue));
 
+      // not all mods have and/or need this value
+      var url = luaValue.get("url");
+      if (url != LuaValue.NIL) {
+        mod.setUrl(url.toString());
+      }
+
       ArrayList<MountInfo> mountInfos = new ArrayList<>();
       LuaTable mountpoints = luaValue.get("mountpoints").opttable(LuaValue.tableOf());
       for (LuaValue key : mountpoints.keys()) {
