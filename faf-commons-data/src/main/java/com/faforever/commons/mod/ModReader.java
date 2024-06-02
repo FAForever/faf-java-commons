@@ -79,9 +79,9 @@ public class ModReader {
       mod.setIcon(extractIconPath(luaValue));
 
       // not all mods have and/or need this value
-      var url = luaValue.get("url");
-      if (url != LuaValue.NIL) {
-        mod.setUrl(url.toString());
+      var url = luaValue.get("url").toString();
+      if (!("nil".equals(url) || Strings.isNullOrEmpty(url))) {
+        mod.setUrl(url);
       }
 
       ArrayList<MountInfo> mountInfos = new ArrayList<>();
