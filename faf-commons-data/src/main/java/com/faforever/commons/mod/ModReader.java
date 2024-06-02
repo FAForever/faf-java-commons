@@ -79,7 +79,7 @@ public class ModReader {
       mod.setIcon(extractIconPath(luaValue));
 
       // not all mods have and/or need this value
-      var url = luaValue.get("url").toString();
+      String url = luaValue.get("url").toString();
       if (!("nil".equals(url) || Strings.isNullOrEmpty(url))) {
         mod.setUrl(url);
       }
