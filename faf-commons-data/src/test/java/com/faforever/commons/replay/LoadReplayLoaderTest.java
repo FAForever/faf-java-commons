@@ -168,6 +168,7 @@ class LoadReplayLoaderTest {
         ReplayContainer fafReplayContainer = ReplayLoader.loadFAFReplayFromDisk(fafReplayFile);
 
         assertEquals(2, fafReplayContainer.header().mods().size());
+
         List<String> modUIDs = new ArrayList<>();
         modUIDs.add("fnewm028-v096-55b4-92b6-64398e7ge43f");
         modUIDs.add("d883189d-c556-4d68-b1c8-6ad201b3f7ad");

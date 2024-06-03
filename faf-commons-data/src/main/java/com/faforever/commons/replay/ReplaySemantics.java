@@ -10,8 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReplaySemantics {
+
+  private static final Pattern invalidCharacters = Pattern.compile("[?@*%{}<>|\"]");
 
   /**
    * Small utility function to convert a tick to the equivalent game time.
@@ -65,11 +69,16 @@ public class ReplaySemantics {
    * @param replayContainer The replay to retrieve the folder from
    * @return The directory that contains the scenario file
    */
-  public static String getMapFolder (ReplayContainer replayContainer) {
+  public static String getMapFolder (ReplayContainer replayContainer) throws IllegalArgumentException {
     // /maps/SCMP_026/SCMP_026_script.lua
     String pathToScenario = replayContainer.header().pathToScenario();
     if (pathToScenario == null) {
       return null;
+    }
+
+    Matcher matcher = invalidCharacters.matcher(pathToScenario);
+    if (matcher.find()) {
+      throw new IllegalArgumentException();
     }
 
     // SCMP_026
