@@ -42,7 +42,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(106, chatMessages.size());
       }
     );
@@ -59,7 +59,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(2, chatMessages.size());
       }
     );
@@ -76,7 +76,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(1, chatMessages.size());
       }
     );
@@ -93,7 +93,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(7, chatMessages.size());
       }
     );
@@ -110,7 +110,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );
@@ -127,7 +127,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );
@@ -144,7 +144,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(3, chatMessages.size());
       }
     );
@@ -163,7 +163,7 @@ class LoadReplayLoaderTest {
         assertNoUnprocessedTokens(fafReplayContainer);
         assertNoErrorTokens(fafReplayContainer);
 
-        List<ChatMessage> chatMessages = ReplaySemantics.findChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );
