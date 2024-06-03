@@ -45,7 +45,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("neroxis_map_generator_1.11.0_wvmzfgnlgiebu_bqgaeb3bgzldwstbaa", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(106, chatMessages.size());
       }
     );
@@ -63,7 +63,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("SCMP_039", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(2, chatMessages.size());
       }
     );
@@ -81,7 +81,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("dualgap_fix_adaptive.v0007", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(1, chatMessages.size());
       }
     );
@@ -99,7 +99,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("SCMP_009", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(7, chatMessages.size());
       }
     );
@@ -117,7 +117,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("SCMP_026", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );
@@ -135,7 +135,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("SCMP_026", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );
@@ -153,7 +153,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("SCMP_026", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(3, chatMessages.size());
       }
     );
@@ -178,7 +178,7 @@ class LoadReplayLoaderTest {
         assertNoErrorTokens(fafReplayContainer);
         assertEquals("project_tumulus.v0004", ReplaySemantics.getMapFolder(fafReplayContainer));
 
-        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.header().sources(), fafReplayContainer.registeredEvents());
+        List<ChatMessage> chatMessages = ReplaySemantics.getChatMessages(fafReplayContainer.registeredEvents());
         assertEquals(0, chatMessages.size());
       }
     );

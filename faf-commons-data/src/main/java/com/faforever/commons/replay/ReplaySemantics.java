@@ -91,7 +91,7 @@ public class ReplaySemantics {
    * @param events A list of events
    * @return A list of events that are chat messages
    */
-  public static List<ChatMessage> getChatMessages(List<Source> sources, List<RegisteredEvent> events) {
+  public static List<ChatMessage> getChatMessages(List<RegisteredEvent> events) {
     return events.stream().map((registeredEvent) -> switch (registeredEvent.event()) {
 
       // TODO: the fact that we piggy-back on the 'GiveResourcesToPlayer' callback to embed chat messages is all wrong! We should instead introduce an alternative callback with the sole purpose to send messages.
