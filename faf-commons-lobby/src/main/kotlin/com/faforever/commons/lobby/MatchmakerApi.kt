@@ -76,6 +76,8 @@ data class MatchmakerInfo(
     val teamSize: Int,
     @JsonProperty("num_players")
     val numberOfPlayers: Int,
+    @JsonProperty("active_rating_groups")
+    val activeRatingGroups: List<Int>,
     @JsonProperty("boundary_75s")
     val boundary75s: List<List<Int>>,
     @JsonProperty("boundary_80s")

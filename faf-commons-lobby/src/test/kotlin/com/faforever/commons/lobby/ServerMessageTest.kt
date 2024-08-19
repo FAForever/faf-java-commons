@@ -72,17 +72,19 @@ class ServerMessageTest {
   fun deserializeMatchmakerInfo() {
     val result = objectMapper.readValue<ServerMessage>(
       """
-      {"command":"matchmaker_info","queues":[{"queue_name":"ladder1v1","queue_pop_time":"2021-03-21T22:26:27.555251+00:00","queue_pop_time_delta":10, "num_players":1,"boundary_80s":[[670,1070]],"boundary_75s":[[770,970]],"team_size":1}]}
+      {"command":"matchmaker_info","queues":[{"queue_name":"ladder1v1","queue_pop_time":"2021-03-21T22:26:27.555251+00:00","queue_pop_time_delta":10, "num_players":1,"active_rating_groups":[875],"boundary_80s":[[670,1070]],"boundary_75s":[[770,970]]"team_size":1}]}
     """.trimIndent()
     )
     assertEquals(
       MatchmakerInfo(
         listOf(
           MatchmakerInfo.MatchmakerQueue(
-            "ladder1v1", OffsetDateTime.parse("2021-03-21T22:26:27.555251+00:00"),
+            "ladder1v1",
+            OffsetDateTime.parse("2021-03-21T22:26:27.555251+00:00"),
             10f,
             1,
             1,
+            listOf(875),
             listOf(listOf(770, 970)),
             listOf(listOf(670, 1070))
           )
