@@ -1,0 +1,61 @@
+project:
+  name: FAForever Java Commons
+  version: 1.0.0
+  description: A shared Java library for usage in the FAForever project
+  license: MIT
+  links:
+    homepage: https://github.com/FAForever/faf-java-commons
+  inceptionYear: 2017
+
+release:
+  github:
+    overwrite: true
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+
+distributions:
+  api:
+    active: ALWAYS
+    type: SINGLE_JAR
+    stereotype: NONE
+    artifacts:
+      - path: api/build/libs/api-{{projectVersion}}.jar
+    java:
+      groupId: com.faforever.commons
+      artifactId: api
+
+  data:
+    active: ALWAYS
+    type: SINGLE_JAR
+    stereotype: NONE
+    artifacts:
+      - path: data/build/libs/data-{{projectVersion}}.jar
+    java:
+      groupId: com.faforever.commons
+      artifactId: data
+
+  lobby:
+    active: ALWAYS
+    type: SINGLE_JAR
+    stereotype: NONE
+    artifacts:
+      - path: lobby/build/libs/lobby-{{projectVersion}}.jar
+    java:
+      groupId: com.faforever.commons
+      artifactId: lobby
+
+signing:
+  active: ALWAYS
+  armored: true
+
+deploy:
+  maven:
+    mavenCentral:
+      sonatype:
+        active: ALWAYS
+        url: https://central.sonatype.com/api/v1/publisher
+        stagingRepositories:
+          - target/staging-deploy

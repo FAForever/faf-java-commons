@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.test.logger) apply false
+  alias(libs.plugins.jreleaser)
 }
 
 configure(subprojects) {
@@ -16,7 +17,7 @@ configure(subprojects) {
 
   tasks.withType<Test> {
     useJUnitPlatform()
-    }
+  }
 
   configure<PublishingExtension> {
     publications {
