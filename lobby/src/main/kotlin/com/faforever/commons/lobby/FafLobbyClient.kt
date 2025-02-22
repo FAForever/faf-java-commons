@@ -294,7 +294,7 @@ class FafLobbyClient(
         }
           .flatMap { event ->
             when (event) {
-              is GameJoinFailed -> Mono.error(GameJoinFailedException(gameId))
+              is GameJoinFailed -> Mono.error(GameJoinFailedException(gameId, event.reason))
               is GameLaunchResponse -> Mono.just(event)
               else -> Mono.empty()
             }
