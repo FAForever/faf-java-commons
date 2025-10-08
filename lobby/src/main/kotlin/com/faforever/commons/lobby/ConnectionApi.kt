@@ -55,6 +55,14 @@ data class NoticeInfo(
 ) : ServerMessage
 
 /**
+ * A message from the server (automated) to update vetoes of the user.
+ */
+data class VetoesChangedInfo(
+  val forced: Boolean,
+  val vetoes: List <VetoData>
+) : ServerMessage
+
+/**
  * Error response from server when joining a game.
  */
 data class GameJoinFailed (
