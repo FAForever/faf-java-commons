@@ -29,8 +29,12 @@ dependencies {
 }
 
 mavenPublishing {
-  publishToMavenCentral()
-  signAllPublications()
+  if (project.hasProperty("mavenCentralUsername")) {
+    publishToMavenCentral()
+  }
+  if (project.hasProperty("signingInMemoryKey")) {
+    signAllPublications()
+  }
 
   coordinates("com.faforever.commons", "api", project.version.toString())
   // Configure POM metadata

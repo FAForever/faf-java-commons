@@ -53,8 +53,12 @@ kotlin {
 }
 
 mavenPublishing {
-  publishToMavenCentral()
-  signAllPublications()
+  if (project.hasProperty("mavenCentralUsername")) {
+    publishToMavenCentral()
+  }
+  if (project.hasProperty("signingInMemoryKey")) {
+    signAllPublications()
+  }
 
   coordinates("com.faforever.commons", "lobby", project.version.toString())
   // Configure POM metadata
