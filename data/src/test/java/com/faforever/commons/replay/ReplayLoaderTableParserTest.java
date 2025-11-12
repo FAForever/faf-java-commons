@@ -108,7 +108,7 @@ class ReplayLoaderTableParserTest {
     Files.copy(getClass().getResourceAsStream("/replay/zstd_reference.fafreplay"), replayFile);
     Files.copy(getClass().getResourceAsStream("/replay/zstd_reference.raw"), referenceFile);
 
-    byte[] data = new ReplayDataParser(replayFile, objectMapper).getData().array();
+    byte[] data = new ReplayDataParser(replayFile, objectMapper).getRawReplayData();
     byte[] reference = Files.readAllBytes(referenceFile);
     assertThat("Zstd compressed replay matches reference", Arrays.equals(data, reference));
   }
@@ -120,7 +120,7 @@ class ReplayLoaderTableParserTest {
     Files.copy(getClass().getResourceAsStream("/replay/test.fafreplay"), replayFile);
     Files.copy(getClass().getResourceAsStream("/replay/test.raw"), referenceFile);
 
-    byte[] data = new ReplayDataParser(replayFile, objectMapper).getData().array();
+    byte[] data = new ReplayDataParser(replayFile, objectMapper).getRawReplayData();
     byte[] reference = Files.readAllBytes(referenceFile);
     assertThat("Legacy compressed file matches reference", Arrays.equals(data, reference));
   }

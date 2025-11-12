@@ -44,8 +44,7 @@ public class ReplayDataParser {
   private ReplayMetadata metadata;
   @Getter
   private String replayPatchFieldId;
-  @Getter
-  private ByteBuffer data;
+  private ByteBuffer dataBuffer;
   @Getter
   private String map;
   @Getter
@@ -136,7 +135,7 @@ public class ReplayDataParser {
     buffer.limit(buffer.capacity());
 
     buffer.position(headerEnd + 1);
-    data = decompress(buffer, metadata);
+    dataBuffer = decompress(buffer, metadata);
   }
 
   private int findReplayHeaderEnd(byte[] replayData) {
@@ -442,15 +441,20 @@ public class ReplayDataParser {
 
   private void parse() throws IOException, CompressorException {
     readReplayData(path);
-    data.order(ByteOrder.LITTLE_ENDIAN);
+    dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-    parseHeader(data);
+    parseHeader(dataBuffer);
 
-    var rewindPosition = data.position();
-    tokens = ReplayBodyTokenizer.tokenize(data);
-    data.position(rewindPosition);
+    var rewindPosition = dataBuffer.position();
+    tokens = ReplayBodyTokenizer.tokenize(dataBuffer);
+    dataBuffer.position(rewindPosition);
 
-    events = ReplayBodyParser.parseTokens(tokens, data);
+    events = ReplayBodyParser.parseTokens(tokens, dataBuffer);
     interpretEvents(events);
+  }
+
+  public byte[] getRawReplayData() {
+    byte[] backingArray = dataBuffer.array();
+    return Arrays.copyOf(backingArray, backingArray.length);
   }
 }
