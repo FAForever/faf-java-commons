@@ -22,7 +22,11 @@ public class ReplayBodyTokenizer {
       final int tokenLength = buffer.getShort() - TOKEN_HEADER_LENGTH;
 
       buffer.position(buffer.position() + tokenLength);
-      tokens.add(new ReplayBodyToken(ReplayBodyToken.TokenId.values()[tokenId], buffer.position()));
+      ReplayBodyToken token = new ReplayBodyToken(ReplayBodyToken.TokenId.values()[tokenId], buffer.position());
+      tokens.add(token);
+      if (token.tokenId() == ReplayBodyToken.TokenId.CMDST_END_GAME) {
+        break;
+      }
     }
 
     return tokens;
