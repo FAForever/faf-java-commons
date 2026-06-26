@@ -7,6 +7,7 @@ import com.faforever.commons.replay.body.ReplayBodyTokenizer;
 import com.faforever.commons.replay.shared.LoadUtils;
 import com.faforever.commons.replay.shared.LuaData;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.luben.zstd.Zstd;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -161,7 +162,17 @@ public class ReplayDataParser {
         CompressorInputStream compressorInputStream = new CompressorStreamFactory().createCompressorInputStream(arrayInputStream);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOUtils.copy(compressorInputStream, out);
+        // Some (older) replay files contain stray trailing bytes after the zstd frame, e.g. a
+        // trailing newline. zstd-jni <= 1.5.2 silently ignored them, but newer libzstd treats any
+        // post-frame bytes as the start of a second frame and fails with "Unknown frame descriptor".
+        // When the frame advertises its content size we read exactly that many bytes so the
+        // decompressor never touches the trailing data; otherwise we fall back to reading it fully.
+        long contentSize = Zstd.getFrameContentSize(inputArray);
+        if (contentSize > 0) {
+          IOUtils.copyLarge(compressorInputStream, out, 0, contentSize);
+        } else {
+          IOUtils.copy(compressorInputStream, out);
+        }
         return ByteBuffer.wrap(out.toByteArray());
       }
       case UNKNOWN:
