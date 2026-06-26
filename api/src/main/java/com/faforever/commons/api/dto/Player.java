@@ -51,6 +51,9 @@ public class Player extends AbstractEntity<Player> {
   @JsonIgnore
   private List<AvatarAssignment> avatarAssignments;
 
+  @Relationship("currentAvatar")
+  private Avatar currentAvatar;
+
   @JsonBackReference
   @Relationship("reporterOnModerationReports")
   private Set<ModerationReport> reporterOnModerationReports;
