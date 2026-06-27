@@ -27,6 +27,7 @@ public class ElideNavigator<T extends ElideEntity> implements ElideNavigatorSele
   private final Optional<ElideNavigator<?>> parentNavigator;
   private Optional<String> id = Optional.empty();
   private Optional<String> relationship = Optional.empty();
+  private Optional<String> relationshipLink = Optional.empty();
   private Optional<Condition<?>> filterCondition = Optional.empty();
   private Optional<Integer> pageSize = Optional.empty();
   private Optional<Integer> pageNumber = Optional.empty();
@@ -114,6 +115,13 @@ public class ElideNavigator<T extends ElideEntity> implements ElideNavigatorSele
     return new ElideNavigator<>(dtoClass, this);
   }
 
+  @Override
+  public ElideNavigatorOnId<T> relationshipLink(@NotNull String name) {
+    log.trace("relationship link added: {}", name);
+    this.relationshipLink = Optional.of(name);
+    return this;
+  }
+
   /**
    * Add a sorting rule to the navigator
    * Important: You need to give the full qualified route, there is NO referencing of parent relationships.
@@ -189,6 +197,7 @@ public class ElideNavigator<T extends ElideEntity> implements ElideNavigatorSele
     String route = parentNavigator.map(ElideNavigator::build).orElse("/data/" + dtoPath) +
                    id.map(i -> "/" + i).orElse("") +
                    relationship.map(r -> "/" + r).orElse("") +
+                   relationshipLink.map(r -> "/relationships/" + r).orElse("") +
                    queryArgs;
     log.trace("Route built: {}", route);
     return route;

@@ -6,4 +6,12 @@ public interface ElideNavigatorOnId<T extends ElideEntity> extends ElideEndpoint
 
   <R extends ElideEntity> ElideNavigatorSelector<R> navigateRelationship(Class<R> entityClass, String name);
 
+  /**
+   * Points the navigator at the JSON:API relationship endpoint
+   * ({@code /data/{type}/{id}/relationships/{name}}), used to read or modify the relationship linkage itself
+   * (e.g. PATCH/POST/DELETE to add, replace or remove members). This differs from
+   * {@link #navigateRelationship(Class, String)}, which addresses the related resource(s).
+   */
+  ElideNavigatorOnId<T> relationshipLink(String name);
+
 }
