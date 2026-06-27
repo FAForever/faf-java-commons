@@ -88,6 +88,24 @@ class ElideNavigatorTest {
   }
 
   @Test
+  void testRelationshipLink() {
+    assertThat(ElideNavigator.of(MapPool.class)
+                             .id("5")
+                             .relationshipLink("mapVersion")
+                             .build(), is("/data/mapPool/5/relationships/mapVersion"));
+  }
+
+  @Test
+  void testRelationshipLinkAfterNavigateRelationship() {
+    assertThat(ElideNavigator.of(MapPool.class)
+                             .id("5")
+                             .navigateRelationship(MapVersion.class, "mapVersion")
+                             .id("1234")
+                             .relationshipLink("map")
+                             .build(), is("/data/mapPool/5/mapVersion/1234/relationships/map"));
+  }
+
+  @Test
   void testGetListPages() {
     assertThat(ElideNavigator.of(MapPoolAssignment.class)
                              .collection()
