@@ -89,10 +89,11 @@ class ElideNavigatorTest {
 
   @Test
   void testRelationshipLink() {
-    assertThat(ElideNavigator.of(MapPool.class)
-                             .id("5")
-                             .relationshipLink("mapVersion")
-                             .build(), is("/data/mapPool/5/relationships/mapVersion"));
+    ElideNavigatorOnRelationshipLink<MapVersion> navigator = ElideNavigator.of(MapPool.class)
+                                                                           .id("5")
+                                                                           .relationshipLink(MapVersion.class, "mapVersion");
+    assertThat(navigator.build(), is("/data/mapPool/5/relationships/mapVersion"));
+    assertThat(navigator.getDtoClass(), is(MapVersion.class));
   }
 
   @Test
@@ -101,7 +102,7 @@ class ElideNavigatorTest {
                              .id("5")
                              .navigateRelationship(MapVersion.class, "mapVersion")
                              .id("1234")
-                             .relationshipLink("map")
+                             .relationshipLink(MapVersion.class, "map")
                              .build(), is("/data/mapPool/5/mapVersion/1234/relationships/map"));
   }
 
@@ -110,7 +111,7 @@ class ElideNavigatorTest {
     assertThrows(IllegalStateException.class, () -> ElideNavigator.of(MapPool.class)
                                                                   .id("5")
                                                                   .addInclude("mapVersion")
-                                                                  .relationshipLink("mapVersion"));
+                                                                  .relationshipLink(MapVersion.class, "mapVersion"));
   }
 
   @Test
