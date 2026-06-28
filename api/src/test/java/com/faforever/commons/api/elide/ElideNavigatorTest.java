@@ -106,6 +106,14 @@ class ElideNavigatorTest {
   }
 
   @Test
+  void testCannotRelationshipLinkAfterIncludes() {
+    assertThrows(IllegalStateException.class, () -> ElideNavigator.of(MapPool.class)
+                                                                  .id("5")
+                                                                  .addInclude("mapVersion")
+                                                                  .relationshipLink("mapVersion"));
+  }
+
+  @Test
   void testGetListPages() {
     assertThat(ElideNavigator.of(MapPoolAssignment.class)
                              .collection()

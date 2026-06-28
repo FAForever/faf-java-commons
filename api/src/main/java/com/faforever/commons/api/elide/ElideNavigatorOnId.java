@@ -11,7 +11,10 @@ public interface ElideNavigatorOnId<T extends ElideEntity> extends ElideEndpoint
    * ({@code /data/{type}/{id}/relationships/{name}}), used to read or modify the relationship linkage itself
    * (e.g. PATCH/POST/DELETE to add, replace or remove members). This differs from
    * {@link #navigateRelationship(Class, String)}, which addresses the related resource(s).
+   *
+   * <p>This is a terminal operation: the returned navigator only allows {@link
+   * ElideNavigatorOnRelationshipLink#build()}. Includes are not allowed on the parent.
    */
-  ElideNavigatorOnId<T> relationshipLink(String name);
+  ElideNavigatorOnRelationshipLink relationshipLink(String name);
 
 }
