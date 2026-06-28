@@ -14,7 +14,9 @@ public interface ElideNavigatorOnId<T extends ElideEntity> extends ElideEndpoint
    *
    * <p>This is a terminal operation: the returned navigator only allows {@link
    * ElideNavigatorOnRelationshipLink#build()}. Includes are not allowed on the parent.
+   *
+   * @param entityClass the type of the related resource(s) the linkage points at
    */
-  ElideNavigatorOnRelationshipLink relationshipLink(String name);
+  <R extends ElideEntity> ElideNavigatorOnRelationshipLink<R> relationshipLink(Class<R> entityClass, String name);
 
 }

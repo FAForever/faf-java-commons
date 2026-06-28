@@ -115,13 +115,24 @@ public class ElideNavigator<T extends ElideEntity> implements ElideNavigatorSele
   }
 
   @Override
-  public ElideNavigatorOnRelationshipLink relationshipLink(@NotNull String name) {
+  public <R extends ElideEntity> ElideNavigatorOnRelationshipLink<R> relationshipLink(@NotNull Class<R> entityClass,
+                                                                                      @NotNull String name) {
     if (!includes.isEmpty()) {
       throw new IllegalStateException("Cannot navigate to a relationship link with includes on parent");
     }
     log.trace("relationship link added: {}", name);
     String route = build() + "/relationships/" + name;
-    return () -> route;
+    return new ElideNavigatorOnRelationshipLink<>() {
+      @Override
+      public String build() {
+        return route;
+      }
+
+      @Override
+      public Class<R> getDtoClass() {
+        return entityClass;
+      }
+    };
   }
 
   /**
