@@ -102,6 +102,33 @@ class ServerMessageTest {
   }
 
   @Test
+  fun deserializeLocalizableNoticeInfo() {
+    val result = objectMapper.readValue<ServerMessage>(
+      """
+      {
+        "command": "notice",
+        "style": "error",
+        "text": "You are banned from FAF until 2026-05-10T22:00:00+00:00. Reason: test",
+        "i18n_key": "login.error.banned",
+        "i18n_args": ["2026-05-10T22:00:00+00:00", "test"],
+        "expires_at": "2026-05-10T22:00:00+00:00"
+      }
+    """.trimIndent()
+    )
+
+    assertEquals(
+      NoticeInfo(
+        "error",
+        "You are banned from FAF until 2026-05-10T22:00:00+00:00. Reason: test",
+        "login.error.banned",
+        listOf("2026-05-10T22:00:00+00:00", "test"),
+        OffsetDateTime.parse("2026-05-10T22:00:00+00:00")
+      ),
+      result
+    )
+  }
+
+  @Test
   fun deserializeGameJoinFailed() {
     val result = objectMapper.readValue<ServerMessage>(
       """
