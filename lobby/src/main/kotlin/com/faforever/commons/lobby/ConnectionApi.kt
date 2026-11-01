@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.OffsetDateTime
 
 /**
  * API to manage connection to the Lobby server
@@ -49,9 +50,15 @@ internal class InvalidResponse : ServerMessage
  * A general message from the server (automated or broadcast from admin) to display to the user.
  * FIXME: Should maybe offer event codes for translations in case of automated responses.
  */
-data class NoticeInfo(
+data class NoticeInfo @JvmOverloads constructor(
   val style: String?,
   val text: String?,
+  @JsonProperty("i18n_key")
+  val i18nKey: String? = null,
+  @JsonProperty("i18n_args")
+  val i18nArgs: List<String> = emptyList(),
+  @JsonProperty("expires_at")
+  val expiresAt: OffsetDateTime? = null,
 ) : ServerMessage
 
 /**
@@ -210,4 +217,3 @@ internal class ClientPingMessage : ClientMessage
  * Holds no data, just checks if the connection is still alive
  */
 internal class ClientPongMessage : ClientMessage
-
